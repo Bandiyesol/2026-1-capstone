@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5788230156137217010
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2044340214240017662, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Name
+      value: bluemerfolk Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 3979753278919920011, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Size.x
+      value: 1.1471362
+      objectReference: {fileID: 0}
+    - target: {fileID: 3979753278919920011, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Size.y
+      value: 1.1670583
+      objectReference: {fileID: 0}
+    - target: {fileID: 3979753278919920011, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.013427138
+      objectReference: {fileID: 0}
+    - target: {fileID: 3979753278919920011, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: maxHp
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: damage
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: cooltime
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: moveSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: attackRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: maxDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: monsterName
+      value: bluemerfolk
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: knockbackForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027772762231050851, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: knockbackDuration
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5056244013762257740, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: e4bc244bb056a5a4b81b84b214978d3e, type: 2}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.2752275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.37045175
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067434301368655764, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7216148384664477007, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -8577931033451314910, guid: 580b9f001722ddc4d98c3a5d721824a0, type: 3}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b193e7a2b2aee6642a2a734ee4e8e593, type: 3}

@@ -1,0 +1,22 @@
+{
+	"weapons": [
+		{
+			"id": "SWORD_001",
+			"name": "연습용 목검",
+			"spriteId": "sword_wooden",
+			"motionId": "effect_mow",
+	  		"type": "Sword",
+	  		"grade": "Common",
+	  		"balanceKey": "Sword_Common"
+		},
+		{
+			"id": "BOW_001",
+			"name": "짧은 활",
+			"spriteId": "bow_short",
+			"motionId": "effect_arrow",
+	  		"type": "Bow",
+	  		"grade": "Common",
+			"balanceKey": "Bow_Common"
+		}
+	]
+}

@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 16a575d2487ead6489003e04b72995b0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3751149802744492036
+    second: TheLastRuneTitle_0
+  - first:
+      213: -3496472831758299337
+    second: TheLastRuneTitle_1
+  - first:
+      213: 2020104804525018512
+    second: TheLastRuneTitle_2
+  - first:
+      213: -360875783875458379
+    second: TheLastRuneTitle_3
+  - first:
+      213: 4546088021134441460
+    second: TheLastRuneTitle_4
+  - first:
+      213: -1571592633110669046
+    second: TheLastRuneTitle_5
+  - first:
+      213: 2516200679712551586
+    second: TheLastRuneTitle_6
+  - first:
+      213: 7729600522177107510
+    second: TheLastRuneTitle_7
+  - first:
+      213: 5472743187461551287
+    second: TheLastRuneTitle_8
+  - first:
+      213: 8227770649365143580
+    second: TheLastRuneTitle_9
+  - first:
+      213: 8219000915224041191
+    second: TheLastRuneTitle_10
+  - first:
+      213: 3092281949923525836
+    second: TheLastRuneTitle_11
+  - first:
+      213: 435377789605242261
+    second: TheLastRuneTitle_12
+  - first:
+      213: 6124065152251348049
+    second: TheLastRuneTitle_13
+  - first:
+      213: 1270762634845398263
+    second: TheLastRuneTitle_14
+  - first:
+      213: 2339629396725238508
+    second: TheLastRuneTitle_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TheLastRuneTitle_0
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 479
+        width: 113
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cff432cf02d31fbc0800000000000000
+      internalID: -3751149802744492036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_1
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 479
+        width: 170
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73f0e301c780a7fc0800000000000000
+      internalID: -3496472831758299337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_2
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 479
+        width: 100
+        height: 161
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09d06c2ed9ad80c10800000000000000
+      internalID: 2020104804525018512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_3
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 479
+        width: 105
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ba0016f269edfaf0800000000000000
+      internalID: -360875783875458379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_4
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 479
+        width: 78
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fb706118f2f61f30800000000000000
+      internalID: 4546088021134441460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_5
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 479
+        width: 82
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0951dba3d4903ae0800000000000000
+      internalID: -1571592633110669046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_6
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 423
+        width: 328
+        height: 187
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a2fcd1df275be220800000000000000
+      internalID: 2516200679712551586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_7
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 479
+        width: 258
+        height: 196
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6365a04c8be054b60800000000000000
+      internalID: 7729600522177107510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_8
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 88
+        width: 322
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b4b593eee613fb40800000000000000
+      internalID: 5472743187461551287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_9
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 446
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c106bc020d9ee2270800000000000000
+      internalID: 8227770649365143580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_10
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 446
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e61a8849c1cf0270800000000000000
+      internalID: 8219000915224041191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_11
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 446
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc44b82cc0ef9ea20800000000000000
+      internalID: 3092281949923525836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_12
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 445
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 595e38cfac5ca0600800000000000000
+      internalID: 435377789605242261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_13
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 444
+        width: 32
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1544a4d2fcc0df450800000000000000
+      internalID: 6124065152251348049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_14
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 446
+        width: 10
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f4acc332e7a2a110800000000000000
+      internalID: 1270762634845398263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TheLastRuneTitle_15
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 446
+        width: 27
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cea8ed95a88087020800000000000000
+      internalID: 2339629396725238508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TheLastRuneTitle_0: -3751149802744492036
+      TheLastRuneTitle_1: -3496472831758299337
+      TheLastRuneTitle_10: 8219000915224041191
+      TheLastRuneTitle_11: 3092281949923525836
+      TheLastRuneTitle_12: 435377789605242261
+      TheLastRuneTitle_13: 6124065152251348049
+      TheLastRuneTitle_14: 1270762634845398263
+      TheLastRuneTitle_15: 2339629396725238508
+      TheLastRuneTitle_2: 2020104804525018512
+      TheLastRuneTitle_3: -360875783875458379
+      TheLastRuneTitle_4: 4546088021134441460
+      TheLastRuneTitle_5: -1571592633110669046
+      TheLastRuneTitle_6: 2516200679712551586
+      TheLastRuneTitle_7: 7729600522177107510
+      TheLastRuneTitle_8: 5472743187461551287
+      TheLastRuneTitle_9: 8227770649365143580
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
