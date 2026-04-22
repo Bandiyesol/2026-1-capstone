@@ -1,0 +1,780 @@
+fileFormatVersion: 2
+guid: 0be05e89f334c4948b8025b53aae3285
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9002447041099036704
+    second: scubadiver v1_0
+  - first:
+      213: -2158067621401870298
+    second: scubadiver v1_1
+  - first:
+      213: 9025082495393670836
+    second: scubadiver v1_2
+  - first:
+      213: 902128855859279827
+    second: scubadiver v1_3
+  - first:
+      213: 6084876985558173418
+    second: scubadiver v1_4
+  - first:
+      213: 7574380400747383004
+    second: scubadiver v1_5
+  - first:
+      213: -3618314016054273810
+    second: scubadiver v1_6
+  - first:
+      213: 8588034576131726065
+    second: scubadiver v1_7
+  - first:
+      213: -1234940346273464707
+    second: scubadiver v1_8
+  - first:
+      213: 5750888084773074248
+    second: scubadiver v1_9
+  - first:
+      213: -4048446343485365098
+    second: scubadiver v1_10
+  - first:
+      213: 395148291239605232
+    second: scubadiver v1_11
+  - first:
+      213: 5070656383295804230
+    second: scubadiver v1_12
+  - first:
+      213: 6316224200863994359
+    second: scubadiver v1_13
+  - first:
+      213: -153507260175153106
+    second: scubadiver v1_14
+  - first:
+      213: -4937600659168056260
+    second: scubadiver v1_15
+  - first:
+      213: -7296957709325221796
+    second: scubadiver v1_16
+  - first:
+      213: 6273279642759764475
+    second: scubadiver v1_17
+  - first:
+      213: -7117108443125296259
+    second: scubadiver v1_18
+  - first:
+      213: -8794569362743539011
+    second: scubadiver v1_19
+  - first:
+      213: 7371702431248764595
+    second: scubadiver v1_20
+  - first:
+      213: -8279449810514108475
+    second: scubadiver v1_21
+  - first:
+      213: -8991537362602318173
+    second: scubadiver v1_22
+  - first:
+      213: 1128101517793471189
+    second: scubadiver v1_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: scubadiver v1_0
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 95
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e78606fc12e01380800000000000000
+      internalID: -9002447041099036704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_1
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 95
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 620c119aee00d02e0800000000000000
+      internalID: -2158067621401870298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_2
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 95
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b6298e66b88f3d70800000000000000
+      internalID: 9025082495393670836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_3
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 95
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d73f1b2a61058c00800000000000000
+      internalID: 902128855859279827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_4
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 95
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae6052a1163d17450800000000000000
+      internalID: 6084876985558173418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_5
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 95
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd88a3cf7da9d1960800000000000000
+      internalID: 7574380400747383004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_6
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 95
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee89443b29a29cdc0800000000000000
+      internalID: -3618314016054273810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_7
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 95
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fa9a1512f3de2770800000000000000
+      internalID: 8588034576131726065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_8
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 71
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7e729d4c4c9cdee0800000000000000
+      internalID: -1234940346273464707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_9
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 73
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 845fceb5e324fcf40800000000000000
+      internalID: 5750888084773074248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_10
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 71
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 694635c008701d7c0800000000000000
+      internalID: -4048446343485365098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_11
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 73
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f370fcf649db7500800000000000000
+      internalID: 395148291239605232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_12
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 50
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 643d9687d179e5640800000000000000
+      internalID: 5070656383295804230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_13
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 51
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f15936227cb7a750800000000000000
+      internalID: 6316224200863994359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_14
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 51
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2801dec5f1aeddf0800000000000000
+      internalID: -153507260175153106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_15
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 50
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3cad8b6c5e1a7bb0800000000000000
+      internalID: -4937600659168056260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_16
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 48
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c504f92df9ffbba90800000000000000
+      internalID: -7296957709325221796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_17
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 47
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf9926b099a2f0750800000000000000
+      internalID: 6273279642759764475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_18
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 47
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d73559b3493fa3d90800000000000000
+      internalID: -7117108443125296259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_19
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 47
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dba432d92c963f580800000000000000
+      internalID: -8794569362743539011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_20
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 47
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3be4774ed4c8d4660800000000000000
+      internalID: 7371702431248764595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_21
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 23
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cf91a4834c791d80800000000000000
+      internalID: -8279449810514108475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_22
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 0
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a6af6d6864a73380800000000000000
+      internalID: -8991537362602318173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scubadiver v1_23
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 0
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5daa8ae7a52d7af00800000000000000
+      internalID: 1128101517793471189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      scubadiver v1_0: -9002447041099036704
+      scubadiver v1_1: -2158067621401870298
+      scubadiver v1_10: -4048446343485365098
+      scubadiver v1_11: 395148291239605232
+      scubadiver v1_12: 5070656383295804230
+      scubadiver v1_13: 6316224200863994359
+      scubadiver v1_14: -153507260175153106
+      scubadiver v1_15: -4937600659168056260
+      scubadiver v1_16: -7296957709325221796
+      scubadiver v1_17: 6273279642759764475
+      scubadiver v1_18: -7117108443125296259
+      scubadiver v1_19: -8794569362743539011
+      scubadiver v1_2: 9025082495393670836
+      scubadiver v1_20: 7371702431248764595
+      scubadiver v1_21: -8279449810514108475
+      scubadiver v1_22: -8991537362602318173
+      scubadiver v1_23: 1128101517793471189
+      scubadiver v1_3: 902128855859279827
+      scubadiver v1_4: 6084876985558173418
+      scubadiver v1_5: 7574380400747383004
+      scubadiver v1_6: -3618314016054273810
+      scubadiver v1_7: 8588034576131726065
+      scubadiver v1_8: -1234940346273464707
+      scubadiver v1_9: 5750888084773074248
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

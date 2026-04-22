@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 3620b6d2a5cf2b34e8c839a04c043b18
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4692007279915569673
+    second: wallpapertext_0
+  - first:
+      213: 700921748965750226
+    second: wallpapertext_1
+  - first:
+      213: 1004567890582816485
+    second: wallpapertext_2
+  - first:
+      213: -2448927683327566165
+    second: wallpapertext_3
+  - first:
+      213: -4117065499625753933
+    second: wallpapertext_4
+  - first:
+      213: 2277507476907457513
+    second: wallpapertext_5
+  - first:
+      213: 7203305304572939951
+    second: wallpapertext_6
+  - first:
+      213: 3804976407969819857
+    second: wallpapertext_7
+  - first:
+      213: -6616271129370577429
+    second: wallpapertext_8
+  - first:
+      213: -7485689014381183523
+    second: wallpapertext_9
+  - first:
+      213: 7186943829223185774
+    second: wallpapertext_10
+  - first:
+      213: -3452395632709454050
+    second: wallpapertext_11
+  - first:
+      213: 2405868476479924704
+    second: wallpapertext_12
+  - first:
+      213: -2502868556215531769
+    second: wallpapertext_13
+  - first:
+      213: -410731617791506888
+    second: wallpapertext_14
+  - first:
+      213: -6169018236117070593
+    second: wallpapertext_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: wallpapertext_0
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 479
+        width: 113
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fde51dfc34a2eeb0800000000000000
+      internalID: -4692007279915569673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_1
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 479
+        width: 170
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d5f276fd9c2ab900800000000000000
+      internalID: 700921748965750226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_2
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 479
+        width: 100
+        height: 161
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e6c3fe8c21f0fd00800000000000000
+      internalID: 1004567890582816485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_3
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 479
+        width: 105
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baed3aa3f39a30ed0800000000000000
+      internalID: -2448927683327566165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_4
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 479
+        width: 78
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b27ac1cdbe3dd6c0800000000000000
+      internalID: -4117065499625753933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_5
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 479
+        width: 82
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9eb7d56cbf45b9f10800000000000000
+      internalID: 2277507476907457513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_6
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 423
+        width: 328
+        height: 187
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faec1cf720847f360800000000000000
+      internalID: 7203305304572939951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_7
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 479
+        width: 258
+        height: 196
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dc68c722edfdc430800000000000000
+      internalID: 3804976407969819857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_8
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 88
+        width: 322
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be5b13c56784e24a0800000000000000
+      internalID: -6616271129370577429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_9
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 446
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dddf3c6908d7d1890800000000000000
+      internalID: -7485689014381183523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_10
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 446
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6d9889a5572db360800000000000000
+      internalID: 7186943829223185774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_11
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 446
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e173e30b670a610d0800000000000000
+      internalID: -3452395632709454050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_12
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 445
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e965ece1ac536120800000000000000
+      internalID: 2405868476479924704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_13
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 444
+        width: 32
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70747431f46044dd0800000000000000
+      internalID: -2502868556215531769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_14
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 446
+        width: 10
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 836048f05c9cc4af0800000000000000
+      internalID: -410731617791506888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wallpapertext_15
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 446
+        width: 27
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffcc55f599e336aa0800000000000000
+      internalID: -6169018236117070593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      wallpapertext_0: -4692007279915569673
+      wallpapertext_1: 700921748965750226
+      wallpapertext_10: 7186943829223185774
+      wallpapertext_11: -3452395632709454050
+      wallpapertext_12: 2405868476479924704
+      wallpapertext_13: -2502868556215531769
+      wallpapertext_14: -410731617791506888
+      wallpapertext_15: -6169018236117070593
+      wallpapertext_2: 1004567890582816485
+      wallpapertext_3: -2448927683327566165
+      wallpapertext_4: -4117065499625753933
+      wallpapertext_5: 2277507476907457513
+      wallpapertext_6: 7203305304572939951
+      wallpapertext_7: 3804976407969819857
+      wallpapertext_8: -6616271129370577429
+      wallpapertext_9: -7485689014381183523
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
