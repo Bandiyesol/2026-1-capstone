@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     Animator anim;
 
     // 입력이 멈춰도 바라보는 방향을 유지하기 위한 마지막 이동 방향
-    Vector2 lastTravelDirection = Vector2.right;
+    public Vector2 lastTravelDirection = Vector2.right;
 
     void Awake()
     {

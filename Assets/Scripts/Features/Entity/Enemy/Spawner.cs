@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.InputSystem; // 새 Input System 네임스페이스 추가
 
 public class Spawner : MonoBehaviour
 {

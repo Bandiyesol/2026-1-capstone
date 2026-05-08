@@ -1,0 +1,124 @@
+{
+	"balance": [
+		{
+			"key": "Sword_Common",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Sword_Rare",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Sword_Unique",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Sword_Legendary",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Bow_Common",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [0.1, 1],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Bow_Rare",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Bow_Unique",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [0, 1]
+		},
+		{
+			"key": "Bow_Legendary",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [0, 1]
+		},
+		{
+			"key": "Orb_Common",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [0.1, 1]
+		},
+		{
+			"key": "Orb_Rare",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [1, 10]
+		},
+		{
+			"key": "Orb_Unique",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [0, 1]
+		},
+		{
+			"key": "Orb_Legendary",
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [5, 10],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [1, 3],
+			"reachRange": [2, 5],
+			"speedRange": [0, 1]
+		}
+	]
+}

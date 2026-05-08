@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     // 결과 UI(승/패)
     public Result uiResult;
     // 룬 선택 UI
-    public RuneSelectUI uiRuneSelect;
+    // public RuneSelectUI uiRuneSelect;
 
     void Awake()
     {
@@ -47,10 +47,10 @@ public void GameStart()
     Health = maxHealth;
     uiLevelUp.Select(1);
     // 룬 선택창 먼저 열기
-    if (uiRuneSelect != null)
-        uiRuneSelect.Show();
-    else
-        Resume();
+    // if (uiRuneSelect != null)
+    //     uiRuneSelect.Show();
+    // else
+    //     Resume();
 }
 
     public void GameOver()
