@@ -35,7 +35,7 @@ public class LevelUp : MonoBehaviour
     public void Select(int index)
     {
         // 외부에서 특정 아이템을 강제로 선택할 때 사용
-        // items[index].OnClick();
+        items[index].OnClick();
     }
 
     void Next()

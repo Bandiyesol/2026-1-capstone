@@ -36792,9 +36792,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f21bc3f7ef3204b9b3b9f68c4fb6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneManager
-  testRune0: {fileID: 0}
-  testRune1: {fileID: 0}
-  testRune2: {fileID: 0}
+  initialRunes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &1680473516
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,6 +27,7 @@ public class WeaponInfo
 public class WeaponBalance
 {
 	public string key;
+	public bool isRecursion;
 	public float[] damageRange;
 	public float[] weightRange;
 	public float[] sizeRange;

@@ -45,42 +45,42 @@ public class Item : MonoBehaviour
         }
     }
 
-    // public void OnClick()
-    // {
-    //     // 첫 선택 시 무기 오브젝트를 동적으로 생성
-    //     if (weapon == null)
-    //     {
-    //         GameObject newWeapon = new GameObject();
-    //         weapon = newWeapon.AddComponent<Weapon>();
-    //         weapon.Init(data);
-    //     }
+    public void OnClick()
+    {
+        // 첫 선택 시 무기 오브젝트를 동적으로 생성
+        // if (weapon == null)
+        // {
+        //     GameObject newWeapon = new GameObject();
+        //     weapon = newWeapon.AddComponent<Weapon>();
+        //     weapon.Init(data);
+        // }
 
-    //     // 다음 레벨 적용 스탯 계산 시작값(기본치)
-    //     float nextDamage = data.baseDamage;
-    //     int nextCount = data.baseCount;
+        // 다음 레벨 적용 스탯 계산 시작값(기본치)
+        float nextDamage = data.baseDamage;
+        int nextCount = data.baseCount;
 
-    //     // level 0은 기본값, level 1부터 배열 강화치 적용
-    //     int statIndex = level - 1;
-    //     if (statIndex >= 0)
-    //     {
-    //         if (data.damages != null && statIndex < data.damages.Length)
-    //             nextDamage += data.baseDamage * data.damages[statIndex];
-    //         if (data.counts != null && statIndex < data.counts.Length)
-    //             nextCount += data.counts[statIndex];
-    //     }
+        // level 0은 기본값, level 1부터 배열 강화치 적용
+        int statIndex = level - 1;
+        if (statIndex >= 0)
+        {
+            if (data.damages != null && statIndex < data.damages.Length)
+                nextDamage += data.baseDamage * data.damages[statIndex];
+            if (data.counts != null && statIndex < data.counts.Length)
+                nextCount += data.counts[statIndex];
+        }
 
-    //     weapon.LevelUp(nextDamage, nextCount);
+        // weapon.LevelUp(nextDamage, nextCount);
 
-    //     // 강화 레벨 증가
-    //     level++;
+        // 강화 레벨 증가
+        level++;
 
-    //     // 배열 길이를 기준으로 최대 레벨 계산 후 버튼 잠금
-    //     int maxLevel = 1 + Mathf.Max(
-    //         data.damages != null ? data.damages.Length : 0,
-    //         data.counts != null ? data.counts.Length : 0
-    //     );
-    //     if (level >= maxLevel) {
-    //         GetComponent<Button>().interactable = false;
-    //     }
-    // }
+        // 배열 길이를 기준으로 최대 레벨 계산 후 버튼 잠금
+        int maxLevel = 1 + Mathf.Max(
+            data.damages != null ? data.damages.Length : 0,
+            data.counts != null ? data.counts.Length : 0
+        );
+        if (level >= maxLevel) {
+            GetComponent<Button>().interactable = false;
+        }
+    }
 }
