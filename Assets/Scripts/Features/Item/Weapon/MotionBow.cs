@@ -3,37 +3,24 @@ using UnityEngine;
 public class MotionBow : Motion
 {
 	private Vector3 startPos;
-	private bool isInitialized = false;
 
 
+	protected override void OnStartMotion() => startPos = transform.position;
 
-	protected override void OnStartMotion()
+	protected override float GetDefaultTime() =>instance.spawntime;
+
+	protected override bool ShouldDestroyOnHit() => true;
+
+
+	protected override void Update()
 	{
-		startPos = transform.position;
-		Rigidbody2D rigidBody = GetComponent<Rigidbody2D>();
-		if (rigidBody != null) rigidBody.linearVelocity = Vector2.zero;
-
-		isInitialized = true;
+		base.Update();
+		if (Vector2.Distance(startPos, transform.position) > instance.reach) RequestDestroy(DestroyReason.WeaponLogic);
 	}
 
-
-	private void FixedUpdate()
+	protected override void UpdateMovement()
 	{
-		if (!isInitialized || instance == null) return;
-
-		transform.position += transform.right * instance.speed * Time.fixedDeltaTime;
-
-		CheckDistance();
-	}
-
-
-	protected override void OnTriggerEnter2D(Collider2D collision) => HandleCollision(collision);
-
-
-	private void CheckDistance()
-	{
-		float distance = Vector2.Distance(startPos, transform.position);
-		
-		if (distance > instance.reach) CheckDestruction();
+		base.UpdateMovement();
+		if (currentActiveRune == null) transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime);
 	}
 }

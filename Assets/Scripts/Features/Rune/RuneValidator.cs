@@ -6,9 +6,7 @@ public static class RuneValidator
 	// 1. 단순 조합 불가 (순서 상관없이 같이 있으면 에러)
     private static readonly Dictionary<RuneType, RuneType[]>  IncompatiblePairs = new()
     {
-        { RuneType.Split, new[] { RuneType.Return } },   // 분열 후 회귀는 불가
         { RuneType.Orbit, new[] { RuneType.Homing } },   // 공전 중 유도 불가
-        { RuneType.Delay, new[] { RuneType.Blink } },    // 지연 + 점멸: 좌표 불일치로 허공 소멸
         { RuneType.Gravity, new[] { RuneType.Wave } }     // 중력 + 파동: 이동 계산 충돌
     };
 

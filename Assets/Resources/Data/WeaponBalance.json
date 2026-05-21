@@ -2,135 +2,149 @@
 	"balance": [
 		{
 			"key": "Sword_Common",
-			"isRecursion": false,
+			"isRevived": false,
 			"damageRange": [5, 10],
 			"weightRange": [8, 12],
 			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
 			"spawntimeRange": [1, 3],
 			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
 		},
 		{
 			"key": "Sword_Rare",
-			"isRecursion": false,
+			"isRevived": false,
 			"damageRange": [5, 10],
 			"weightRange": [8, 12],
 			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
 			"spawntimeRange": [1, 3],
 			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
 		},
 		{
 			"key": "Sword_Unique",
-			"isRecursion": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
-		},
-		{
-			"key": "Sword_Legendary",
-			"isRecursion": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
-		},
-		{
-			"key": "Bow_Common",
-			"isRecursion": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [0.1, 1],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
-		},
-		{
-			"key": "Bow_Rare",
-			"isRecursion": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
-		},
-		{
-			"key": "Bow_Unique",
-			"isRecursion": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [0, 1]
-		},
-		{
-			"key": "Bow_Legendary",
-			"isRecursion": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [0, 1]
-		},
-		{
-			"key": "Orb_Common",
-			"isRecursion": false,
+			"isRevived": false,
 			"damageRange": [5, 10],
 			"weightRange": [8, 12],
 			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
 			"spawntimeRange": [1, 3],
 			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
+		},
+		{
+			"key": "Sword_Legendary",
+			"isRevived": false,
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
 			"reachRange": [2, 5],
-			"speedRange": [0.1, 1]
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
+		},
+
+		{
+			"key": "Bow_Common",
+			"isRevived": false,
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
+		},
+		{
+			"key": "Bow_Rare",
+			"isRevived": false,
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
+		},
+		{
+			"key": "Bow_Unique",
+			"isRevived": false,
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
+		},
+		{
+			"key": "Bow_Legendary",
+			"isRevived": false,
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
+		},
+
+		{
+			"key": "Orb_Common",
+			"isRevived": false,
+			"damageRange": [5, 10],
+			"weightRange": [8, 12],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
+			"spawntimeRange": [1, 3],
+			"cooltimeRange": [5, 10],
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
 		},
 		{
 			"key": "Orb_Rare",
-			"isRecursion": false,
+			"isRevived": false,
 			"damageRange": [5, 10],
 			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
 			"spawntimeRange": [1, 3],
 			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [1, 10]
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
 		},
 		{
 			"key": "Orb_Unique",
-			"isRecursion": false,
+			"isRevived": false,
 			"damageRange": [5, 10],
 			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
 			"spawntimeRange": [1, 3],
 			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [0, 1]
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
 		},
 		{
 			"key": "Orb_Legendary",
-			"isRecursion": false,
+			"isRevived": false,
 			"damageRange": [5, 10],
 			"weightRange": [8, 12],
-			"sizeRange": [5, 10],
+			"sizeRange": [1, 5],
+			"reachRange": [2, 5],
 			"spawntimeRange": [1, 3],
 			"cooltimeRange": [5, 10],
-			"reachRange": [2, 5],
-			"speedRange": [0, 1]
+			"attackspeedRange": [1, 10],
+			"movespeedRange": [1, 10]
 		}
 	]
 }

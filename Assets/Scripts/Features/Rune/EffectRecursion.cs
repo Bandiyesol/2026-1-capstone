@@ -1,23 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EffectRecursion : RuneEffect
+public class EffectRecursion : RuneEffect, IFinalEffect
 {
-	public override void InitEffect(WeaponInstance instance, Motion motion, RuneData runeData)
+	public void OnFinalExecute()
 	{
-		base.InitEffect(instance, motion, runeData);
+		if (weapon.isRevived) return;
 
-		if (!instance.isRecursion)
+		WeaponInstance again = new WeaponInstance(weapon){ isRevived = true };
+
+		List<RuneData> parentRunes = parentMotion.GetRunes();
+		List<RuneData> childRunes = new List<RuneData>();
+
+		foreach (var r in parentRunes)
 		{
-			instance.isRecursion = true;
-
-			GameObject clone = Instantiate(parentMotion.gameObject, parentMotion.transform.position, parentMotion.transform.rotation);
-			Motion cloneMotion = clone.GetComponent<Motion>();
-			
-			List<RuneData> remainingRunes = parentMotion.GetRemainingRunes();
-			cloneMotion.Initialize(instance, remainingRunes);
+			if (r.runeType != RuneType.Recursion) childRunes.Add(r);
 		}
 
-		Destroy(parentMotion.gameObject);
+		GameObject prefab = WeaponManager.Instance.GetMotionPrefab(weapon.info.motionId);
+		if (prefab == null) return;
+
+		GameObject clone = Instantiate(prefab, transform.position, transform.rotation);
+
+		clone.GetComponent<Motion>().Initialize(again, childRunes);
 	}
 }

@@ -10,7 +10,7 @@ public class RuneManager : MonoBehaviour
 	public string CurrentWarningMessage { get; private set; } = string.Empty;
     private const int SlotCount = 3;
     private RuneData[] slots = new RuneData[SlotCount];
-	private List<RuneData> activeRunesChahe = new List<RuneData>();
+	private List<RuneData> activeRunesCache = new List<RuneData>();
 	[SerializeField] private RuneData[] initialRunes = new RuneData[3];
 
 
@@ -73,13 +73,13 @@ public class RuneManager : MonoBehaviour
     // ─────────────────────────────────────────────────────
     public List<RuneData> GetActiveRunes()
     {
-        activeRunesChahe.Clear();
+        activeRunesCache.Clear();
 		for(int i = 0; i < SlotCount; i++)
 		{
-			if (slots[i] != null) activeRunesChahe.Add(slots[i]);
+			if (slots[i] != null) activeRunesCache.Add(slots[i]);
 		}
 
-		return activeRunesChahe;
+		return activeRunesCache;
     }
 
 
@@ -90,6 +90,7 @@ public class RuneManager : MonoBehaviour
     {
         var activeList = GetActiveRunes();
         IsCurrentCombinationValid = RuneValidator.IsValidCombination(activeList, out string errorMsg);
+		CurrentWarningMessage = IsCurrentCombinationValid ? string.Empty : errorMsg;
 		if (!IsCurrentCombinationValid) Debug.LogWarning($"[RuneManager] 현재 조합 위험: {errorMsg}");
     }
 

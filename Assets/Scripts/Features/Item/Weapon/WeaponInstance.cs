@@ -7,42 +7,48 @@ using UnityEngine;
 public class WeaponInstance
 {
 	public WeaponInfo info;
-	public bool isRecursion;
+	public bool isSplited;
+	public bool isRevived;
 	public float damage;
 	public float weight;
 	public float size;
+	public float reach;
 	public float spawntime;
 	public float cooltime;
-	public float reach;
-	public float speed;
+	public float attackspeed;
+	public float movespeed;
 	private float timer;
 
 
 	public WeaponInstance(WeaponInfo info, WeaponBalance balance)
 	{
 		this.info = info;
-		isRecursion = balance.isRecursion;
+		isSplited = balance.isSplited;
+		isRevived = balance.isRevived;
 		damage = UnityEngine.Random.Range(balance.damageRange[0], balance.damageRange[1]);
 		weight = UnityEngine.Random.Range(balance.weightRange[0], balance.weightRange[1]);
 		size = UnityEngine.Random.Range(balance.sizeRange[0], balance.sizeRange[1]);
+		reach = UnityEngine.Random.Range(balance.reachRange[0], balance.reachRange[1]);
 		spawntime = UnityEngine.Random.Range(balance.spawntimeRange[0], balance.spawntimeRange[1]);
 		cooltime = UnityEngine.Random.Range(balance.cooltimeRange[0], balance.cooltimeRange[1]);
-		reach = UnityEngine.Random.Range(balance.reachRange[0], balance.reachRange[1]);
-		speed = UnityEngine.Random.Range(balance.speedRange[0], balance.speedRange[1]);
+		attackspeed = UnityEngine.Random.Range(balance.attackspeedRange[0], balance.attackspeedRange[1]);
+		movespeed = UnityEngine.Random.Range(balance.movespeedRange[0], balance.movespeedRange[1]);
 	}
 
 
 	public WeaponInstance(WeaponInstance other)
 	{
 		info = other.info;
+		isSplited = other.isSplited;
+		isRevived = other.isRevived;
 		damage = other.damage;
 		weight = other.weight;
 		size = other.size;
+		reach = other.reach;
 		spawntime = other.spawntime;
 		cooltime = other.cooltime;
-		reach = other.reach;
-		speed = other.speed;
-		isRecursion = other.isRecursion;
+		attackspeed = other.attackspeed;
+		movespeed = other.movespeed;
 	}
 
 
@@ -90,8 +96,7 @@ public class WeaponInstance
 				break;
 
 			case "Orb":
-				float spawnRadius = size * 1.5f;
-				Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * spawnRadius;
+				Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * reach;
 
 				spawnPos = playerPos.position + new Vector3(randomOffset.x, randomOffset.y, 0);
 				spawnRotation = Quaternion.identity;

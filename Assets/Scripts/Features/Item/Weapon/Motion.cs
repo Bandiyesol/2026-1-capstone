@@ -1,111 +1,213 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
+public enum DestroyReason
+{
+	WeaponLogic,
+	TriggerRune
+}
+	
+
 public abstract class Motion : MonoBehaviour
 {
+	[Header("[ 설정 ]")]
 	public WeaponInstance instance;
-	protected List<RuneData> activeRunes;
-	protected int index;
-	protected RuneEffect effect;
-	protected RuneData data;
+	protected List<RuneData> allRunes;
+
+	protected List<RuneEffect> persistentEffects = new List<RuneEffect>();
+	protected RuneEffect currentActiveRune;
+	protected int activeIndex = -1;
+	protected float life = 0f;
+	protected bool isInitialLifeSet = false;
+	private bool isDestroyRequested = false;
 
 
+	
 
-	public virtual void Initialize(WeaponInstance instance, List<RuneData> runes) 
+
+	public virtual void Initialize(WeaponInstance instance, List<RuneData> runes, float inheritedLifeTime = -1f) 
 	{
 		this.instance = instance;
-		activeRunes = new List<RuneData>(runes);
-		index = -1;
+		allRunes = new List<RuneData>(runes);
 		transform.localScale = new Vector3(instance.size, instance.size, 1f);
 
+		if (inheritedLifeTime > 0f) life = inheritedLifeTime;
+		else life = GetDefaultTime();
+
+		isInitialLifeSet = true;
+
 		OnStartMotion();
-		ExecuteRune();
+		SetupPersistentRunes();
+		SetTriggerRunes();
+		ExecuteActiveRune();
+	}
+
+
+	protected virtual void Update()
+	{
+		if (!isInitialLifeSet) return;
+
+		life -= Time.deltaTime;
+		if (life <= 0f) RequestDestroy(DestroyReason.WeaponLogic);
+
+		UpdateMovement();
+
+		foreach (var effect in persistentEffects)
+		{
+			if (effect is IStateEffect state) state.UpdateState();
+			if (effect is ILogicEffect logic) logic.UpdateLogic();
+		}
 	}
 
 
 	protected abstract void OnStartMotion();
 
+	protected abstract float GetDefaultTime();
 
-	public void ExecuteRune()
+	protected virtual void OnTriggerEnter2D(Collider2D collision) => HandleCollision(collision);
+
+	protected virtual bool ShouldDestroyOnHit() => false;
+
+	protected virtual bool ActuallyDestroy() 
 	{
-		if (effect != null) Destroy(effect);
-
-		index++;
-		if (index >= activeRunes.Count)
+		var triggerEffects = GetComponents<RuneEffect>().OfType<ITriggerEffect>();
+		foreach (var trigger in triggerEffects)
 		{
-			effect = null;
-			data = null;
-			return;
+			if (trigger.ProtectParent) return false;
 		}
-
-		data = activeRunes[index];
-		System.Type type = System.Type.GetType("Effect" + data.runeType.ToString());
-		if (type == null) return;
-
-		effect = (RuneEffect)gameObject.AddComponent(type);
-		if (effect != null) effect.InitEffect(instance, this, data);
+		
+		return true;
 	}
 
+	public float GetRemainingLife() => life;
+	public List<RuneData> GetRunes() { return new List<RuneData>(allRunes); }
 
-	protected virtual void Update() => transform.Translate(Vector3.right * instance.speed * Time.deltaTime);
+
+	protected virtual void UpdateMovement()
+	{
+		if (currentActiveRune != null && currentActiveRune is IActiveDriver driver) 
+		{
+			driver.UpdateMovement();
+			if (driver.isFinished) ExecuteActiveRune();
+		}
+	}
 
 
 	protected virtual void HandleCollision(Collider2D collision)
 	{
-		if (effect == null)
+		var triggerEffects = GetComponents<RuneEffect>().OfType<ITriggerEffect>().ToList();
+		bool triggerAnyActivated = false;
+
+		foreach (var effect in triggerEffects)
 		{
-			DefaultHitEffect(collision);
-			return;
+			RuneEffect rune = effect as RuneEffect;
+
+			if (rune != null && rune.isReady)
+			{
+				float calculatedDamage = DamageCalculator.CalculateBaseDamage(instance, rune.data);
+				ApplyCalculatedDamage(collision, calculatedDamage);
+
+				effect.OnReflect(collision);
+				rune.ResetCooltime();
+				triggerAnyActivated = true;
+
+				if (effect.DestroyOnExecute)
+				{
+					RequestDestroy(DestroyReason.TriggerRune);
+					return;
+				}
+			}
 		}
 
-		switch (data.category)
+		if (!triggerAnyActivated)
 		{
-			case RuneCategory.Movement:
-				ExecuteRune();
-				break;
-
-			case RuneCategory.Trigger:
-				if (effect.ManualCollision) return; 
-            	ExecuteRune();
-				break;
-
-			case RuneCategory.Final:
-				break;
+			float defaultDamage = DamageCalculator.CalculateBaseDamage(instance, null);
+			ApplyCalculatedDamage(collision, defaultDamage);
+			
+			if (ShouldDestroyOnHit()) RequestDestroy(DestroyReason.WeaponLogic);
 		}
 	}
 
 
-	protected virtual void OnTriggerEnter2D(Collider2D collision) => HandleCollision(collision);
-
-
-	protected virtual void DefaultHitEffect(Collider2D collision)
+	protected virtual void ApplyCalculatedDamage(Collider2D collision, float finalDamage)
 	{
-		if (collision.CompareTag("Enemy"))
+		if (collision.CompareTag("Enemy")) 
 		{
-			IDamageable enemy = collision.GetComponent<IDamageable>();
-			if (enemy != null) enemy.TakeDamage(instance.damage);
+			var damageable = collision.GetComponent<IDamageable>();
+			if (damageable != null) damageable.TakeDamage(finalDamage);
 		}
-
-		CheckDestruction();
 	}
 
 
-	protected virtual void CheckDestruction()
+	public void RequestDestroy(DestroyReason reason)
 	{
-		int next = index + 1;
-		if (next < activeRunes.Count && activeRunes[next].category == RuneCategory.Final)
+		if (isDestroyRequested) return;
+
+		if (currentActiveRune != null && currentActiveRune is IActiveDriver driver && !driver.isFinished)
 		{
-			ExecuteRune();
-			return;
+			if (reason == DestroyReason.WeaponLogic) return;
 		}
 
-		OnFinalDestroy();
+		if (!ActuallyDestroy()) return;
+
+		isDestroyRequested = true;
+		FinalizeMotion();
 	}
 
 
-	private void OnFinalDestroy() => Destroy(gameObject);
+	private void FinalizeMotion()
+	{
+		RuneData finalRune = allRunes.FirstOrDefault(r => r.category == RuneCategory.Final);
+
+		if (finalRune != null)
+		{
+			RuneEffect effect = RuneEffectRegistry.AddEffect(gameObject, finalRune.runeType, instance, this, finalRune);
+			if (effect is IFinalEffect final) final.OnFinalExecute();
+		}
+
+		Destroy(gameObject);
+	}
 
 
-	public List<RuneData> GetRemainingRunes() => new List<RuneData>(activeRunes);
+	private void ExecuteActiveRune()
+	{
+		if (currentActiveRune != null)
+		{
+			Destroy(currentActiveRune);
+			currentActiveRune = null;
+		}
+
+		activeIndex++;
+		var activeRunes = allRunes.Where(r => r.category == RuneCategory.Active).ToList();
+
+		if (activeIndex < activeRunes.Count) currentActiveRune = AddRuneComponent(activeRunes[activeIndex]);
+		else currentActiveRune = null;
+
+	}
+
+
+	private void SetupPersistentRunes()
+	{
+		var persistents = allRunes.Where(r => r.category == RuneCategory.State || r.category == RuneCategory.Logic);
+		foreach (var runeData in persistents)
+		{
+			RuneEffect runeEffect = AddRuneComponent(runeData);
+			if (runeEffect != null) persistentEffects.Add(runeEffect);
+		}
+	}
+
+
+	private void SetTriggerRunes()
+	{
+		var triggers = allRunes.Where(r => r.category == RuneCategory.Trigger);
+		foreach (var trigger in triggers) AddRuneComponent(trigger);
+	}
+
+
+	private RuneEffect AddRuneComponent(RuneData data)
+	{
+		return RuneEffectRegistry.AddEffect(gameObject, data.runeType, instance, this, data);
+	}
 }

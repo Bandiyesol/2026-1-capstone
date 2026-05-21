@@ -1,52 +1,76 @@
 using UnityEngine;
 
-public class EffectHoming : RuneEffect
+public class EffectHoming : RuneEffect, IActiveDriver
 {
     private Transform target;
+	private float elapsedtime;
+	private float searchtime;
 
 
-
-    public override void InitEffect(WeaponInstance instance, Motion motion, RuneData data)
-    {
-        base.InitEffect(instance, motion, data);
-        FindTarget();
-    }
+	public override bool isFinished => elapsedtime >= RuneDataAccess.GetDuration(data);
 
 
-    private void Update()
-    {
-        if (target == null || !target.gameObject.activeInHierarchy)
-        {
-            FindTarget();
-            return;
-        }
-
-        Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-        float rotationSpeed = parentMotion.instance.speed * data.power;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-    }
+	public override void InitEffect(WeaponInstance instance, Motion motion, RuneData runeData)
+	{
+		base.InitEffect(instance, motion, runeData);
+		elapsedtime = 0f;
+		searchtime = 0f;
+		FindTarget();
+	}
 
 
-    private void FindTarget()
-    {
-		float radius = data.duration > 0f ? data.duration : 10f;
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, radius);
-        float minDistance = Mathf.Infinity;
+	public void UpdateMovement()
+	{
+		elapsedtime += Time.deltaTime;
+		searchtime += Time.deltaTime;
 
-        foreach (var enemy in hitEnemies)
-        {
-            if (enemy.CompareTag("Enemy"))
-            {
-                float distance = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    target = enemy.transform;
-                }
-            }
-        }
-    }
+		if (target == null || !target.gameObject.activeInHierarchy)
+		{
+			if (searchtime >= 0.2f)
+			{
+				FindTarget();
+				searchtime = 0f;
+			}
+		}
+
+		if (target == null)
+		{
+			transform.Translate(Vector3.right * weapon.movespeed * Time.deltaTime);
+			return;
+		}
+
+		Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+		Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+		float speedMultiplier = RuneDataAccess.GetSpeedMultiplier(data);
+		float rotationSpeed = weapon.movespeed * (speedMultiplier > 0f ? speedMultiplier : 1f);
+		transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
+
+		transform.Translate(Vector3.right * weapon.movespeed * Time.deltaTime);
+		if (Vector2.Distance(transform.position, target.position) < 0.2f) target = null;
+	}
+
+
+	private void FindTarget()
+	{
+		float range = RuneDataAccess.GetAffectedRange(data);
+		float radius = range > 0f ? range : 10f;
+		Collider2D[] Enemies = Physics2D.OverlapCircleAll(transform.position, radius, LayerMask.GetMask("Enemy"));
+
+		float minDistance = Mathf.Infinity;
+		Transform nearest = null;
+
+		foreach (var enemy in Enemies)
+		{
+			float distance = Vector2.Distance(transform.position, enemy.transform.position);
+			if (distance < minDistance)
+			{
+				minDistance = distance;
+				nearest = enemy.transform;
+			}
+
+			target = nearest;
+		}
+	}
 }

@@ -27,12 +27,14 @@ public class WeaponInfo
 public class WeaponBalance
 {
 	public string key;
-	public bool isRecursion;
+	public bool isSplited;
+	public bool isRevived;
 	public float[] damageRange;
 	public float[] weightRange;
 	public float[] sizeRange;
+	public float[] reachRange;
 	public float[] spawntimeRange;
 	public float[] cooltimeRange;
-	public float[] reachRange;
-	public float[] speedRange;
+	public float[] attackspeedRange;
+	public float[] movespeedRange;
 }
