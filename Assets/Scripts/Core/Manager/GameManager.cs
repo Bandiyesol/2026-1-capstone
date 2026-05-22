@@ -42,16 +42,16 @@ public class GameManager : MonoBehaviour
         instance = this;
     }
 
-public void GameStart()
-{
-    Health = maxHealth;
-    uiLevelUp.Select(1);
-    // 룬 선택창 먼저 열기
-    if (uiRuneSelect != null)
-        uiRuneSelect.Show();
-    else
-        Resume();
-}
+    public void GameStart()
+    {
+        Health = maxHealth;
+        uiLevelUp.Select(1);
+        // 룬 선택창 먼저 열기
+        if (uiRuneSelect != null)
+            uiRuneSelect.Show();
+        else
+            Resume();
+    }
 
     public void GameOver()
     {
@@ -100,28 +100,25 @@ public void GameStart()
 
     void Update()
     {
-        // 정지 상태에서는 타이머/승리 검사 중단
+        // 정지 상태에서는 타이머 중단
         if (!isLive)
             return;
-        gameTime += Time.deltaTime;
 
-        // 처치 수 50 달성 시 즉시 승리
-        if (Kill == 50)
-            GameVictory();
+        gameTime += Time.deltaTime;
     }
 
     // 처치 조건을 만족하면 레벨업 선택 UI 오픈
-public void GetLevelUp()
-{
-    if (!isLive)
-        return;
-
-    // 10킬 단위로 레벨업 기회 제공 (0킬 제외)
-    if (Kill % 10 == 0 && Kill > 0)
+    public void GetLevelUp()
     {
-        uiLevelUp.Show();
+        if (!isLive)
+            return;
+
+        // 10킬 단위로 레벨업 기회 제공 (0킬 제외)
+        if (Kill % 25 == 0 && Kill > 0)
+        {
+            uiLevelUp.Show();
+        }
     }
-}
 
     public void Stop()
     {
@@ -132,9 +129,13 @@ public void GetLevelUp()
 
     public void Resume()
     {
-        // 게임 상태 재개 + 전역 시간 복구
+        // 게임 상태 재개
         isLive = true;
         Time.timeScale = 1;
+
+        WaveManager wave = FindFirstObjectByType<WaveManager>();
+        if (wave != null)
+            wave.Begin();
     }
 }
 

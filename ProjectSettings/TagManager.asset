@@ -8,6 +8,9 @@ TagManager:
   - Area
   - Enemy
   - Bullet
+  - Lava
+  - BossBullet
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -16,6 +19,8 @@ TagManager:
   - Water
   - UI
   - Enemy
+  - Environment
+  - BossBullet
   - 
   - 
   - 
@@ -32,9 +37,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Hide
   - 
   - 
   - 

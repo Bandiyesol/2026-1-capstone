@@ -186,30 +186,30 @@ void Update()
         ClearRunes();
     }
 
-void OnTriggerEnter2D(Collider2D collision)
-{
-    if (!collision.CompareTag("Enemy") || per == -1 || isRuneError) return;
-
-    // ✅ 순회 전 복사본 생성 — SpawnCopy가 runes를 건드려도 안전
-    var runeSnapshot = new List<IBulletRune>(runes);
-
-    bool keepAlive = false;
-    foreach (var rune in runeSnapshot)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        if (rune.OnHit(this, collision))
-            keepAlive = true;
-    }
+        if (!collision.CompareTag("Enemy") || per == -1 || isRuneError) return;
 
-    if (!keepAlive)
-    {
-        per--;
-        if (per == -1)
+        // ✅ 순회 전 복사본 생성 — SpawnCopy가 runes를 건드려도 안전
+        var runeSnapshot = new List<IBulletRune>(runes);
+
+        bool keepAlive = false;
+        foreach (var rune in runeSnapshot)
         {
-            if (rigid != null) rigid.linearVelocity = Vector2.zero;
-            Deactivate();
+            if (rune.OnHit(this, collision))
+                keepAlive = true;
+        }
+
+        if (!keepAlive)
+        {
+            per--;
+            if (per == -1)
+            {
+                if (rigid != null) rigid.linearVelocity = Vector2.zero;
+                Deactivate();
+            }
         }
     }
-}
 
     // ─────────────────────────────────────────────────────
     // 소멸 처리
@@ -226,25 +226,23 @@ void OnTriggerEnter2D(Collider2D collision)
         gameObject.SetActive(false);
     }
 
-    // ─────────────────────────────────────────────────────
-    // 외부 접근용 유틸리티
-    // ─────────────────────────────────────────────────────
-    // 풀에서 새 탄환을 가져와 현재 룬 구성으로 복사 발사 (Split/Recursion용)
-   public BulletRune SpawnCopy(Vector2 dir, float damageOverride = -1f,
-    params RuneType[] excludeRunes)
-{
-    GameObject obj = GameManager.instance.pool.Get(prefabId);
-    BulletRune copy = obj.GetComponent<BulletRune>();
-    if (copy == null) return null;
+   // ─────────────────────────────────────────────────────
+   // 외부 접근용 유틸리티
+   // ─────────────────────────────────────────────────────
+   // 풀에서 새 탄환을 가져와 현재 룬 구성으로 복사 발사 (Split/Recursion용)
+   public BulletRune SpawnCopy(Vector2 dir, float damageOverride = -1f, params RuneType[] excludeRunes)
+   {
+        GameObject obj = GameManager.instance.pool.GetProjectile(prefabId);
+        BulletRune copy = obj.GetComponent<BulletRune>();
+        if (copy == null) return null;
 
-    // 제외할 룬만 빼고 나머지 전부 유지
-    var newList = new List<RuneData>(runeDataList);
-    newList.RemoveAll(r => r != null &&
-        System.Array.IndexOf(excludeRunes, r.runeType) >= 0);
+        // 제외할 룬만 빼고 나머지 전부 유지
+        var newList = new List<RuneData>(runeDataList);
+        newList.RemoveAll(r => r != null && System.Array.IndexOf(excludeRunes, r.runeType) >= 0);
 
-    copy.transform.position = transform.position;
-    float dmg = damageOverride >= 0 ? damageOverride : damage;
-    copy.Init(dmg, per, dir, 0, newList);
-    return copy;
-}
+        copy.transform.position = transform.position;
+        float dmg = damageOverride >= 0 ? damageOverride : damage;
+        copy.Init(dmg, per, dir, 0, newList);
+        return copy;
+   }
 }

@@ -1,62 +1,97 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.InputSystem; // 새 Input System 네임스페이스 추가
 
 public class Spawner : MonoBehaviour
 {
-    // 자식 트랜스폼들(0번은 자기 자신, 1번부터 실제 스폰 포인트)
+    [Header("스폰 포인트")]
     public Transform[] spawnPoint;
-    // 시간대별/레벨별 스폰 설정 데이터
+
+    [Header("스폰 데이터")]
     public SpawnData[] spawnData;
-    // 현재 게임 시간 기준 스폰 단계
-    int level;
-    // 마지막 스폰 이후 경과 시간
-    float timer;
+
+    // PoolManager
+    PoolManager pool;
 
     void Awake()
     {
-        // 자식 오브젝트를 스폰 포인트 배열로 캐싱
         spawnPoint = GetComponentsInChildren<Transform>();
     }
-    void Update()
-    {
-        // 게임 정지 상태에서는 스폰 중단
-        if (!GameManager.instance.isLive)
-            return;
-            
-        timer += Time.deltaTime;
-        // 10초마다 레벨 상승, 배열 범위를 넘지 않도록 clamp
-        level = Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / 10f), spawnData.Length - 1);
 
-        // 레벨별 스폰 주기를 넘기면 적 생성
-        if (timer > spawnData[level].spawnTime)
-        {
-            timer = 0;
-            Spawn();
-        }
+    void Start()
+    {
+        pool = GameManager.instance.pool;
     }
 
-    void Spawn()
+    // 랜덤 위치 반환
+    public Transform GetRandomPoint()
     {
-        // 0번 풀(적 프리팹)에서 가져와 랜덤 스폰 포인트에 배치
-        GameObject enemy = GameManager.instance.pool.Get(0);
-        enemy.transform.position = spawnPoint[Random.Range(1,spawnPoint.Length)].position;
-        // 현재 레벨 데이터로 적 능력치 초기화
-        enemy.GetComponent<Enemy>().Init(spawnData[level]);
+        return spawnPoint[
+            Random.Range(1, spawnPoint.Length)
+        ];
+    }
+
+    // 스폰 데이터 반환
+    public SpawnData GetSpawnData(int index)
+    {
+        index = Mathf.Clamp
+        (
+            index,
+            0,
+            spawnData.Length - 1
+        );
+
+        return spawnData[index];
+    }
+
+    // 적 또는 보스 스폰
+    public GameObject Spawn(int index)
+    {
+        // 데이터 가져오기
+        SpawnData data = GetSpawnData(index);
+
+        // 위치 가져오기
+        Transform point = GetRandomPoint();
+
+        GameObject obj;
+
+        // 보스
+        if (data.isBoss)
+        {
+            obj = pool.GetBoss(data.prefabIndex);
+        }
+        // 일반 적
+        else
+        {
+            obj = pool.GetEnemy(data.prefabIndex);
+        }
+
+        // 위치 설정
+        obj.transform.position = point.position;
+
+        // 회전 초기화
+        obj.transform.rotation = Quaternion.identity;
+
+        return obj;
     }
 }
 
 [System.Serializable]
 public class SpawnData
 {
-    // 스폰 간격(초)
+    [Header("타입")]
+    // 보스 여부
+    public bool isBoss;
+
+    [Header("스폰")]
+    // 스폰 간격
     public float spawnTime;
-    // 사용할 스프라이트/애니메이터 타입
-    public int spriteType;
-    // 적 체력
-    public int health;
-    // 적 이동 속도
-    public float speed;
+    // 프리팹 번호
+    public int prefabIndex;
+
+    /*[Header("보스 연출")]
+    // 등장 연출 사용 여부
+    public bool useBossIntro;
+    // 스폰 이펙트
+    public GameObject spawnEffect;
+    // 보스 BGM
+    public AudioClip bossBgm;*/
 }

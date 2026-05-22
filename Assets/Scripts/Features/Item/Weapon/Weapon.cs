@@ -91,8 +91,10 @@ public class Weapon : MonoBehaviour
         count = data.baseCount;
 
         // 아이템의 발사체 프리팹이 풀 매니저의 몇 번 인덱스인지 검색
-        for (int index=0; index < GameManager.instance.pool.prefabs.Length; index++) {
-            if (data.projectile == GameManager.instance.pool.prefabs[index]) {
+        for (int index = 0; index < GameManager.instance.pool.projectilePrefabs.Length; index++)
+        {
+            if (data.projectile == GameManager.instance.pool.projectilePrefabs[index])
+            {
                 prefabId = index;
                 break;
             }
@@ -119,75 +121,75 @@ public class Weapon : MonoBehaviour
         }
     }
 
-void Batch()
-{
-    // ✅ 현재 장착된 룬 가져오기
-    List<RuneData> runes = RuneManager.instance != null
-        ? RuneManager.instance.GetActiveRunes()
-        : new List<RuneData>();
-
-    for (int index = 0; index < count; index++)
+    void Batch()
     {
-        Transform bullet;
+        // ✅ 현재 장착된 룬 가져오기
+        List<RuneData> runes = RuneManager.instance != null
+            ? RuneManager.instance.GetActiveRunes()
+            : new List<RuneData>();
 
-        if (index < transform.childCount)
-            bullet = transform.GetChild(index);
-        else
+        for (int index = 0; index < count; index++)
         {
-            bullet = GameManager.instance.pool.Get(prefabId).transform;
-            bullet.parent = transform;
+            Transform bullet;
+
+            if (index < transform.childCount)
+                bullet = transform.GetChild(index);
+            else
+            {
+                bullet = GameManager.instance.pool.GetProjectile(prefabId).transform;
+                bullet.parent = transform;
+            }
+
+            bullet.localPosition = Vector3.zero;
+            bullet.localRotation = Quaternion.identity;
+
+            Vector3 rotVec = Vector3.forward * 360 * index / count;
+            bullet.Rotate(rotVec);
+            bullet.Translate(bullet.up * 1f, Space.World);
+
+            BulletRune br = bullet.GetComponent<BulletRune>();
+            if (br != null)
+            {
+                br.prefabId = prefabId;
+                // ✅ 룬 리스트 전달
+                br.Init(damage, -1, Vector2.zero, count, runes, false);
+            }
+            else
+                bullet.GetComponent<Bullet>()?.Init(damage, -1, Vector2.zero, count, false);
         }
+    }
+    void Fire()
+    {
+        Vector3 dir = player.GetFacingDirection();
+        Vector2 dir2 = new Vector2(dir.x, dir.y);
+        if (dir2.sqrMagnitude < 1e-6f) dir2 = Vector2.right;
 
-        bullet.localPosition = Vector3.zero;
-        bullet.localRotation = Quaternion.identity;
+        Transform bulletTf = GameManager.instance.pool.GetProjectile(prefabId).transform;
+        bulletTf.SetParent(this.transform);
+        bulletTf.localPosition = Vector3.zero;
 
-        Vector3 rotVec = Vector3.forward * 360 * index / count;
-        bullet.Rotate(rotVec);
-        bullet.Translate(bullet.up * 1f, Space.World);
+        List<RuneData> runes = RuneManager.instance != null
+            ? RuneManager.instance.GetActiveRunes()
+            : new List<RuneData>();
 
-        BulletRune br = bullet.GetComponent<BulletRune>();
+        // ── 디버그 추가 ──
+        BulletRune br = bulletTf.GetComponent<BulletRune>();
+
         if (br != null)
         {
             br.prefabId = prefabId;
-            // ✅ 룬 리스트 전달
-            br.Init(damage, -1, Vector2.zero, count, runes, false);
+            br.Init(damage, count, dir2.normalized, count, runes);
         }
         else
-            bullet.GetComponent<Bullet>()?.Init(damage, -1, Vector2.zero, count, false);
+            bulletTf.GetComponent<Bullet>()?.Init(damage, count, dir2.normalized, count, false);
     }
-}
-void Fire()
-{
-    Vector3 dir = player.GetFacingDirection();
-    Vector2 dir2 = new Vector2(dir.x, dir.y);
-    if (dir2.sqrMagnitude < 1e-6f) dir2 = Vector2.right;
-
-    Transform bulletTf = GameManager.instance.pool.Get(prefabId).transform;
-    bulletTf.SetParent(this.transform);
-    bulletTf.localPosition = Vector3.zero;
-
-    List<RuneData> runes = RuneManager.instance != null
-        ? RuneManager.instance.GetActiveRunes()
-        : new List<RuneData>();
-
-    // ── 디버그 추가 ──
-    BulletRune br = bulletTf.GetComponent<BulletRune>();
-
-    if (br != null)
-    {
-        br.prefabId = prefabId;
-        br.Init(damage, count, dir2.normalized, count, runes);
-    }
-    else
-        bulletTf.GetComponent<Bullet>()?.Init(damage, count, dir2.normalized, count, false);
-}
 
     void Swing()
     {
         // 소드는 단일 히트박스를 생성하고 count를 크기 배율로 활용
         for (int i = 0; i < 1; i++)
         {
-            Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
+            Transform bullet = GameManager.instance.pool.GetProjectile(prefabId).transform;
             bullet.SetParent(this.transform);
 
             // 크기에 비례해 생성 위치를 전방으로 조금 더 보정

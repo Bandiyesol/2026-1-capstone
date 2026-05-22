@@ -61,20 +61,36 @@ public class Bullet : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        // 적이 아니거나(벽/플레이어 등), 이미 소멸 상태면 무시
-        if (!collision.CompareTag("Enemy") || per == -1)
+        // 이미 소멸 상태면 무시
+        if (per == -1)
             return;
 
-        // 적과 충돌할 때마다 관통 횟수 차감
-        per--;
+        // 적 또는 벽만 충돌 처리
+        if (
+            !collision.gameObject.CompareTag("Enemy")
+            && !collision.gameObject.CompareTag("Wall")
+        )
+            return;
 
-        // 관통 횟수를 모두 소진하면 이동 정지 후 비활성화(오브젝트 풀 반납)
+        // 벽이면 즉시 제거
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            per = -1;
+        }
+        else
+        {
+            // 적이면 관통 감소
+            per--;
+        }
+
+        // 관통 다 쓰면 제거
         if (per == -1)
         {
             if (rigid != null)
                 rigid.linearVelocity = Vector2.zero;
+
             gameObject.SetActive(false);
         }
     }
