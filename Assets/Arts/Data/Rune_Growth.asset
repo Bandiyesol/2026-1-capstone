@@ -9,16 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b899106686885cf4b843f60a5470562c, type: 3}
+  m_Script: {fileID: 11500000, guid: e98e46be98914014e91d20b736ba28cd, type: 3}
   m_Name: Rune_Growth
-  m_EditorClassIdentifier: Assembly-CSharp::RuneData
-  runeType: 14
-  category: 2
+  m_EditorClassIdentifier: Assembly-CSharp::GrowthRuneData
   runeName: Growth
-  runeDesc: 
+  category: 3
+  runeType: 12
   runeIcon: {fileID: 0}
-  cooldownPenalty: 0.1
-  manaCost: 0
-  incompatibleWith: 
-  valueA: 20
-  valueB: 20
+  runeDescription: 
+  isDestroyed: 0
+  power: 1.5
+  maxGrowthTime: 3
+  maxScaleRatio: 2

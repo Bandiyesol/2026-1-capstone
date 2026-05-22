@@ -10,7 +10,7 @@ public class RuneData : ScriptableObject
     public Sprite runeIcon;
 	[TextArea] public string runeDescription;
 	[Tooltip("룬 기능 완료 후 즉시 탄환 소멸 요청")] public bool isDestroyed;
-	[Tooltip("데미지와 관련된 배율 수치")] public float power;
+	[Tooltip("데미지 배율만 (DamageCalculator). 이동/회전에는 쓰지 않음")] public float power;
 }
 
 

@@ -33,21 +33,29 @@ public class GameManager : MonoBehaviour
     public LevelUp uiLevelUp;
     // 결과 UI(승/패)
     public Result uiResult;
+    // 무기 선택 UI (게임 시작, 룬 선택 전)
+    public WeaponSelectUI uiWeaponSelect;
     // 룬 선택 UI
     public RuneSelectUI uiRuneSelect;
 
     void Awake()
     {
-        // 씬에서 단일 매니저로 동작하도록 인스턴스 등록
         instance = this;
+
+        if (uiWeaponSelect == null)
+            uiWeaponSelect = FindFirstObjectByType<WeaponSelectUI>(FindObjectsInactive.Include);
+        if (uiRuneSelect == null)
+            uiRuneSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
     }
 
 public void GameStart()
 {
     Health = maxHealth;
     uiLevelUp.Select(1);
-    // 룬 선택창 먼저 열기
-    if (uiRuneSelect != null)
+
+    if (uiWeaponSelect != null)
+        uiWeaponSelect.Show();
+    else if (uiRuneSelect != null)
         uiRuneSelect.Show();
     else
         Resume();

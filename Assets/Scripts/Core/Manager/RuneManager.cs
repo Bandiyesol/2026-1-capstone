@@ -88,10 +88,9 @@ public class RuneManager : MonoBehaviour
     // ─────────────────────────────────────────────────────
     void Validate()
     {
-        var activeList = GetActiveRunes();
-        IsCurrentCombinationValid = RuneValidator.IsValidCombination(activeList, out string errorMsg);
+        IsCurrentCombinationValid = RuneValidator.ValidateSlots(slots, out string errorMsg);
 		CurrentWarningMessage = IsCurrentCombinationValid ? string.Empty : errorMsg;
-		if (!IsCurrentCombinationValid) Debug.LogWarning($"[RuneManager] 현재 조합 위험: {errorMsg}");
+		if (!IsCurrentCombinationValid) Debug.LogWarning($"[RuneManager] {errorMsg}");
     }
 
 

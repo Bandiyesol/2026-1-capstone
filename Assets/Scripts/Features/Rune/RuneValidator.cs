@@ -3,72 +3,87 @@ using UnityEngine;
 
 public static class RuneValidator
 {
-	// 1. 단순 조합 불가 (순서 상관없이 같이 있으면 에러)
-    private static readonly Dictionary<RuneType, RuneType[]>  IncompatiblePairs = new()
-    {
-        { RuneType.Orbit, new[] { RuneType.Homing } },   // 공전 중 유도 불가
-        { RuneType.Gravity, new[] { RuneType.Wave } }     // 중력 + 파동: 이동 계산 충돌
-    };
+	public const int MaxSlots = 3;
 
-
-    // 2. 순서 의존 비호환 (앞 룬 -> 뒤 룬 순서일 때만 에러)
-    private static readonly (RuneType first, RuneType second)[] OrderRules =
-    {
-        (RuneType.Explode, RuneType.Homing),  // 폭발을 유도할 수 없음
-        (RuneType.Freeze, RuneType.Chain)  // 얼어붙은 적에게 연쇄 전이 불가
-    };
-
-
-    public static bool IsValidCombination(List<RuneData> runeList, out string errorMsg)
-    {
+	/// <summary>
+	/// 슬롯 배열 기준 검증. Final 위치·중복만 검사 (호환/비호환 표 없음).
+	/// </summary>
+	public static bool ValidateSlots(IReadOnlyList<RuneData> slots, out string errorMsg)
+	{
 		errorMsg = string.Empty;
-        if (runeList == null || runeList.Count == 0) return true;
+		if (slots == null || slots.Count == 0) return true;
 
-        // 1) 중복 검사
-        var seen = new HashSet<RuneType>();
-        foreach (var r in runeList)
-        {
-            if (r == null) continue;
-            if (!seen.Add(r.runeType))
-            {
-				errorMsg = $"[RuneValidator] 중복 룬 감지: {r.runeType} → 런타임 에러";
-                Debug.Log(errorMsg);
-                return false;
-            }
-        }
+		var seen = new HashSet<RuneType>();
+		int lastFilledIndex = -1;
+		int finalCount = 0;
+		int finalIndex = -1;
 
-        // 2) 조합 비호환 검사
-        for (int i = 0; i < runeList.Count; i++)
-        {
-			RuneType type = runeList[i].runeType;
-			if (IncompatiblePairs.TryGetValue(type, out var bads))
-			{
-				foreach (var bad in bads)
-				{
-					if (runeList.Exists(r => r != null && r.runeType == bad))
-					{
-						errorMsg = $"[RuneValidator] 비호환 조합: {type} + {bad} → 런타임 에러";
-						Debug.Log(errorMsg);
-						return false;
-					}
-				}
-			}
-        }
-
-        // 3) 순서 비호환 검사
-        foreach (var rule in OrderRules)
+		for (int i = 0; i < slots.Count; i++)
 		{
-			int firstIdx = runeList.FindIndex(rune => rune != null && rune.runeType == rule.first);
-			int secondIdx = runeList.FindIndex(rune => rune != null && rune.runeType == rule.second);
+			RuneData r = slots[i];
+			if (r == null) continue;
 
-			if (firstIdx != -1 && secondIdx != -1 && firstIdx < secondIdx)
+			lastFilledIndex = i;
+
+			if (!seen.Add(r.runeType))
 			{
-				errorMsg = $"[RuneValidator] 순서 비호환 조합: {rule.first} → {rule.second} → 런타임 에러";
-				Debug.Log(errorMsg);
+				errorMsg = $"[RuneValidator] 중복 룬: {r.runeType}";
 				return false;
+			}
+
+			if (r.category == RuneCategory.Final)
+			{
+				finalCount++;
+				finalIndex = i;
 			}
 		}
 
-        return true;
-    }
+		if (finalCount > 1)
+		{
+			errorMsg = "[RuneValidator] Final 룬은 1개만 장착할 수 있습니다.";
+			return false;
+		}
+
+		if (finalCount == 1 && finalIndex != lastFilledIndex)
+		{
+			errorMsg = "[RuneValidator] Final 룬은 마지막 슬롯에만 장착할 수 있습니다.";
+			return false;
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// 공격 시 룬 리스트(슬롯 순, 빈 슬롯 제외)용. 슬롯 위치 없이 중복·Final 개수만 검사.
+	/// Final 위치는 <see cref="ValidateSlots"/>에서만 검증합니다.
+	/// </summary>
+	public static bool IsValidCombination(List<RuneData> runeList, out string errorMsg)
+	{
+		errorMsg = string.Empty;
+		if (runeList == null || runeList.Count == 0) return true;
+
+		var seen = new HashSet<RuneType>();
+		int finalCount = 0;
+
+		foreach (var r in runeList)
+		{
+			if (r == null) continue;
+
+			if (!seen.Add(r.runeType))
+			{
+				errorMsg = $"[RuneValidator] 중복 룬: {r.runeType}";
+				return false;
+			}
+
+			if (r.category == RuneCategory.Final) finalCount++;
+		}
+
+		if (finalCount > 1)
+		{
+			errorMsg = "[RuneValidator] Final 룬은 1개만 장착할 수 있습니다.";
+			return false;
+		}
+
+		return true;
+	}
 }

@@ -28,7 +28,7 @@ public class EffectOrbit : RuneEffect, IActiveDriver
 		elapsedtime += Time.deltaTime;
 
 		float currentRadius = orbitRange > 0f ? orbitRange * weapon.size : 2f * weapon.size;
-		float angularSpeed = weapon.movespeed * data.power / currentRadius;
+		float angularSpeed = weapon.movespeed * RuneDataAccess.GetSpeedMultiplier(data) / currentRadius;
 		currentAngle += angularSpeed * Time.deltaTime;
 
 		float x = Mathf.Cos(currentAngle) * currentRadius;

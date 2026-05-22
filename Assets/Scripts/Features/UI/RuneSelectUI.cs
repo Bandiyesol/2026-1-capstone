@@ -29,7 +29,9 @@ public class RuneSelectUI : MonoBehaviour
 	public Button clearSlotButton;
 
 	[Header("# 룬 데이터")]
+	[Tooltip("비어 있으면 Rune Catalog에서 자동 로드")]
 	public RuneData[] allRunes;
+	public RuneCatalog runeCatalog;
 
 	int selectedSlotIndex = -1;
 	Color highlightColor = new Color(1f, 0.8f, 0f, 1f);
@@ -39,6 +41,8 @@ public class RuneSelectUI : MonoBehaviour
 
 	void Start()
 	{
+		EnsureAllRunesLoaded();
+
 		for (int i = 0; i < slotButtons.Length; i++)
 		{
 			int idx = i;
@@ -91,7 +95,7 @@ public class RuneSelectUI : MonoBehaviour
 	// ─────────────────────────────────────────────────────
 	void OnRuneClicked(int runeIndex)
 	{
-		if (runeIndex >= allRunes.Length) return;
+		if (allRunes == null || runeIndex >= allRunes.Length) return;
 		RuneData rune = allRunes[runeIndex];
 		ShowDesc(rune);
 
@@ -179,8 +183,31 @@ public class RuneSelectUI : MonoBehaviour
 	}
 
 
+	void EnsureAllRunesLoaded()
+	{
+		if (allRunes != null && allRunes.Length > 0) return;
+		if (runeCatalog != null && runeCatalog.runes != null && runeCatalog.runes.Length > 0)
+			allRunes = runeCatalog.runes;
+	}
+
+
 	void RefreshRuneList()
 	{
+		EnsureAllRunesLoaded();
+
+		if (allRunes == null || allRunes.Length == 0)
+		{
+			for (int i = 0; i < runeButtons.Length; i++)
+				runeButtons[i].gameObject.SetActive(false);
+
+			if (warningText != null)
+			{
+				warningText.text = "룬 목록이 비었습니다. Tools → Rune → Build Rune Catalog 후 RuneSelectUI에 Catalog를 연결하세요.";
+				warningText.gameObject.SetActive(true);
+			}
+			return;
+		}
+
 		var active = RuneManager.instance.GetActiveRunes();
 
 		for (int i = 0; i < runeButtons.Length; i++)
@@ -197,15 +224,16 @@ public class RuneSelectUI : MonoBehaviour
 			Image btnImage = runeButtons[i].GetComponent<Image>();
 			if (btnImage != null) btnImage.color = Color.white;
 
-			if (runeIcons[i] != null)
+			if (runeIcons != null && i < runeIcons.Length && runeIcons[i] != null)
 			{
 				runeIcons[i].sprite = rune.runeIcon;
 				runeIcons[i].enabled = rune.runeIcon != null;
 			}
 
-			if (runeNames[i] != null)runeNames[i].text = rune.runeName;
+			if (runeNames != null && i < runeNames.Length && runeNames[i] != null)
+				runeNames[i].text = rune.runeName;
 
-			if (runeDimOverlays[i] != null)
+			if (runeDimOverlays != null && i < runeDimOverlays.Length && runeDimOverlays[i] != null)
 			{
 				bool isEquipped = active.Contains(rune);
 				runeDimOverlays[i].enabled = isEquipped;
@@ -258,6 +286,7 @@ public class RuneSelectUI : MonoBehaviour
 	// ─────────────────────────────────────────────────────
 	public void Show()
 	{
+		EnsureAllRunesLoaded();
 		gameObject.SetActive(true);
 		selectedSlotIndex = -1;
 		RefreshAll();

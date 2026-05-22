@@ -37,7 +37,7 @@
 ## 수치 필드 (서브클래스)
 
 - **ActiveRuneData:** `duration`, `speedMultiplier`, `affectedRange`
-- **SplitRuneData:** `splitCount`, `power`(데미지 배율)
+- **SplitRuneData:** `spawnsPerTrigger`(충돌·쿨마다 n발), `spreadDegrees`(대칭 퍼짐 각도), `power`. 부모는 생존·Active 동안 반복. 자식은 분열 룬 **뒤 슬롯** 룬만 상속, `isSplited`로 재분열 불가.
 - **RicochetRuneData:** `bounceCount`, `interval`
 - **Freeze / Explode:** 각 전용 필드 + `interval`
 
@@ -46,8 +46,9 @@ Effect에서는 `RuneDataAccess` 정적 메서드로 읽습니다.
 ## 조합 검증 (RuneValidator)
 
 - 중복 `RuneType` 금지
-- 비호환: Orbit+Homing, Gravity+Wave
-- 순서: Explode→Homing, Freeze→Chain
+- `Final`은 1개만, **마지막 채워진 슬롯**에만
+- 호환/비호환 표 없음 (기획: 카테고리별 실행 + `isDestroyed` 소멸)
+- `isDestroyed` Trigger 발동 시 이후 룬 스킵 → **런타임(Motion)**, Validator 아님
 
 ## 신규 룬 추가 체크리스트
 

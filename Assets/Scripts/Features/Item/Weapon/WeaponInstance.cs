@@ -66,12 +66,15 @@ public class WeaponInstance
 
 	public void Attack(Transform playerPos)
 	{
-		List<RuneData> activeRunes = RuneManager.instance.GetActiveRunes();
-		if (!RuneValidator.IsValidCombination(activeRunes, out string errorMsg))
+		if (RuneManager.instance != null && !RuneManager.instance.IsCurrentCombinationValid)
 		{
-			Debug.LogWarning($"[WeaponInstance] 공격 시도 중 런타임 에러: {errorMsg} → 탄환이 즉시 소멸됩니다.");
+			Debug.LogWarning($"[WeaponInstance] 룬 조합 오류: {RuneManager.instance.CurrentWarningMessage} → 공격 취소");
 			return;
 		}
+
+		List<RuneData> activeRunes = RuneManager.instance != null
+			? RuneManager.instance.GetActiveRunes()
+			: new List<RuneData>();
 
 		GameObject prefab = WeaponManager.Instance.GetMotionPrefab(info.motionId);
 		if (prefab == null) return;

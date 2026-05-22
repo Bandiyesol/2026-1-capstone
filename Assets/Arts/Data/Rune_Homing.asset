@@ -9,17 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b899106686885cf4b843f60a5470562c, type: 3}
+  m_Script: {fileID: 11500000, guid: 15a8b2911b3f5744889af1baf82b2c43, type: 3}
   m_Name: Rune_Homing
-  m_EditorClassIdentifier: Assembly-CSharp::RuneData
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveRuneData
   runeName: Homing
   category: 0
-  runeType: 6
+  runeType: 3
   runeIcon: {fileID: 0}
   runeDescription: "\uC720\uB3C4: \uD0C0\uAC9F\uD305\uB41C \uC801\uC744 \uCAD2\uC74C"
-  valueDescription: "power: \uD68C\uC804 \uC18D\uB3C4\nduration: \uD68C\uC804\uB7C9 "
+  isDestroyed: 0
   power: 0
-  duration: 0
-  count: 0
-  range: 0
-  interval: 0
+  duration: 3
+  speedMultiplier: 2
+  affectedRange: 6

@@ -9,19 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b899106686885cf4b843f60a5470562c, type: 3}
+  m_Script: {fileID: 11500000, guid: 15a8b2911b3f5744889af1baf82b2c43, type: 3}
   m_Name: Rune_Orbit
-  m_EditorClassIdentifier: Assembly-CSharp::RuneData
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveRuneData
   runeName: Oribit
   category: 0
-  runeType: 1
+  runeType: 0
   runeIcon: {fileID: 0}
   runeDescription: "\uACF5\uC804: \uC0DD\uC131 \uC2DC\uC810\uC744 \uAE30\uC900\uC73C\uB85C
     \uD55C \uBC14\uD034 \uD68C\uC804"
-  valueDescription: "power: \uD68C\uC804 \uC18D\uB3C4\nduration: \uD68C\uC804\uB7C9\nrange:
-    \uBC18\uC9C0\uB984"
-  power: 5
-  duration: 360
-  count: 0
-  range: 1.5
-  interval: 0
+  isDestroyed: 0
+  power: 0
+  duration: 3
+  speedMultiplier: 5
+  affectedRange: 6
