@@ -1,0 +1,540 @@
+fileFormatVersion: 2
+guid: 3d06797e0c992574aa90ab80947327c4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 739946641577475545
+    second: Whirlpool_Re_0
+  - first:
+      213: -4991343657616735981
+    second: Whirlpool_Re_1
+  - first:
+      213: -5019006796784427581
+    second: Whirlpool_Re_2
+  - first:
+      213: -7587008873582389896
+    second: Whirlpool_Re_3
+  - first:
+      213: -5784301932127390633
+    second: Whirlpool_Re_4
+  - first:
+      213: 3230851853664948650
+    second: Whirlpool_Re_5
+  - first:
+      213: -861488758299954436
+    second: Whirlpool_Re_6
+  - first:
+      213: -1183940700123775003
+    second: Whirlpool_Re_7
+  - first:
+      213: -279112396090027864
+    second: Whirlpool_Re_8
+  - first:
+      213: -5682178229512356444
+    second: Whirlpool_Re_9
+  - first:
+      213: -3596008862834983941
+    second: Whirlpool_Re_10
+  - first:
+      213: 6281534323165192799
+    second: Whirlpool_Re_11
+  - first:
+      213: -1782282090135876523
+    second: Whirlpool_Re_12
+  - first:
+      213: -4245493034651256049
+    second: Whirlpool_Re_13
+  - first:
+      213: -6212900770966295181
+    second: Whirlpool_Re_14
+  - first:
+      213: 6943377499774448307
+    second: Whirlpool_Re_15
+  - first:
+      213: 8294822569383673127
+    second: Whirlpool_Re_16
+  - first:
+      213: -2723521262880816093
+    second: Whirlpool_Re_17
+  - first:
+      213: 7077395021418730785
+    second: Whirlpool_Re_18
+  - first:
+      213: 4361416261773477875
+    second: Whirlpool_Re_19
+  - first:
+      213: 2324721536147352308
+    second: Whirlpool_Re_20
+  - first:
+      213: -4318770237380653357
+    second: Whirlpool_Re_21
+  - first:
+      213: -5320487475525707567
+    second: Whirlpool_Re_22
+  - first:
+      213: 168962475768333557
+    second: Whirlpool_Re_23
+  - first:
+      213: -6555752036408552929
+    second: Whirlpool_Re_24
+  - first:
+      213: 5520171299360263976
+    second: Whirlpool_Re_25
+  - first:
+      213: 3311805321487332918
+    second: Whirlpool_Re_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Whirlpool_Re_0
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 1241
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ddf7f3dc81d44a00800000000000000
+      internalID: 739946641577475545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_08
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 690
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3110bdf736f2bbab0800000000000000
+      internalID: -4991343657616735981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_01
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 1241
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cd946009e7e85ab0800000000000000
+      internalID: -5019006796784427581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_05
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 966
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 875926e80a785b690800000000000000
+      internalID: -7587008873582389896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_03
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 966
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 754f0fd0a080abfa0800000000000000
+      internalID: -5784301932127390633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_04
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 966
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa19c93a4aa46dc20800000000000000
+      internalID: 3230851853664948650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_02
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 1241
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf2f987e9806b04f0800000000000000
+      internalID: -861488758299954436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_06
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 690
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f38b7416190d3f4281a2eaed4d67964
+      internalID: -76880625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_07
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 690
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c911d5ddb2f85046a4443ee579ad16a
+      internalID: -750636922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_09
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 405
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7973847a2fd42644194a75d6a13ecd92
+      internalID: -5203938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_10
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 406
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52c596084549e994f8744b49257c3d52
+      internalID: -3596008862834983941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_11
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 406
+        width: 254
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9021bf932dc02044b35f02fe658af29
+      internalID: 6281534323165192799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Whirlpool_Re_1
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 139
+        width: 265
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63f2ec4c2d2b8b647a05f7cf61f8bf3b
+      internalID: 2122771849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a61ae1ead9cb8014d8b38d13f0e7d319
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":341.0,"y":341.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Whirlpool_Re_0: 739946641577475545
+      Whirlpool_Re_01: -5019006796784427581
+      Whirlpool_Re_02: -861488758299954436
+      Whirlpool_Re_03: -5784301932127390633
+      Whirlpool_Re_04: 3230851853664948650
+      Whirlpool_Re_05: -7587008873582389896
+      Whirlpool_Re_06: -76880625
+      Whirlpool_Re_07: -750636922
+      Whirlpool_Re_08: -4991343657616735981
+      Whirlpool_Re_09: -5203938
+      Whirlpool_Re_1: 2122771849
+      Whirlpool_Re_10: -3596008862834983941
+      Whirlpool_Re_11: 6281534323165192799
+      Whirlpool_Re_8: -279112396090027864
+      Whirlpool_Re_9: -5682178229512356444
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

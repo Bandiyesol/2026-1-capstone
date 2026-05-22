@@ -1,0 +1,3 @@
+repository "The Last Rune/Proto Type@14569725178827@cloud"
+  path "/"
+    smartbranch "/main/LTG/HongSick"
