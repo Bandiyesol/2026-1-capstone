@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [DefaultExecutionOrder(50)]
-public class Reposition : MonoBehaviour
+public class GrasslandReposition : MonoBehaviour
 {
     // 트리거 감지용 콜라이더
     Collider2D coll;

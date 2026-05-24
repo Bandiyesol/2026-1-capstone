@@ -1,0 +1,3432 @@
+fileFormatVersion: 2
+guid: e15aaee92b6b728489a8311c1727ce99
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6809750734441632701
+    second: PlantAlternate_0
+  - first:
+      213: -7972407639906005717
+    second: PlantAlternate_1
+  - first:
+      213: -3924985036463438701
+    second: PlantAlternate_2
+  - first:
+      213: -3703050500453419772
+    second: PlantAlternate_3
+  - first:
+      213: -1810199971435590437
+    second: PlantAlternate_4
+  - first:
+      213: 3167256007623477152
+    second: PlantAlternate_5
+  - first:
+      213: -7783943295543444885
+    second: PlantAlternate_6
+  - first:
+      213: 7565386847265893416
+    second: PlantAlternate_7
+  - first:
+      213: -2158574478052705302
+    second: PlantAlternate_8
+  - first:
+      213: -4574951028881945335
+    second: PlantAlternate_9
+  - first:
+      213: 4442489899341793821
+    second: PlantAlternate_10
+  - first:
+      213: 2988026021626164598
+    second: PlantAlternate_11
+  - first:
+      213: -7628224408314327445
+    second: PlantAlternate_12
+  - first:
+      213: -176522197109955918
+    second: PlantAlternate_13
+  - first:
+      213: 3310362574397745709
+    second: PlantAlternate_14
+  - first:
+      213: -4718282352554756167
+    second: PlantAlternate_15
+  - first:
+      213: -1113991918890403645
+    second: PlantAlternate_16
+  - first:
+      213: 7564637508310987863
+    second: PlantAlternate_17
+  - first:
+      213: 5592429909548077539
+    second: PlantAlternate_18
+  - first:
+      213: 6201241022611936118
+    second: PlantAlternate_19
+  - first:
+      213: -6191599675538842986
+    second: PlantAlternate_20
+  - first:
+      213: 2468436313362906553
+    second: PlantAlternate_21
+  - first:
+      213: -6777266770353788917
+    second: PlantAlternate_22
+  - first:
+      213: 6639381532144971127
+    second: PlantAlternate_23
+  - first:
+      213: -4017825382054560358
+    second: PlantAlternate_24
+  - first:
+      213: -8658806982105985951
+    second: PlantAlternate_25
+  - first:
+      213: 6550881071325204943
+    second: PlantAlternate_26
+  - first:
+      213: 229090334578025801
+    second: PlantAlternate_27
+  - first:
+      213: 5881613228322272160
+    second: PlantAlternate_28
+  - first:
+      213: -4505857859671387139
+    second: PlantAlternate_29
+  - first:
+      213: -5810828882123568345
+    second: PlantAlternate_30
+  - first:
+      213: -7435711843672122877
+    second: PlantAlternate_31
+  - first:
+      213: -81120685632579406
+    second: PlantAlternate_32
+  - first:
+      213: -1313850135480722666
+    second: PlantAlternate_33
+  - first:
+      213: -2644947832898976737
+    second: PlantAlternate_34
+  - first:
+      213: 968124470025824793
+    second: PlantAlternate_35
+  - first:
+      213: -7976292906144440903
+    second: PlantAlternate_36
+  - first:
+      213: 1678084866348094578
+    second: PlantAlternate_37
+  - first:
+      213: -8488091127922960378
+    second: PlantAlternate_38
+  - first:
+      213: -2007034169713442986
+    second: PlantAlternate_39
+  - first:
+      213: -2126858078915526440
+    second: PlantAlternate_40
+  - first:
+      213: 2463670557566815114
+    second: PlantAlternate_41
+  - first:
+      213: -855573868414462803
+    second: PlantAlternate_42
+  - first:
+      213: -5199776562132545597
+    second: PlantAlternate_43
+  - first:
+      213: -2175928415346811287
+    second: PlantAlternate_44
+  - first:
+      213: -7671073437316843972
+    second: PlantAlternate_45
+  - first:
+      213: -2620707604472783030
+    second: PlantAlternate_46
+  - first:
+      213: -4422948673280757614
+    second: PlantAlternate_47
+  - first:
+      213: 7865213203603306866
+    second: PlantAlternate_48
+  - first:
+      213: -5795103793307289117
+    second: PlantAlternate_49
+  - first:
+      213: -6885938853409839060
+    second: PlantAlternate_50
+  - first:
+      213: 5178835135272487542
+    second: PlantAlternate_51
+  - first:
+      213: -1826167861657179837
+    second: PlantAlternate_52
+  - first:
+      213: 4911903296383256873
+    second: PlantAlternate_53
+  - first:
+      213: -6511687128922135426
+    second: PlantAlternate_54
+  - first:
+      213: 854735317342807765
+    second: PlantAlternate_55
+  - first:
+      213: 2095160627678062670
+    second: PlantAlternate_56
+  - first:
+      213: 4548537035948919312
+    second: PlantAlternate_57
+  - first:
+      213: 130422126090766154
+    second: PlantAlternate_58
+  - first:
+      213: -3424122664483332405
+    second: PlantAlternate_59
+  - first:
+      213: 153300525641573678
+    second: PlantAlternate_60
+  - first:
+      213: -9153973464684774740
+    second: PlantAlternate_61
+  - first:
+      213: 3848349621895841351
+    second: PlantAlternate_62
+  - first:
+      213: 1386637874982482899
+    second: PlantAlternate_63
+  - first:
+      213: 3795002586524090954
+    second: PlantAlternate_64
+  - first:
+      213: -8436646735128745250
+    second: PlantAlternate_65
+  - first:
+      213: -8272672210457468965
+    second: PlantAlternate_66
+  - first:
+      213: 3264667023727539859
+    second: PlantAlternate_67
+  - first:
+      213: 8250702648948558234
+    second: PlantAlternate_68
+  - first:
+      213: 1923572106557473770
+    second: PlantAlternate_69
+  - first:
+      213: 4837565349768959160
+    second: PlantAlternate_70
+  - first:
+      213: 8511112905006380367
+    second: PlantAlternate_71
+  - first:
+      213: 757073078810318365
+    second: PlantAlternate_72
+  - first:
+      213: 8040919572672781395
+    second: PlantAlternate_73
+  - first:
+      213: -4867548047393982443
+    second: PlantAlternate_74
+  - first:
+      213: 911365448160722766
+    second: PlantAlternate_75
+  - first:
+      213: 698125032535426844
+    second: PlantAlternate_76
+  - first:
+      213: 6477459341631003524
+    second: PlantAlternate_77
+  - first:
+      213: 6998970974480503653
+    second: PlantAlternate_78
+  - first:
+      213: 5080028089336791367
+    second: PlantAlternate_79
+  - first:
+      213: -4602500940649154187
+    second: PlantAlternate_80
+  - first:
+      213: -2223698775884199041
+    second: PlantAlternate_81
+  - first:
+      213: 5537219833692923557
+    second: PlantAlternate_82
+  - first:
+      213: -3573247353428184
+    second: PlantAlternate_83
+  - first:
+      213: 354221870747180073
+    second: PlantAlternate_84
+  - first:
+      213: 4954775002464960364
+    second: PlantAlternate_85
+  - first:
+      213: -3234380802764138880
+    second: PlantAlternate_86
+  - first:
+      213: -1867784236855723088
+    second: PlantAlternate_87
+  - first:
+      213: 6833730087335835728
+    second: PlantAlternate_88
+  - first:
+      213: 419159131218451936
+    second: PlantAlternate_89
+  - first:
+      213: -4742718782977775454
+    second: PlantAlternate_90
+  - first:
+      213: 7744262871258194492
+    second: PlantAlternate_91
+  - first:
+      213: -6315065050798781414
+    second: PlantAlternate_92
+  - first:
+      213: -8277219734363204206
+    second: PlantAlternate_93
+  - first:
+      213: -1029493694998225525
+    second: PlantAlternate_94
+  - first:
+      213: -4072921688079865395
+    second: PlantAlternate_95
+  - first:
+      213: 5350461292781840316
+    second: PlantAlternate_96
+  - first:
+      213: -6843789721633243230
+    second: PlantAlternate_97
+  - first:
+      213: -2406425945471031281
+    second: PlantAlternate_98
+  - first:
+      213: 2206124915033722
+    second: PlantAlternate_99
+  - first:
+      213: 2812644365270700968
+    second: PlantAlternate_100
+  - first:
+      213: -479846552594579510
+    second: PlantAlternate_101
+  - first:
+      213: 1479639910380152850
+    second: PlantAlternate_102
+  - first:
+      213: -3696389469233733592
+    second: PlantAlternate_103
+  - first:
+      213: 3315924906557464491
+    second: PlantAlternate_104
+  - first:
+      213: 8467278690188614789
+    second: PlantAlternate_105
+  - first:
+      213: 8926566787707282223
+    second: PlantAlternate_106
+  - first:
+      213: -4769911443883537480
+    second: PlantAlternate_107
+  - first:
+      213: 5639240566462313506
+    second: PlantAlternate_108
+  - first:
+      213: 8476057362902185429
+    second: PlantAlternate_109
+  - first:
+      213: 7362248795397222409
+    second: PlantAlternate_110
+  - first:
+      213: -7156679526432252846
+    second: PlantAlternate_111
+  - first:
+      213: 1997490306819510123
+    second: PlantAlternate_112
+  - first:
+      213: 1962762352462189173
+    second: PlantAlternate_113
+  - first:
+      213: 8521505484054529287
+    second: PlantAlternate_114
+  - first:
+      213: -859514129966617094
+    second: PlantAlternate_115
+  - first:
+      213: -4148681655907675812
+    second: PlantAlternate_116
+  - first:
+      213: -5660641253555572591
+    second: PlantAlternate_117
+  - first:
+      213: -5718301777314438291
+    second: PlantAlternate_118
+  - first:
+      213: 4571332410237088026
+    second: PlantAlternate_119
+  - first:
+      213: -4239001608134621417
+    second: PlantAlternate_120
+  - first:
+      213: 111274522086022743
+    second: PlantAlternate_121
+  - first:
+      213: 3390305235001532845
+    second: PlantAlternate_122
+  - first:
+      213: 1912939942795235576
+    second: PlantAlternate_123
+  - first:
+      213: -5644654700605685830
+    second: PlantAlternate_124
+  - first:
+      213: -4842952525922159862
+    second: PlantAlternate_125
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PlantAlternate_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 617
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34ca6a069c7ee71a0800000000000000
+      internalID: -6809750734441632701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_1
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 618
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2dcacabd715c5190800000000000000
+      internalID: -7972407639906005717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_2
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 619
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3948fd0a7e6a789c0800000000000000
+      internalID: -3924985036463438701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_3
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 619
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 405342f703f1c9cc0800000000000000
+      internalID: -3703050500453419772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_4
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 617
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdcc82287b0e0e6e0800000000000000
+      internalID: -1810199971435590437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_5
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 617
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a78e1fde8a54fb20800000000000000
+      internalID: 3167256007623477152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_6
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 619
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6a795550d0e9f390800000000000000
+      internalID: -7783943295543444885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_7
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 618
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82c22b32147adf860800000000000000
+      internalID: 7565386847265893416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_8
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 607
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aebb176e2f33b02e0800000000000000
+      internalID: -2158574478052705302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_9
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 607
+        width: 9
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90d0fa247428280c0800000000000000
+      internalID: -4574951028881945335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_10
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 607
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1a4780b605e6ad30800000000000000
+      internalID: 4442489899341793821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_11
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 607
+        width: 9
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 675b6aed5d9977920800000000000000
+      internalID: 2988026021626164598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_12
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 624
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6ec573115a132690800000000000000
+      internalID: -7628224408314327445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_13
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 621
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b22a4a3ffddc8df0800000000000000
+      internalID: -176522197109955918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_14
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 622
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2aa9bce835c0fd20800000000000000
+      internalID: 3310362574397745709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_15
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 621
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b7baf9e23b458eb0800000000000000
+      internalID: -4718282352554756167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_16
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 608
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c8b1ef704e4a80f0800000000000000
+      internalID: -1113991918890403645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_17
+      rect:
+        serializedVersion: 2
+        x: 673
+        y: 608
+        width: 30
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 754f8711cbdfaf860800000000000000
+      internalID: 7564637508310987863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_18
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 608
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e112ed6f5d4c9d40800000000000000
+      internalID: 5592429909548077539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_19
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 608
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6735d5fbadb3f0650800000000000000
+      internalID: 6201241022611936118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_20
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 607
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69a551c46e4031aa0800000000000000
+      internalID: -6191599675538842986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_21
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 607
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bdbba8afb5a14220800000000000000
+      internalID: 2468436313362906553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_22
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 607
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b08e005a7cf42f1a0800000000000000
+      internalID: -6777266770353788917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_23
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 607
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77d2ac79352d32c50800000000000000
+      internalID: 6639381532144971127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_24
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 608
+        width: 26
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9df6153a11dd38c0800000000000000
+      internalID: -4017825382054560358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_25
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 580
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16c86e41decb5d780800000000000000
+      internalID: -8658806982105985951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_26
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 581
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc15b2650a769ea50800000000000000
+      internalID: 6550881071325204943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_27
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 580
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 945affd0274ed2300800000000000000
+      internalID: 229090334578025801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_28
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 579
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a3336ca110bf9150800000000000000
+      internalID: 5881613228322272160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_29
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 578
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df392e1562af771c0800000000000000
+      internalID: -4505857859671387139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_30
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 577
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72bc1763be9cb5fa0800000000000000
+      internalID: -5810828882123568345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_31
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 576
+        width: 26
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30a12c9697b0fc890800000000000000
+      internalID: -7435711843672122877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_32
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 576
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b81fec8a2dcfdef0800000000000000
+      internalID: -81120685632579406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_33
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 587
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61b929a434444cde0800000000000000
+      internalID: -1313850135480722666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_34
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 587
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f140e92a5f14b4bd0800000000000000
+      internalID: -2644947832898976737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_35
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 587
+        width: 19
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91aa04e73187f6d00800000000000000
+      internalID: 968124470025824793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_36
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 587
+        width: 35
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bddac0bcd38e4190800000000000000
+      internalID: -7976292906144440903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_37
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 587
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27413a98b41c94710800000000000000
+      internalID: 1678084866348094578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_38
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 587
+        width: 19
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 608d10b471e343a80800000000000000
+      internalID: -8488091127922960378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_39
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 587
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65fb82e6e059524e0800000000000000
+      internalID: -2007034169713442986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_40
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 544
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d0029688d1eb72e0800000000000000
+      internalID: -2126858078915526440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_41
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 544
+        width: 27
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8bcb5ba157b03220800000000000000
+      internalID: 2463670557566815114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_42
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 544
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da49c0689146024f0800000000000000
+      internalID: -855573868414462803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_43
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 544
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cf00be24cea6d7b0800000000000000
+      internalID: -5199776562132545597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_44
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96e139282ac8dc1e0800000000000000
+      internalID: -2175928415346811287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_45
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 512
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c367bc21a5fda8590800000000000000
+      internalID: -7671073437316843972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_46
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 512
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4f1c3f915061abd0800000000000000
+      internalID: -2620707604472783030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_47
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 512
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 290b05d8d978e92c0800000000000000
+      internalID: -4422948673280757614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_48
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 512
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 279bc7bacb9d62d60800000000000000
+      internalID: 7865213203603306866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_49
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 512
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e97663cdc7a39fa0800000000000000
+      internalID: -5795103793307289117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_50
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c282279981b3070a0800000000000000
+      internalID: -6885938853409839060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_51
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 448
+        width: 42
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67a8a3ced1beed740800000000000000
+      internalID: 5178835135272487542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_52
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 448
+        width: 37
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34960b9510628a6e0800000000000000
+      internalID: -1826167861657179837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_53
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 448
+        width: 30
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9298eff06069a2440800000000000000
+      internalID: 4911903296383256873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_54
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 448
+        width: 58
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e74ec108e07d1a5a0800000000000000
+      internalID: -6511687128922135426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_55
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 421
+        width: 48
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d6e2371e31acdb00800000000000000
+      internalID: 854735317342807765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_56
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 427
+        width: 59
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e48a2208d71831d10800000000000000
+      internalID: 2095160627678062670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_57
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 448
+        width: 46
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01a8173c556af1f30800000000000000
+      internalID: 4548537035948919312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_58
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 448
+        width: 30
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a47cd709b3a5fc100800000000000000
+      internalID: 130422126090766154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_59
+      rect:
+        serializedVersion: 2
+        x: 890
+        y: 448
+        width: 37
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bce5b1414921b70d0800000000000000
+      internalID: -3424122664483332405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_60
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 448
+        width: 42
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e252fbe0402a02200800000000000000
+      internalID: 153300525641573678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_61
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 352
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caabc1a32ad86f080800000000000000
+      internalID: -9153973464684774740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_62
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 352
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7464c987795186530800000000000000
+      internalID: 3848349621895841351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_63
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 352
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d3fe62fcc35e3310800000000000000
+      internalID: 1386637874982482899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_64
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 352
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a420573eebe8aa430800000000000000
+      internalID: 3795002586524090954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_65
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 352
+        width: 29
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eda21316e720bea80800000000000000
+      internalID: -8436646735128745250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_66
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 352
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdfdf608470913d80800000000000000
+      internalID: -8272672210457468965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_67
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 352
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39636337c5d6e4d20800000000000000
+      internalID: 3264667023727539859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_68
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 352
+        width: 29
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9904f95852608270800000000000000
+      internalID: 8250702648948558234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_69
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 352
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae3453fa3a6e1ba10800000000000000
+      internalID: 1923572106557473770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_70
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 352
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b497ba1e0c722340800000000000000
+      internalID: 4837565349768959160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_71
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 352
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f45f522e71c8d1670800000000000000
+      internalID: 8511112905006380367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_72
+      rect:
+        serializedVersion: 2
+        x: 1090
+        y: 352
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d16108b34f9a18a00800000000000000
+      internalID: 757073078810318365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_73
+      rect:
+        serializedVersion: 2
+        x: 1184
+        y: 352
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35c95acafb5179f60800000000000000
+      internalID: 8040919572672781395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_74
+      rect:
+        serializedVersion: 2
+        x: 1282
+        y: 352
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5187feb17def27cb0800000000000000
+      internalID: -4867548047393982443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_75
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4f3f26eb02d5ac00800000000000000
+      internalID: 911365448160722766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_76
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 256
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c17051da40d30b900800000000000000
+      internalID: 698125032535426844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_77
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 256
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48b93f0c3fe84e950800000000000000
+      internalID: 6477459341631003524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_78
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 256
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5631e27e407512160800000000000000
+      internalID: 6998970974480503653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_79
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 256
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7410de1d1a2ef7640800000000000000
+      internalID: 5080028089336791367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_80
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 256
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 579b43297c1a020c0800000000000000
+      internalID: -4602500940649154187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_81
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 289
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7b83f7beb5d321e0800000000000000
+      internalID: -2223698775884199041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_82
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 256
+        width: 29
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a6a38ee91828dc40800000000000000
+      internalID: 5537219833692923557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_83
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 256
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 827edc4862e43fff0800000000000000
+      internalID: -3573247353428184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_84
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 256
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92c5f892ae27ae400800000000000000
+      internalID: 354221870747180073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_85
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 256
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6fb8ebfc95e2c440800000000000000
+      internalID: 4954775002464960364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_86
+      rect:
+        serializedVersion: 2
+        x: 1090
+        y: 256
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08696eedbcb2d13d0800000000000000
+      internalID: -3234380802764138880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_87
+      rect:
+        serializedVersion: 2
+        x: 1184
+        y: 256
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bbf32de12c4416e0800000000000000
+      internalID: -1867784236855723088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_88
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 256
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0583d8ace4946de50800000000000000
+      internalID: 6833730087335835728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_89
+      rect:
+        serializedVersion: 2
+        x: 1282
+        y: 256
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ed13a0520721d500800000000000000
+      internalID: 419159131218451936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_90
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 160
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a86907156a7e2eb0800000000000000
+      internalID: -4742718782977775454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_91
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 160
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c326790fc06297b60800000000000000
+      internalID: 7744262871258194492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_92
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 160
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1c87a18bc16c58a0800000000000000
+      internalID: -6315065050798781414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_93
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 160
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2959d659188612d80800000000000000
+      internalID: -8277219734363204206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_94
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 160
+        width: 29
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8d502b50f086b1f0800000000000000
+      internalID: -1029493694998225525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_95
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 160
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc9e300dd431a77c0800000000000000
+      internalID: -4072921688079865395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_96
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 172
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb72db4a238a04a40800000000000000
+      internalID: 5350461292781840316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_97
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 160
+        width: 35
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2afb4941289f501a0800000000000000
+      internalID: -6843789721633243230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_98
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 178
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f086ae53a58aa9ed0800000000000000
+      internalID: -2406425945471031281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_99
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 160
+        width: 38
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7604eb7576d70000800000000000000
+      internalID: 2206124915033722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_100
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 160
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a3d67fe525880720800000000000000
+      internalID: 2812644365270700968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_101
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 160
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acf77ed4a1e3759f0800000000000000
+      internalID: -479846552594579510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_102
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 160
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21823b5b8acb88410800000000000000
+      internalID: 1479639910380152850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_103
+      rect:
+        serializedVersion: 2
+        x: 1090
+        y: 160
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82024deac59c3bcc0800000000000000
+      internalID: -3696389469233733592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_104
+      rect:
+        serializedVersion: 2
+        x: 1184
+        y: 160
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baf5a3d4228840e20800000000000000
+      internalID: 3315924906557464491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_105
+      rect:
+        serializedVersion: 2
+        x: 1282
+        y: 160
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58c5dee6b11d18570800000000000000
+      internalID: 8467278690188614789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_106
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 167
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f23a71dc23981eb70800000000000000
+      internalID: 8926566787707282223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_107
+      rect:
+        serializedVersion: 2
+        x: 639
+        y: 171
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bb404950deddcdb0800000000000000
+      internalID: -4769911443883537480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_108
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 64
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22475feca6b924e40800000000000000
+      internalID: 5639240566462313506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_109
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d57e93734101a570800000000000000
+      internalID: 8476057362902185429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_110
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 64
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 900f2b5c546fb2660800000000000000
+      internalID: 7362248795397222409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_111
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 64
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25cd1bf63ed5eac90800000000000000
+      internalID: -7156679526432252846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_112
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 64
+        width: 29
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6f4344d9d288bb10800000000000000
+      internalID: 1997490306819510123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_113
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 76
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 572d40dd5f12d3b10800000000000000
+      internalID: 1962762352462189173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_114
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 64
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7050d90c618724670800000000000000
+      internalID: 8521505484054529287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_115
+      rect:
+        serializedVersion: 2
+        x: 604
+        y: 82
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afd29e3e3746214f0800000000000000
+      internalID: -859514129966617094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_116
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 64
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c51917db30cec66c0800000000000000
+      internalID: -4148681655907675812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_117
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 64
+        width: 39
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 190f5e075cc5171b0800000000000000
+      internalID: -5660641253555572591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_118
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 64
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6320b494d284a0b0800000000000000
+      internalID: -5718301777314438291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_119
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 64
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a11796e6b92a07f30800000000000000
+      internalID: 4571332410237088026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_120
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 64
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71783d02f7a0c25c0800000000000000
+      internalID: -4239001608134621417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_121
+      rect:
+        serializedVersion: 2
+        x: 1090
+        y: 64
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75e1d7996935b8100800000000000000
+      internalID: 111274522086022743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_122
+      rect:
+        serializedVersion: 2
+        x: 1184
+        y: 64
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da1e96c06a8cc0f20800000000000000
+      internalID: 3390305235001532845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_123
+      rect:
+        serializedVersion: 2
+        x: 1282
+        y: 64
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f057f62eb02c8a10800000000000000
+      internalID: 1912939942795235576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_124
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 71
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abfb8aad4782aa1b0800000000000000
+      internalID: -5644654700605685830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlantAlternate_125
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 70
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a03345436506accb0800000000000000
+      internalID: -4842952525922159862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PlantAlternate_0: -6809750734441632701
+      PlantAlternate_1: -7972407639906005717
+      PlantAlternate_10: 4442489899341793821
+      PlantAlternate_100: 2812644365270700968
+      PlantAlternate_101: -479846552594579510
+      PlantAlternate_102: 1479639910380152850
+      PlantAlternate_103: -3696389469233733592
+      PlantAlternate_104: 3315924906557464491
+      PlantAlternate_105: 8467278690188614789
+      PlantAlternate_106: 8926566787707282223
+      PlantAlternate_107: -4769911443883537480
+      PlantAlternate_108: 5639240566462313506
+      PlantAlternate_109: 8476057362902185429
+      PlantAlternate_11: 2988026021626164598
+      PlantAlternate_110: 7362248795397222409
+      PlantAlternate_111: -7156679526432252846
+      PlantAlternate_112: 1997490306819510123
+      PlantAlternate_113: 1962762352462189173
+      PlantAlternate_114: 8521505484054529287
+      PlantAlternate_115: -859514129966617094
+      PlantAlternate_116: -4148681655907675812
+      PlantAlternate_117: -5660641253555572591
+      PlantAlternate_118: -5718301777314438291
+      PlantAlternate_119: 4571332410237088026
+      PlantAlternate_12: -7628224408314327445
+      PlantAlternate_120: -4239001608134621417
+      PlantAlternate_121: 111274522086022743
+      PlantAlternate_122: 3390305235001532845
+      PlantAlternate_123: 1912939942795235576
+      PlantAlternate_124: -5644654700605685830
+      PlantAlternate_125: -4842952525922159862
+      PlantAlternate_13: -176522197109955918
+      PlantAlternate_14: 3310362574397745709
+      PlantAlternate_15: -4718282352554756167
+      PlantAlternate_16: -1113991918890403645
+      PlantAlternate_17: 7564637508310987863
+      PlantAlternate_18: 5592429909548077539
+      PlantAlternate_19: 6201241022611936118
+      PlantAlternate_2: -3924985036463438701
+      PlantAlternate_20: -6191599675538842986
+      PlantAlternate_21: 2468436313362906553
+      PlantAlternate_22: -6777266770353788917
+      PlantAlternate_23: 6639381532144971127
+      PlantAlternate_24: -4017825382054560358
+      PlantAlternate_25: -8658806982105985951
+      PlantAlternate_26: 6550881071325204943
+      PlantAlternate_27: 229090334578025801
+      PlantAlternate_28: 5881613228322272160
+      PlantAlternate_29: -4505857859671387139
+      PlantAlternate_3: -3703050500453419772
+      PlantAlternate_30: -5810828882123568345
+      PlantAlternate_31: -7435711843672122877
+      PlantAlternate_32: -81120685632579406
+      PlantAlternate_33: -1313850135480722666
+      PlantAlternate_34: -2644947832898976737
+      PlantAlternate_35: 968124470025824793
+      PlantAlternate_36: -7976292906144440903
+      PlantAlternate_37: 1678084866348094578
+      PlantAlternate_38: -8488091127922960378
+      PlantAlternate_39: -2007034169713442986
+      PlantAlternate_4: -1810199971435590437
+      PlantAlternate_40: -2126858078915526440
+      PlantAlternate_41: 2463670557566815114
+      PlantAlternate_42: -855573868414462803
+      PlantAlternate_43: -5199776562132545597
+      PlantAlternate_44: -2175928415346811287
+      PlantAlternate_45: -7671073437316843972
+      PlantAlternate_46: -2620707604472783030
+      PlantAlternate_47: -4422948673280757614
+      PlantAlternate_48: 7865213203603306866
+      PlantAlternate_49: -5795103793307289117
+      PlantAlternate_5: 3167256007623477152
+      PlantAlternate_50: -6885938853409839060
+      PlantAlternate_51: 5178835135272487542
+      PlantAlternate_52: -1826167861657179837
+      PlantAlternate_53: 4911903296383256873
+      PlantAlternate_54: -6511687128922135426
+      PlantAlternate_55: 854735317342807765
+      PlantAlternate_56: 2095160627678062670
+      PlantAlternate_57: 4548537035948919312
+      PlantAlternate_58: 130422126090766154
+      PlantAlternate_59: -3424122664483332405
+      PlantAlternate_6: -7783943295543444885
+      PlantAlternate_60: 153300525641573678
+      PlantAlternate_61: -9153973464684774740
+      PlantAlternate_62: 3848349621895841351
+      PlantAlternate_63: 1386637874982482899
+      PlantAlternate_64: 3795002586524090954
+      PlantAlternate_65: -8436646735128745250
+      PlantAlternate_66: -8272672210457468965
+      PlantAlternate_67: 3264667023727539859
+      PlantAlternate_68: 8250702648948558234
+      PlantAlternate_69: 1923572106557473770
+      PlantAlternate_7: 7565386847265893416
+      PlantAlternate_70: 4837565349768959160
+      PlantAlternate_71: 8511112905006380367
+      PlantAlternate_72: 757073078810318365
+      PlantAlternate_73: 8040919572672781395
+      PlantAlternate_74: -4867548047393982443
+      PlantAlternate_75: 911365448160722766
+      PlantAlternate_76: 698125032535426844
+      PlantAlternate_77: 6477459341631003524
+      PlantAlternate_78: 6998970974480503653
+      PlantAlternate_79: 5080028089336791367
+      PlantAlternate_8: -2158574478052705302
+      PlantAlternate_80: -4602500940649154187
+      PlantAlternate_81: -2223698775884199041
+      PlantAlternate_82: 5537219833692923557
+      PlantAlternate_83: -3573247353428184
+      PlantAlternate_84: 354221870747180073
+      PlantAlternate_85: 4954775002464960364
+      PlantAlternate_86: -3234380802764138880
+      PlantAlternate_87: -1867784236855723088
+      PlantAlternate_88: 6833730087335835728
+      PlantAlternate_89: 419159131218451936
+      PlantAlternate_9: -4574951028881945335
+      PlantAlternate_90: -4742718782977775454
+      PlantAlternate_91: 7744262871258194492
+      PlantAlternate_92: -6315065050798781414
+      PlantAlternate_93: -8277219734363204206
+      PlantAlternate_94: -1029493694998225525
+      PlantAlternate_95: -4072921688079865395
+      PlantAlternate_96: 5350461292781840316
+      PlantAlternate_97: -6843789721633243230
+      PlantAlternate_98: -2406425945471031281
+      PlantAlternate_99: 2206124915033722
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

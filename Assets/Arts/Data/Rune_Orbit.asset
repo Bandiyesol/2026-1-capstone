@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15a8b2911b3f5744889af1baf82b2c43, type: 3}
+  m_Name: Rune_Orbit
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveRuneData
+  runeName: Oribit
+  category: 0
+  runeType: 0
+  runeIcon: {fileID: 0}
+  runeDescription: "\uACF5\uC804: \uC0DD\uC131 \uC2DC\uC810\uC744 \uAE30\uC900\uC73C\uB85C
+    \uD55C \uBC14\uD034 \uD68C\uC804"
+  isDestroyed: 0
+  power: 0
+  duration: 3
+  speedMultiplier: 5
+  affectedRange: 6

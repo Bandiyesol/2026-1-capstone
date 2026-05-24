@@ -1,0 +1,420 @@
+fileFormatVersion: 2
+guid: 8eddf74a5021b454aa7a5a7bd7bb10a4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4771077665775176751
+    second: HeavenEyeBoss_Move_0
+  - first:
+      213: -8653594323715055111
+    second: HeavenEyeBoss_Move_1
+  - first:
+      213: -4276765812276799861
+    second: HeavenEyeBoss_Move_2
+  - first:
+      213: 8436488022419726826
+    second: HeavenEyeBoss_Move_3
+  - first:
+      213: 6104364069255979357
+    second: HeavenEyeBoss_Move_4
+  - first:
+      213: 3099780953016791493
+    second: HeavenEyeBoss_Move_5
+  - first:
+      213: -7504758849608456083
+    second: HeavenEyeBoss_Move_6
+  - first:
+      213: 4835439693767277869
+    second: HeavenEyeBoss_Move_7
+  - first:
+      213: 4597352932643093772
+    second: HeavenEyeBoss_Move_8
+  - first:
+      213: 5840306146026224394
+    second: HeavenEyeBoss_Move_9
+  - first:
+      213: -4939611335670583000
+    second: HeavenEyeBoss_Move_10
+  - first:
+      213: -3044663891893461296
+    second: HeavenEyeBoss_Move_11
+  - first:
+      213: 5436958853440690596
+    second: HeavenEyeBoss_Move_12
+  - first:
+      213: 318527640886834510
+    second: HeavenEyeBoss_Move_13
+  - first:
+      213: -7365479587419509345
+    second: HeavenEyeBoss_Move_14
+  - first:
+      213: -812678293198281079
+    second: HeavenEyeBoss_Move_15
+  - first:
+      213: -6575012216845640024
+    second: HeavenEyeBoss_Move_16
+  - first:
+      213: 8600591583227933589
+    second: HeavenEyeBoss_Move_17
+  - first:
+      213: -12017316486185333
+    second: HeavenEyeBoss_Move_18
+  - first:
+      213: -5041138749567492982
+    second: HeavenEyeBoss_Move_19
+  - first:
+      213: -3169273644692380931
+    second: HeavenEyeBoss_Move_20
+  - first:
+      213: 1190299550652533285
+    second: HeavenEyeBoss_Move_21
+  - first:
+      213: 5075334292031666168
+    second: HeavenEyeBoss_Move_22
+  - first:
+      213: 2951177019203328878
+    second: HeavenEyeBoss_Move_23
+  - first:
+      213: 8268161324969198274
+    second: HeavenEyeBoss_Move_24
+  - first:
+      213: 9020383924655637954
+    second: HeavenEyeBoss_Move_25
+  - first:
+      213: -4449034973527247698
+    second: HeavenEyeBoss_Move_26
+  - first:
+      213: 7912975829941876874
+    second: HeavenEyeBoss_Move_27
+  - first:
+      213: -5138873557511856252
+    second: HeavenEyeBoss_Move_28
+  - first:
+      213: -5661582922810666592
+    second: HeavenEyeBoss_Move_29
+  - first:
+      213: -6022415490477589329
+    second: HeavenEyeBoss_Move_30
+  - first:
+      213: 8629308950610089315
+    second: HeavenEyeBoss_Move_31
+  - first:
+      213: -1180536007407607651
+    second: HeavenEyeBoss_Move_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: HeavenEyeBoss_Move_0
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 482
+        width: 276
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2c4458dbd5463240800000000000000
+      internalID: 4771077665775176751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeavenEyeBoss_Move_1
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 133
+        width: 231
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f1a0a0bfc148e780800000000000000
+      internalID: -8653594323715055111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeavenEyeBoss_Move_2
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 133
+        width: 231
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b86d4bb2720e5a4c0800000000000000
+      internalID: -4276765812276799861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeavenEyeBoss_Move_3
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 133
+        width: 231
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae16a20782d641570800000000000000
+      internalID: 8436488022419726826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeavenEyeBoss_Move_4
+      rect:
+        serializedVersion: 2
+        x: 756
+        y: 133
+        width: 231
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5129a757ce07b450800000000000000
+      internalID: 6104364069255979357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeavenEyeBoss_Move_5
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 133
+        width: 231
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c1761a7a52a40b20800000000000000
+      internalID: 3099780953016791493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5d5c68c72fd667b42af851b0c197557a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      HeavenEyeBoss_Move_0: 4771077665775176751
+      HeavenEyeBoss_Move_1: -8653594323715055111
+      HeavenEyeBoss_Move_10: -4939611335670583000
+      HeavenEyeBoss_Move_11: -3044663891893461296
+      HeavenEyeBoss_Move_12: 5436958853440690596
+      HeavenEyeBoss_Move_13: 318527640886834510
+      HeavenEyeBoss_Move_14: -7365479587419509345
+      HeavenEyeBoss_Move_15: -812678293198281079
+      HeavenEyeBoss_Move_16: -6575012216845640024
+      HeavenEyeBoss_Move_17: 8600591583227933589
+      HeavenEyeBoss_Move_18: -12017316486185333
+      HeavenEyeBoss_Move_19: -5041138749567492982
+      HeavenEyeBoss_Move_2: -4276765812276799861
+      HeavenEyeBoss_Move_20: -3169273644692380931
+      HeavenEyeBoss_Move_21: 1190299550652533285
+      HeavenEyeBoss_Move_22: 5075334292031666168
+      HeavenEyeBoss_Move_23: 2951177019203328878
+      HeavenEyeBoss_Move_24: 8268161324969198274
+      HeavenEyeBoss_Move_25: 9020383924655637954
+      HeavenEyeBoss_Move_26: -4449034973527247698
+      HeavenEyeBoss_Move_27: 7912975829941876874
+      HeavenEyeBoss_Move_28: -5138873557511856252
+      HeavenEyeBoss_Move_29: -5661582922810666592
+      HeavenEyeBoss_Move_3: 8436488022419726826
+      HeavenEyeBoss_Move_30: -6022415490477589329
+      HeavenEyeBoss_Move_31: 8629308950610089315
+      HeavenEyeBoss_Move_32: -1180536007407607651
+      HeavenEyeBoss_Move_4: 6104364069255979357
+      HeavenEyeBoss_Move_5: 3099780953016791493
+      HeavenEyeBoss_Move_6: -7504758849608456083
+      HeavenEyeBoss_Move_7: 4835439693767277869
+      HeavenEyeBoss_Move_8: 4597352932643093772
+      HeavenEyeBoss_Move_9: 5840306146026224394
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
