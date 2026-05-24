@@ -1,0 +1,31 @@
+{
+	"info": [
+		{
+			"id": "SWORD_001",
+			"name": "연습용 목검",
+			"spriteId": "sword_wooden",
+			"motionId": "effect_sword",
+	  		"type": "Sword",
+	  		"grade": "Common",
+	  		"balanceKey": "Sword_Common"
+		},
+		{
+			"id": "BOW_001",
+			"name": "짧은 활",
+			"spriteId": "bow_short",
+			"motionId": "effect_bow",
+	  		"type": "Bow",
+	  		"grade": "Common",
+			"balanceKey": "Bow_Common"
+		},
+		{
+			"id": "ORB_001",
+			"name": "독 장판",
+			"spriteId": "orb_poison",
+			"motionId": "effect_orb",
+	  		"type": "Orb",
+	  		"grade": "Common",
+			"balanceKey": "Orb_Common"
+		}
+	]
+}

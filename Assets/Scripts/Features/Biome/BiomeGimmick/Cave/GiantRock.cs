@@ -2,7 +2,7 @@
 using System.Collections;
 
 // 오래 남는 거대 암석
-public class GiantRock : BiomeGimmick
+public class GiantRock : BiomeGimmick, IDamageable
 {
     [Header("암석 체력")]
     [SerializeField] float maxHealth = 200f;
@@ -167,49 +167,12 @@ public class GiantRock : BiomeGimmick
             }
         }
 
-        // 아직 피격 불가 상태
-        if (!canTakeBulletDamage)
-            return;
-
-        // 총알만 처리
-        if (!collision.CompareTag("Bullet"))
-            return;
-
-        float dmg = 0f;
-
-        // 룬 총알 우선
-        BulletRune br =
-            collision.GetComponentInParent<BulletRune>();
-
-        if (br != null)
-        {
-            dmg = br.damage;
-
-            // 💡 추가된 부분: 룬 총알을 즉시 비활성화하여 관통을 막습니다.
-            br.gameObject.SetActive(false);
-        }
-        else
-        {
-            Bullet bullet =
-                collision.GetComponentInParent<Bullet>();
-
-            if (bullet == null)
-                return;
-
-            dmg = bullet.damage;
-
-            // 💡 추가된 부분: 일반 총알을 즉시 비활성화하여 관통을 막습니다.
-            bullet.gameObject.SetActive(false);
-        }
-
-        // 체력 감소
-        TakeDamage(dmg);
     }
 
     // 데미지 처리
-    void TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
-        if (dead)
+        if (dead || !canTakeBulletDamage)
             return;
 
         health -= damage;

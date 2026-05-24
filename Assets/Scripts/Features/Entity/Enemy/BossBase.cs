@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BossBase : MonoBehaviour
+public class BossBase : MonoBehaviour, IDamageable
 {
     // 웨이브 매니저
     [HideInInspector]
@@ -189,28 +189,4 @@ public class BossBase : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        // 플레이어 탄환만
-        if (!collision.CompareTag("Bullet"))
-            return;
-
-        // 일반 탄환
-        Bullet bullet =
-            collision.GetComponent<Bullet>();
-
-        if (bullet != null)
-        {
-            TakeDamage(bullet.damage);
-        }
-
-        // 룬 탄환
-        BulletRune rune =
-            collision.GetComponent<BulletRune>();
-
-        if (rune != null)
-        {
-            TakeDamage(rune.damage);
-        }
-    }
 }
