@@ -3,33 +3,34 @@ using UnityEngine;
 
 public class RuneManager : MonoBehaviour
 {
-	public static RuneManager instance;
+    public static RuneManager instance;
 
-    [Header("# 테스트용 초기 룬")]
     public bool IsCurrentCombinationValid { get; private set; } = true;
-	public string CurrentWarningMessage { get; private set; } = string.Empty;
-    private const int SlotCount = 3;
-    private RuneData[] slots = new RuneData[SlotCount];
-	private List<RuneData> activeRunesCache = new List<RuneData>();
-	[SerializeField] private RuneData[] initialRunes = new RuneData[3];
+    public string CurrentWarningMessage { get; private set; } = string.Empty;
 
+    const int SlotCount = 3;
+    readonly RuneData[] slots = new RuneData[SlotCount];
+    readonly List<RuneData> activeRunesCache = new List<RuneData>();
 
+    [SerializeField] RuneData[] initialRunes = new RuneData[3];
 
-	void Awake()
-	{
-    	if (instance != null && instance != this) Destroy(gameObject);
-		instance = this;
+    void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-		for (int i = 0; i < initialRunes.Length; i++)
-		{
-			if (initialRunes[i] != null) SetRune(i, initialRunes[i]);
-		}
-	}
+        instance = this;
 
+        for (int i = 0; i < initialRunes.Length; i++)
+        {
+            if (initialRunes[i] != null)
+                SetRune(i, initialRunes[i]);
+        }
+    }
 
-    // ─────────────────────────────────────────────────────
-    // 슬롯 조작
-    // ─────────────────────────────────────────────────────
     public void SetRune(int slotIndex, RuneData data)
     {
         if (slotIndex < 0 || slotIndex >= SlotCount) return;
@@ -63,40 +64,56 @@ public class RuneManager : MonoBehaviour
 
     public void ClearAll()
     {
-        for (int i = 0; i < SlotCount; i++) slots[i] = null;
+        for (int i = 0; i < SlotCount; i++)
+            slots[i] = null;
         Validate();
     }
 
-
-    // ─────────────────────────────────────────────────────
-    // Weapon이 호출하는 접근자
-    // ─────────────────────────────────────────────────────
     public List<RuneData> GetActiveRunes()
     {
         activeRunesCache.Clear();
-		for(int i = 0; i < SlotCount; i++)
-		{
-			if (slots[i] != null) activeRunesCache.Add(slots[i]);
-		}
+        for (int i = 0; i < SlotCount; i++)
+        {
+            if (slots[i] != null)
+                activeRunesCache.Add(slots[i]);
+        }
 
-		return activeRunesCache;
+        return activeRunesCache;
     }
 
+    public float GetTotalCooldownPenalty()
+    {
+        float total = 0f;
+        foreach (var slot in slots)
+        {
+            if (slot != null)
+                total += slot.cooldownPenalty;
+        }
 
-    // ─────────────────────────────────────────────────────
-    // 검증
-    // ─────────────────────────────────────────────────────
+        return total;
+    }
+
     void Validate()
     {
-        IsCurrentCombinationValid = RuneValidator.ValidateSlots(slots, out string errorMsg);
-		CurrentWarningMessage = IsCurrentCombinationValid ? string.Empty : errorMsg;
-		if (!IsCurrentCombinationValid) Debug.LogWarning($"[RuneManager] {errorMsg}");
+        if (!RuneValidator.ValidateSlots(slots, out string slotError))
+        {
+            IsCurrentCombinationValid = false;
+            CurrentWarningMessage = slotError;
+            return;
+        }
+
+        var active = GetActiveRunes();
+        IsCurrentCombinationValid = RuneValidator.IsValidCombination(active, out string comboError);
+        CurrentWarningMessage = IsCurrentCombinationValid
+            ? string.Empty
+            : (string.IsNullOrEmpty(comboError)
+                ? RuneValidator.GetWarningMessage(active)
+                : comboError);
+
+        if (!IsCurrentCombinationValid)
+            Debug.LogWarning($"[RuneManager] {CurrentWarningMessage}");
     }
 
-
-    // ─────────────────────────────────────────────────────
-    // 디버그용
-    // ─────────────────────────────────────────────────────
     public RuneData GetSlot(int i) => (i >= 0 && i < SlotCount) ? slots[i] : null;
     public int SlotCount_ => SlotCount;
 }

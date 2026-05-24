@@ -8,6 +8,8 @@ TagManager:
   - Area
   - Enemy
   - Bullet
+  - Lava
+  - BossBullet
   - Wall
   layers:
   - Default
@@ -17,7 +19,8 @@ TagManager:
   - Water
   - UI
   - Enemy
-  - projectile
+  - Environment
+  - BossBullet
   - 
   - 
   - 
@@ -34,8 +37,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Hide
   - 
   - 
   - 

@@ -1,76 +1,102 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-100)]
 public class Player : MonoBehaviour
 {
-    // 입력 시스템에서 받은 이동 입력값
+    [Header("이동 관련")]
     public Vector2 inputVec;
-    // 이동 속도
-    public float speed;
-    // 근처 적 탐색 컴포넌트
+    public Vector2 inputModifier = Vector2.one;
+    public float inputJitter;
+
+    [Header("물리/속도")]
+    public float speed = 5f;
+    public float baseSpeed = 5f;
+    [HideInInspector]
+    public Vector2 externalVelocity;
+
+    [Header("탐색/환경")]
     public Scaner scaner;
-    // 물리 이동 처리용 리지드바디
+    public LayerMask groundMask;
+
+    [Header("스프라이트 틴트")]
+    public Color defaultTint = Color.white;
+    Color currentTint;
+
     Rigidbody2D rigid;
-    // 좌우 반전 제어용 스프라이트 렌더러
     public SpriteRenderer spriter;
-    // 이동/사망 애니메이션 제어
     Animator anim;
 
-    // 입력이 멈춰도 바라보는 방향을 유지하기 위한 마지막 이동 방향
+    bool isStunned;
+    bool isDead;
+
     public Vector2 lastTravelDirection = Vector2.right;
 
     void Awake()
     {
-        // 자주 사용하는 컴포넌트 캐싱
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         scaner = GetComponent<Scaner>();
+
+        defaultTint = spriter.color;
+        currentTint = defaultTint;
+        speed = baseSpeed;
+    }
+
+    void Update()
+    {
+        if (GameManager.instance != null && GameManager.instance.Health <= 0f)
+            PlayerDead();
     }
 
     void FixedUpdate()
     {
-        // 게임 정지 시 이동 입력 처리 중단
-        if (!GameManager.instance.isLive)
+        if (isStunned)
+        {
+            rigid.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (GameManager.instance == null || !GameManager.instance.isLive)
             return;
 
-        // 입력값 기반으로 물리 프레임 이동량 계산
-        Vector2 nextVec = inputVec * speed * Time.fixedDeltaTime;
-        // 이동 중일 때만 마지막 진행 방향 갱신
-        if (nextVec.sqrMagnitude > 1e-10f)
-            lastTravelDirection = nextVec.normalized;
-        rigid.MovePosition(rigid.position + nextVec);
+        Vector2 inputVelocity = inputVec * speed;
+
+        if (inputVelocity.sqrMagnitude > 1e-10f)
+            lastTravelDirection = inputVelocity.normalized;
+
+        rigid.linearVelocity = inputVelocity + externalVelocity;
+        externalVelocity = Vector2.zero;
     }
 
     void OnMove(InputValue value)
     {
-        // Input System Action에서 이동값 수신
-        inputVec = value.Get<Vector2>();
+        Vector2 input = value.Get<Vector2>();
+        input = Vector2.Scale(input, inputModifier);
+
+        if (inputJitter > 0f)
+            input += Random.insideUnitCircle * inputJitter;
+
+        inputVec = Vector2.ClampMagnitude(input, 1f);
     }
 
     void LateUpdate()
     {
-        // 게임 중이 아닐 때는 애니메이션/방향 갱신 중단
-        if (!GameManager.instance.isLive)
-                    return;
+        if (GameManager.instance == null || !GameManager.instance.isLive)
+            return;
 
-        // 이동량을 애니메이션 파라미터로 전달
         anim.SetFloat("Speed", inputVec.magnitude);
 
-        // 좌/우 입력이 있을 때만 캐릭터 좌우 반전
-        if (inputVec.x != 0) {
-            spriter.flipX =  inputVec.x < 0;
-        }
+        if (inputVec.x != 0f)
+            spriter.flipX = inputVec.x < 0;
     }
 
-    // 현재 플레이어의 월드 좌표 반환
     public Vector2 GetWorldPosition() => rigid.position;
 
-    /// <summary>재배치 등: 실제 이동 속도 → 입력 → 마지막 이동 방향 → 스프라이트 좌우.</summary>
     public Vector2 GetFacingDirection()
     {
-        // 가장 신뢰도 높은 정보부터 순서대로 바라보는 방향 결정
         const float velEps = 0.06f;
         if (rigid.linearVelocity.sqrMagnitude > velEps * velEps)
             return rigid.linearVelocity.normalized;
@@ -86,25 +112,88 @@ public class Player : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D collision)
     {
-        // 게임 정지 상태에서는 접촉 데미지 처리 중단
-        if (!GameManager.instance.isLive)
+        if (GameManager.instance == null || !GameManager.instance.isLive)
             return;
 
-        // 적과 닿아있는 동안 지속 피해 적용
-        GameManager.instance.Health -= Time.deltaTime * 10;
+        float damage = 0f;
 
-        // 체력이 0 이하이면 사망 처리
-        if (GameManager.instance.Health < 0)
+        Enemy enemy = collision.collider.GetComponent<Enemy>();
+        if (enemy != null)
+            damage = enemy.attackDamage;
+
+        BossBase boss = collision.collider.GetComponent<BossBase>();
+        if (boss != null)
+            damage = boss.AttackDamage;
+
+        if (damage <= 0f)
+            return;
+
+        GameManager.instance.Health -= damage * Time.deltaTime;
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!collision.gameObject.CompareTag("BossBullet"))
+            return;
+
+        BossBullet bullet = collision.gameObject.GetComponent<BossBullet>();
+        if (bullet != null)
+            GameManager.instance.Health -= bullet.damage;
+
+        collision.gameObject.SetActive(false);
+    }
+
+    public void PlayerDead()
+    {
+        if (isDead)
+            return;
+
+        isDead = true;
+
+        for (int index = 2; index < transform.childCount; index++)
+            transform.GetChild(index).gameObject.SetActive(false);
+
+        anim.SetTrigger("Dead");
+        GameManager.instance.GameOver();
+    }
+
+    public void Stun(float time)
+    {
+        StopAllCoroutines();
+        StartCoroutine(StunRoutine(time));
+    }
+
+    IEnumerator StunRoutine(float time)
+    {
+        isStunned = true;
+        yield return new WaitForSeconds(time);
+        isStunned = false;
+    }
+
+    public void SetStatusTint(Color tint)
+    {
+        currentTint = tint;
+        spriter.color = currentTint;
+    }
+
+    public void ResetStatusTint()
+    {
+        currentTint = defaultTint;
+        spriter.color = defaultTint;
+    }
+
+    public bool IsOnLava()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(rigid.position, 0.15f, groundMask);
+        if (hits == null)
+            return false;
+
+        foreach (Collider2D hit in hits)
         {
-            // 무기/보조 오브젝트 비활성화
-            for (int index=2; index < transform.childCount; index++)
-            {
-                transform.GetChild(index).gameObject.SetActive(false);
-            }
-
-            // 사망 애니메이션 재생 후 게임 오버
-            anim.SetTrigger("Dead");
-            GameManager.instance.GameOver();
+            if (hit != null && hit.CompareTag("Lava"))
+                return true;
         }
+
+        return false;
     }
 }

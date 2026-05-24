@@ -133,11 +133,8 @@ public abstract class Motion : MonoBehaviour
 
 	protected virtual void ApplyCalculatedDamage(Collider2D collision, float finalDamage)
 	{
-		if (collision.CompareTag("Enemy")) 
-		{
-			var damageable = collision.GetComponent<IDamageable>();
-			if (damageable != null) damageable.TakeDamage(finalDamage);
-		}
+		var damageable = collision.GetComponent<IDamageable>();
+		if (damageable != null) damageable.TakeDamage(finalDamage);
 	}
 
 
