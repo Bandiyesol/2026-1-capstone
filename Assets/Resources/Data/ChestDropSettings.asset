@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d1c43a6945dfcb46bb5a69ffc007698, type: 3}
+  m_Name: ChestDropSettings
+  m_EditorClassIdentifier: Assembly-CSharp::ChestDropSettings
+  enemyDropChance: 0.08
+  bossDropChance: 0.25
+  normalWeight: 70
+  rareWeight: 20
+  uniqueWeight: 8
+  legendaryWeight: 2
+  normalWeaponIds:
+  - SWORD_001
+  - BOW_001
+  - ORB_001
+  rareWeaponIds:
+  - SWORD_001
+  - BOW_001
+  uniqueWeaponIds:
+  - BOW_001
+  legendaryWeaponIds:
+  - ORB_001
+  openAnimationFallbackSeconds: 0.6

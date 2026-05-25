@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-100)]
+[RequireComponent(typeof(PlayerStats))]
 public class Player : MonoBehaviour
 {
     [Header("이동 관련")]
@@ -35,6 +36,9 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
+        if (GetComponent<PlayerStats>() == null)
+            gameObject.AddComponent<PlayerStats>();
+
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
@@ -180,6 +184,34 @@ public class Player : MonoBehaviour
     {
         currentTint = defaultTint;
         spriter.color = defaultTint;
+    }
+
+    /// <summary>메인 메뉴 복귀 후 새 게임을 위해 플레이어 상태를 되돌립니다.</summary>
+    public void ResetForMainMenu()
+    {
+        isDead = false;
+        isStunned = false;
+        inputVec = Vector2.zero;
+        externalVelocity = Vector2.zero;
+        StopAllCoroutines();
+
+        if (rigid != null)
+        {
+            rigid.linearVelocity = Vector2.zero;
+            transform.position = Vector3.zero;
+        }
+
+        ResetStatusTint();
+        speed = baseSpeed;
+
+        for (int index = 2; index < transform.childCount; index++)
+            transform.GetChild(index).gameObject.SetActive(true);
+
+        if (anim != null)
+        {
+            anim.ResetTrigger("Dead");
+            anim.SetFloat("Speed", 0f);
+        }
     }
 
     public bool IsOnLava()

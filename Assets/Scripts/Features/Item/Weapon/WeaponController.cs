@@ -17,7 +17,11 @@ public class WeaponController : MonoBehaviour
 
 	void Update()
 	{
-		if (!GameManager.instance.isLive || inventory == null) return;
+		if (GameManager.instance == null || !GameManager.instance.isLive)
+			return;
+
+		if (inventory == null)
+			return;
 
 		foreach (WeaponInstance weapon in inventory.Weapons)
 			weapon.Tick(Time.deltaTime, transform);

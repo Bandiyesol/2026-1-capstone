@@ -56,9 +56,8 @@ public abstract class BiomeGimmick : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        // 플레이어가 아니면 무시
         if (!collision.CompareTag("Player"))
             return;
 

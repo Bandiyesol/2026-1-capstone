@@ -14,6 +14,7 @@ public static class RuneEffectRegistry
 		{ RuneType.Split, typeof(EffectSplit) },
 		{ RuneType.Ricochet, typeof(EffectRicochet) },
 		{ RuneType.Recursion, typeof(EffectRecursion) },
+		{ RuneType.Vampire, typeof(EffectVampire) },
 	};
 
 	public static bool TryGetEffectType(RuneType runeType, out Type effectType) =>

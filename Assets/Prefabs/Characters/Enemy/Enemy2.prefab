@@ -294,10 +294,8 @@ MonoBehaviour:
   waveManager: {fileID: 0}
   health: 0
   maxHealth: 0
+  attackDamage: 0
   speed: 0
-  knockbackDuration: 0.09
-  knockbackSpeed: 4.5
-  knockbackVelocityMinSqr: 0.25
 --- !u!114 &7708622900765237060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,5 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Reposition
-  minSpawn: 4
-  maxSpawn: 8
+  enemyFarFromPlayerDistance: 10.5
+  gameplayCamera: {fileID: 0}
+  pastScreenEdge: 1.25
+  lateralPastScreen: 1.5

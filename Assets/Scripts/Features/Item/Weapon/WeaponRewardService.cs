@@ -52,9 +52,31 @@ public static class WeaponRewardService
 		return result;
 	}
 
+	public static string FormatTitle(WeaponInstance w)
+	{
+		if (w?.info == null) return "(없음)";
+		return w.info.name;
+	}
+
+	public static string FormatStats(WeaponInstance w)
+	{
+		if (w?.info == null) return "";
+		return $"{w.info.grade}\n데미지 {w.damage:F0}\n쿨 {w.cooltime:F1}s";
+	}
+
+	/// <summary>Title + Stats 한 줄에 (레거시). 새 UI는 FormatTitle / FormatStats 사용.</summary>
 	public static string FormatPreview(WeaponInstance w)
 	{
 		if (w?.info == null) return "(없음)";
-		return $"{w.info.name}\n{w.info.grade}\n데미지 {w.damage:F0}\n쿨 {w.cooltime:F1}s";
+		return $"{FormatTitle(w)}\n{FormatStats(w)}";
+	}
+
+	public static Sprite GetIcon(WeaponInstance w)
+	{
+		if (w?.info == null || string.IsNullOrEmpty(w.info.spriteId))
+			return null;
+		if (WeaponManager.Instance == null)
+			return null;
+		return WeaponManager.Instance.GetWeaponSprite(w.info.spriteId);
 	}
 }

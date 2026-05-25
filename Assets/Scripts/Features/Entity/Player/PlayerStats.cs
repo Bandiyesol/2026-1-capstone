@@ -195,6 +195,13 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP.Final;
     }
 
+    /// <summary>메인 메뉴 복귀 시 체력 등 런타임 스탯을 기본값으로 되돌립니다.</summary>
+    public void ResetRuntimeState()
+    {
+        InitializeStats();
+        OnStatsChanged?.Invoke();
+    }
+
     // ═════════════════════════════════════════
     //  공격 스탯 — 외부 읽기 프로퍼티
     // ═════════════════════════════════════════

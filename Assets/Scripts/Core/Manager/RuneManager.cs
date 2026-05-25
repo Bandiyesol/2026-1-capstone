@@ -69,6 +69,20 @@ public class RuneManager : MonoBehaviour
         Validate();
     }
 
+    public void ResetToInitial()
+    {
+        ClearAll();
+
+        if (initialRunes == null)
+            return;
+
+        for (int i = 0; i < initialRunes.Length && i < SlotCount; i++)
+        {
+            if (initialRunes[i] != null)
+                SetRune(i, initialRunes[i]);
+        }
+    }
+
     public List<RuneData> GetActiveRunes()
     {
         activeRunesCache.Clear();

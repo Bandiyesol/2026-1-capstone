@@ -124,8 +124,10 @@ public class GiantRock : BiomeGimmick, IDamageable
     }
 
     // 충돌 처리
-    void OnTriggerEnter2D(Collider2D collision)
+    protected override void OnTriggerEnter2D(Collider2D collision)
     {
+        base.OnTriggerEnter2D(collision);
+
         if (dead)
             return;
 
