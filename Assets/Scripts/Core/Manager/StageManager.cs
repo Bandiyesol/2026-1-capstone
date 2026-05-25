@@ -11,9 +11,32 @@ public class StageManager : MonoBehaviour
     [Header("스테이지별 웨이브 데이터")]
     public StageData[] stageDatas;
 
+    public int CurrentStage => stageIndex + 1;
+
+    public int TotalStages
+    {
+        get
+        {
+            if (stages != null && stages.Length > 0)
+                return stages.Length;
+            if (stageDatas != null && stageDatas.Length > 0)
+                return stageDatas.Length;
+            return 1;
+        }
+    }
+
     void Start()
     {
         UpdateStage();
+    }
+
+    public void ResetToFirstStage()
+    {
+        stageIndex = 0;
+        UpdateStage();
+
+        if (GameManager.instance != null && GameManager.instance.player != null)
+            GameManager.instance.player.transform.position = Vector3.zero;
     }
 
     // 현재 스테이지만 켜기

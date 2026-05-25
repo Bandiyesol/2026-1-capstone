@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1016566483445",
+    "firebase_url": "https://the-last-rune-default-rtdb.firebaseio.com",
+    "project_id": "the-last-rune",
+    "storage_bucket": "the-last-rune.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016566483445:android:636459332edf4a46f3b8bc",
+        "android_client_info": {
+          "package_name": "com.capstone.TheLastRune"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdriuWDzGyRV8vUHn9tnu1xeoay2uCQco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

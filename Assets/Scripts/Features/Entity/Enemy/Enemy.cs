@@ -140,6 +140,15 @@ public class Enemy : MonoBehaviour, IDamageable
         rigid.simulated = false;
         spriter.sortingOrder = 1;
 
+        if (GameManager.instance != null)
+            GameManager.instance.Kill++;
+
+        if (CoinDropManager.Instance != null)
+            CoinDropManager.Instance.TryDropFromEnemy(transform.position);
+
+        if (ChestDropManager.Instance != null)
+            ChestDropManager.Instance.TryDropFromEnemy(transform.position);
+
         waveManager?.OnEnemyDead();
         gameObject.SetActive(false);
     }

@@ -16,13 +16,18 @@ public class WeaponManager : MonoBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
+
+			if (transform.parent != null)
+				transform.SetParent(null);
 			DontDestroyOnLoad(gameObject);
 
 			LoadWeaponData();
 			LoadResourceData();
 		}
-
-		else Destroy(gameObject);
+		else
+		{
+			Destroy(gameObject);
+		}
 	}
 
 	void LoadWeaponData()
@@ -57,7 +62,17 @@ public class WeaponManager : MonoBehaviour
 	void LoadResourceData()
 	{
 		Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Weapons");
-		foreach (var s in sprites) weaponSprites[s.name] = s;
+		foreach (var s in sprites)
+		{
+			if (s == null) continue;
+			weaponSprites[s.name] = s;
+		}
+
+		foreach (var info in infoDatabase.Values)
+		{
+			if (!string.IsNullOrEmpty(info.spriteId))
+				GetWeaponSprite(info.spriteId);
+		}
 
 		GameObject[] motions = Resources.LoadAll<GameObject>("Prefabs/Motions");
 		foreach (var p in motions) motionPrefabs[p.name] = p;
@@ -69,7 +84,30 @@ public class WeaponManager : MonoBehaviour
 	
 	public WeaponBalance GetWeaponBalance(string key) => balanceDatabase.GetValueOrDefault(key);
 
-	public Sprite GetWeaponSprite(string spriteId) => weaponSprites.GetValueOrDefault(spriteId);
+	public Sprite GetWeaponSprite(string spriteId)
+	{
+		if (string.IsNullOrEmpty(spriteId))
+			return null;
+
+		if (weaponSprites.TryGetValue(spriteId, out Sprite cached))
+			return cached;
+
+		const string folder = "Sprites/Weapons";
+		Sprite sprite = Resources.Load<Sprite>($"{folder}/{spriteId}");
+		if (sprite == null)
+		{
+			Sprite[] subs = Resources.LoadAll<Sprite>($"{folder}/{spriteId}");
+			if (subs != null && subs.Length > 0)
+				sprite = subs[0];
+		}
+
+		if (sprite != null)
+			weaponSprites[spriteId] = sprite;
+		else
+			Debug.LogWarning($"[WeaponManager] 스프라이트를 찾지 못했습니다: {spriteId} (경로: Resources/{folder}/{spriteId})");
+
+		return sprite;
+	}
 
 	public GameObject GetMotionPrefab(string motionId)
 	{
