@@ -143,8 +143,14 @@ public class Quicksand : BiomeGimmick
         else
         {
             // 중심 지속 피해
-            GameManager.instance.Health -=
-                damagePerSecond * Time.deltaTime;
+            if (PlayerStats.Instance != null)
+            {
+                PlayerStats.Instance.TakeDamage(
+                    damagePerSecond * Time.deltaTime,
+                    applyIFrames: false,
+                    PlayerDamageKind.PerSecondFrame
+                );
+            }
 
             if (GameManager.instance.Health <= 0f)
                 currentPlayer.PlayerDead();

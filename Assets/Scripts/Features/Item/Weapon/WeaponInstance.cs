@@ -6,6 +6,8 @@ using UnityEngine;
 [Serializable]
 public class WeaponInstance
 {
+	const float MultiShotSpreadAngle = 15f;
+
 	public WeaponInfo info;
 	public bool isSplited;
 	public bool isRevived;
@@ -55,14 +57,26 @@ public class WeaponInstance
 	public void Tick(float dlt, Transform playerPos)
 	{
 		timer += dlt;
-		
-		if (timer >= cooltime)
+
+		if (timer >= GetEffectiveCooltime())
 		{
 			Attack(playerPos);
-			timer = 0;
+			timer = 0f;
 		}
 	}
 
+	float GetEffectiveCooltime()
+	{
+		float effectiveCooltime = cooltime;
+		PlayerStats stats = PlayerStats.Instance;
+		if (stats != null)
+			effectiveCooltime = effectiveCooltime / stats.AttackSpeed * (1f - stats.CooldownReduction);
+
+		if (RuneManager.instance != null)
+			effectiveCooltime += RuneManager.instance.GetTotalCooldownPenalty();
+
+		return Mathf.Max(0.01f, effectiveCooltime);
+	}
 
 	public void Attack(Transform playerPos)
 	{
@@ -80,38 +94,123 @@ public class WeaponInstance
 		if (prefab == null) return;
 
 		Player player = playerPos.GetComponent<Player>();
-		Vector2 direction = player.lastTravelDirection;
+		if (player == null)
+			return;
+
+		Vector2 baseDirection = player.GetFacingDirection();
+		if (baseDirection.sqrMagnitude <= 0.0001f)
+			baseDirection = Vector2.right;
+		baseDirection.Normalize();
+
+		PlayerStats stats = PlayerStats.Instance;
+		bool isProjectileWeapon = IsProjectileWeaponType(info.type);
+		int projectileCount = (stats != null && isProjectileWeapon) ? stats.ProjectileCount : 1;
+		float projectileRangeMultiplier = stats != null ? Mathf.Max(0.1f, stats.ProjectileRange) : 1f;
+		float projectileSpeedMultiplier = stats != null ? Mathf.Max(0.1f, stats.ProjectileSpeed) : 1f;
+		float meleeRangeMultiplier = stats != null ? Mathf.Max(0.1f, stats.MeleeRange) : 1f;
+
+		for (int index = 0; index < projectileCount; index++)
+		{
+			float spreadAngle = ComputeSpreadAngle(index, projectileCount);
+			Vector2 shotDirection = Quaternion.Euler(0f, 0f, spreadAngle) * baseDirection;
+			SpawnOne(
+				prefab,
+				playerPos,
+				shotDirection,
+				activeRunes,
+				projectileRangeMultiplier,
+				projectileSpeedMultiplier,
+				meleeRangeMultiplier
+			);
+		}
+	}
+
+	float ComputeSpreadAngle(int shotIndex, int shotCount)
+	{
+		if (shotCount <= 1)
+			return 0f;
+
+		float t = shotIndex / (shotCount - 1f);
+		return Mathf.Lerp(-MultiShotSpreadAngle, MultiShotSpreadAngle, t);
+	}
+
+	bool IsProjectileWeaponType(string weaponType)
+	{
+		return weaponType == "Bow"
+			|| weaponType == "Gun"
+			|| weaponType == "Whip"
+			|| weaponType == "Boomerang"
+			|| weaponType == "Staff"
+			|| weaponType == "Orb";
+	}
+
+	bool IsMeleeWeaponType(string weaponType)
+	{
+		return weaponType == "Sword"
+			|| weaponType == "Hammer"
+			|| weaponType == "Sickle"
+			|| weaponType == "Grimore";
+	}
+
+	void SpawnOne(
+		GameObject prefab,
+		Transform playerPos,
+		Vector2 direction,
+		List<RuneData> activeRunes,
+		float projectileRangeMultiplier,
+		float projectileSpeedMultiplier,
+		float meleeRangeMultiplier
+	)
+	{
 		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-		
 		Vector3 spawnPos = playerPos.position;
-		Quaternion spawnRotation= Quaternion.identity;
+		Quaternion spawnRotation = Quaternion.identity;
 
 		switch (info.type)
 		{
-			case "Sword": 
-				spawnPos = playerPos.position + (Vector3)(direction *0.7f);
-				spawnRotation = Quaternion.Euler(0, 0, angle);
-				break;
-
+			case "Sword":
 			case "Bow":
-				spawnPos = playerPos.position + (Vector3)(direction *0.7f);
-				spawnRotation = Quaternion.Euler(0, 0, angle);
+			case "Gun":
+			case "Hammer":
+			case "Sickle":
+			case "Whip":
+			case "Boomerang":
+			case "Staff":
+				spawnPos = playerPos.position + (Vector3)(direction * 0.7f);
+				spawnRotation = Quaternion.Euler(0f, 0f, angle);
 				break;
-
-			case "Orb":
-				Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * reach;
-
-				spawnPos = playerPos.position + new Vector3(randomOffset.x, randomOffset.y, 0);
+			case "Grimore":
+				spawnPos = playerPos.position;
 				spawnRotation = Quaternion.identity;
 				break;
-			
+			case "Orb":
+				Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * (reach * projectileRangeMultiplier);
+				spawnPos = playerPos.position + new Vector3(randomOffset.x, randomOffset.y, 0f);
+				spawnRotation = Quaternion.identity;
+				break;
 			default:
 				Debug.LogWarning($"{info.type}은(는) 정의되지 않은 소환 방식입니다.");
 				break;
 		}
-		
-		GameObject motionobj = UnityEngine.Object.Instantiate(prefab, spawnPos, spawnRotation);
+
+		GameObject motionObj = UnityEngine.Object.Instantiate(prefab, spawnPos, spawnRotation);
+		Motion motion = motionObj.GetComponent<Motion>();
+		if (motion == null)
+		{
+			UnityEngine.Object.Destroy(motionObj);
+			return;
+		}
+
 		WeaponInstance cloneInstance = new WeaponInstance(this);
-		motionobj.GetComponent<Motion>().Initialize(cloneInstance, activeRunes);
+		if (IsMeleeWeaponType(info.type))
+			cloneInstance.size *= meleeRangeMultiplier;
+
+		if (IsProjectileWeaponType(info.type))
+		{
+			cloneInstance.reach *= projectileRangeMultiplier;
+			cloneInstance.movespeed *= projectileSpeedMultiplier;
+		}
+
+		motion.Initialize(cloneInstance, activeRunes);
 	}
 }

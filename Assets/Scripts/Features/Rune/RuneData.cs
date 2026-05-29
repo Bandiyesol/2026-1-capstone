@@ -15,7 +15,6 @@ public class RuneData : ScriptableObject
     [Tooltip("룬 기능 완료 후 즉시 탄환 소멸 요청")] public bool isDestroyed;
     [Tooltip("데미지 배율 (DamageCalculator)")] public float power;
     [Tooltip("발사 간격 페널티 (초)")] public float cooldownPenalty;
-    public int manaCost;
 
     [Header("[ 호환성 ]")]
     public RuneType[] incompatibleWith;
@@ -34,6 +33,5 @@ public enum RuneType
     Split, Ricochet, Vampire, Freeze, Chain, Explode,
     Recursion,
     Gravity, Growth,
-    Blink, Boing,
-    Return, Delay
+    Blink, Boing
 }

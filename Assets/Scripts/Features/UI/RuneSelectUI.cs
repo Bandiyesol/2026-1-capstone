@@ -156,6 +156,13 @@ public class RuneSelectUI : MonoBehaviour
     void EnsureAllRunesLoaded()
     {
         if (allRunes != null && allRunes.Length > 0) return;
+#if UNITY_EDITOR
+        if (runeCatalog == null)
+        {
+            const string catalogPath = "Assets/Arts/Data/RuneCatalog.asset";
+            runeCatalog = UnityEditor.AssetDatabase.LoadAssetAtPath<RuneCatalog>(catalogPath);
+        }
+#endif
         if (runeCatalog != null && runeCatalog.runes != null && runeCatalog.runes.Length > 0)
             allRunes = runeCatalog.runes;
     }

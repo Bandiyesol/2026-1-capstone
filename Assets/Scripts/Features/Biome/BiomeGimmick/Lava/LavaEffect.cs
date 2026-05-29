@@ -53,8 +53,14 @@ public class LavaEffect : BiomeEffect
         if (onLava)
         {
             // 용암 지속 피해
-            GameManager.instance.Health -=
-                lavaDamagePerSecond * Time.deltaTime;
+            if (PlayerStats.Instance != null)
+            {
+                PlayerStats.Instance.TakeDamage(
+                    lavaDamagePerSecond * Time.deltaTime,
+                    applyIFrames: false,
+                    PlayerDamageKind.PerSecondFrame
+                );
+            }
 
             // 화상 시간 갱신
             burnTimer = burnDuration;
@@ -77,8 +83,13 @@ public class LavaEffect : BiomeEffect
             // 일정 시간마다 화상 피해
             if (burnTickTimer <= 0f)
             {
-                GameManager.instance.Health -=
-                    burnDamagePerSecond;
+                if (PlayerStats.Instance != null)
+                {
+                    PlayerStats.Instance.TakeDamage(
+                        burnDamagePerSecond,
+                        applyIFrames: false
+                    );
+                }
 
                 // 다음 틱 초기화
                 burnTickTimer = burnTickInterval;

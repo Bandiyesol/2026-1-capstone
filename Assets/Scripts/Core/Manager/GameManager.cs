@@ -12,10 +12,34 @@ public class GameManager : MonoBehaviour
     public float maxGameTime = 2 * 10f;
 
     [Header("# Player Info")]
-    public float Health;
-    public float maxHealth = 100;
+    [SerializeField] float fallbackHealth = 100f;
+    [SerializeField] float fallbackMaxHealth = 100f;
     public int Kill;
     public int Coin;
+
+    public float Health
+    {
+        get
+        {
+            if (PlayerStats.Instance != null)
+                return PlayerStats.Instance.CurrentHP;
+
+            return fallbackHealth;
+        }
+        set
+        {
+            if (PlayerStats.Instance != null)
+            {
+                PlayerStats.Instance.SetCurrentHPDirect(value);
+                fallbackHealth = PlayerStats.Instance.CurrentHP;
+                return;
+            }
+
+            fallbackHealth = Mathf.Clamp(value, 0f, fallbackMaxHealth);
+        }
+    }
+
+    public float maxHealth => PlayerStats.Instance != null ? PlayerStats.Instance.MaxHP : fallbackMaxHealth;
 
     [Header("# Game Object")]
     public PoolManager pool;
@@ -30,12 +54,38 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        instance = this;
+        ResolveRuntimeReferences();
+        ValidateCoreManagers();
+    }
+
+    void ResolveRuntimeReferences()
+    {
+        if (player == null)
+            player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
+        if (pool == null)
+            pool = FindFirstObjectByType<PoolManager>(FindObjectsInactive.Include);
+        if (uiResult == null)
+            uiResult = FindFirstObjectByType<Result>(FindObjectsInactive.Include);
         if (uiWeaponSelect == null)
             uiWeaponSelect = FindFirstObjectByType<WeaponSelectUI>(FindObjectsInactive.Include);
         if (uiRuneSelect == null)
             uiRuneSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+        ResolveMainMenuReferences();
+    }
+
+    static void ValidateCoreManagers()
+    {
+        if (FindObjectsByType<WeaponManager>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length != 1)
+            Debug.LogWarning("[GameManager] WeaponManager는 씬 전체에서 1개여야 합니다.");
+        if (FindObjectsByType<RuneManager>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length != 1)
+            Debug.LogWarning("[GameManager] RuneManager는 씬 전체에서 1개여야 합니다.");
     }
 
     /// <summary>스토리/메뉴 표시 전 무기·룬 선택 UI를 숨깁니다.</summary>

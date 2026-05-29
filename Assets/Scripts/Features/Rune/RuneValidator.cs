@@ -7,10 +7,8 @@ public static class RuneValidator
 
     static readonly Dictionary<RuneType, RuneType[]> hardIncompatible = new()
     {
-        { RuneType.Split, new[] { RuneType.Return } },
         { RuneType.Orbit, new[] { RuneType.Homing } },
         { RuneType.Recursion, new[] { RuneType.Recursion } },
-        { RuneType.Delay, new[] { RuneType.Blink } },
         { RuneType.Gravity, new[] { RuneType.Wave } },
     };
 

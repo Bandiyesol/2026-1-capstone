@@ -364,7 +364,7 @@ public static class PlayerStatsDisplay
 
 		AppendSection(sb, "공격");
 		sb.AppendLine($"공격력: {stats.AttackPower:F2}");
-		sb.AppendLine($"공격 속도: {stats.AttackSpeed:F2}");
+		sb.AppendLine($"공격 속도: x{stats.AttackSpeed:F2}");
 		sb.AppendLine($"투사체 수: {stats.ProjectileCount}");
 		sb.AppendLine($"투사체 속도: {stats.ProjectileSpeed:F2}");
 		sb.AppendLine($"투사체 사거리: {stats.ProjectileRange:F2}");

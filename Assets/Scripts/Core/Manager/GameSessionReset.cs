@@ -24,6 +24,8 @@ public static class GameSessionReset
 	{
 		game.isLive = false;
 		game.gameTime = 0f;
+		if (PlayerStats.Instance != null)
+			PlayerStats.Instance.ResetRuntimeState();
 		game.Health = game.maxHealth;
 		game.Kill = 0;
 		game.Coin = 0;

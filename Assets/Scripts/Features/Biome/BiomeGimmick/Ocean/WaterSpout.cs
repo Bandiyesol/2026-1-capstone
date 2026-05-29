@@ -105,7 +105,8 @@ public class WaterSpout : BiomeGimmick
     {
         while (isPlayerInside)
         {
-            GameManager.instance.Health -= tickDamage;
+            if (PlayerStats.Instance != null)
+                PlayerStats.Instance.TakeDamage(tickDamage, applyIFrames: false);
             yield return new WaitForSeconds(damageInterval);
         }
         damageCoroutine = null;

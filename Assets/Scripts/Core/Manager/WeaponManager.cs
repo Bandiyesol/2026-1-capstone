@@ -23,6 +23,7 @@ public class WeaponManager : MonoBehaviour
 
 			LoadWeaponData();
 			LoadResourceData();
+			ValidateLoadedData();
 		}
 		else
 		{
@@ -115,5 +116,27 @@ public class WeaponManager : MonoBehaviour
 		
 		Debug.LogWarning($"프리팹 [{motionId}]을 찾을 수 없습니다!");
 		return null;
+	}
+
+	[ContextMenu("Validate Weapon Resources")]
+	void ValidateLoadedData()
+	{
+		foreach (WeaponInfo info in infoDatabase.Values)
+		{
+			if (string.IsNullOrWhiteSpace(info.id))
+			{
+				Debug.LogWarning("[WeaponManager] id가 비어 있는 무기 항목이 있습니다.");
+				continue;
+			}
+
+			if (string.IsNullOrWhiteSpace(info.balanceKey) || !balanceDatabase.ContainsKey(info.balanceKey))
+				Debug.LogWarning($"[WeaponManager] balanceKey 누락/불일치: {info.id} -> {info.balanceKey}");
+
+			if (string.IsNullOrWhiteSpace(info.motionId) || !motionPrefabs.ContainsKey(info.motionId))
+				Debug.LogWarning($"[WeaponManager] motionId 누락/불일치: {info.id} -> {info.motionId}");
+
+			if (!string.IsNullOrWhiteSpace(info.spriteId) && GetWeaponSprite(info.spriteId) == null)
+				Debug.LogWarning($"[WeaponManager] spriteId 누락/불일치: {info.id} -> {info.spriteId}");
+		}
 	}
 }

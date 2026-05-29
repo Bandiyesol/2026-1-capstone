@@ -4,6 +4,14 @@ using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-100)]
 [RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(WeaponInventory))]
+[RequireComponent(typeof(WeaponController))]
+[RequireComponent(typeof(Scaner))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
     [Header("이동 관련")]
@@ -38,6 +46,22 @@ public class Player : MonoBehaviour
     {
         if (GetComponent<PlayerStats>() == null)
             gameObject.AddComponent<PlayerStats>();
+        if (GetComponent<WeaponInventory>() == null)
+            gameObject.AddComponent<WeaponInventory>();
+        if (GetComponent<WeaponController>() == null)
+            gameObject.AddComponent<WeaponController>();
+        if (GetComponent<Scaner>() == null)
+            gameObject.AddComponent<Scaner>();
+        if (GetComponent<Rigidbody2D>() == null)
+            gameObject.AddComponent<Rigidbody2D>();
+        if (GetComponent<Collider2D>() == null)
+            gameObject.AddComponent<CapsuleCollider2D>();
+        if (GetComponent<SpriteRenderer>() == null)
+            gameObject.AddComponent<SpriteRenderer>();
+        if (GetComponent<Animator>() == null)
+            gameObject.AddComponent<Animator>();
+        if (GetComponent<PlayerInput>() == null)
+            gameObject.AddComponent<PlayerInput>();
 
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
@@ -132,7 +156,9 @@ public class Player : MonoBehaviour
         if (damage <= 0f)
             return;
 
-        GameManager.instance.Health -= damage * Time.deltaTime;
+        PlayerStats stats = PlayerStats.Instance;
+        if (stats != null)
+            stats.TakeDamage(damage * Time.deltaTime, applyIFrames: false, PlayerDamageKind.PerSecondFrame);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -142,7 +168,11 @@ public class Player : MonoBehaviour
 
         BossBullet bullet = collision.gameObject.GetComponent<BossBullet>();
         if (bullet != null)
-            GameManager.instance.Health -= bullet.damage;
+        {
+            PlayerStats stats = PlayerStats.Instance;
+            if (stats != null)
+                stats.TakeDamage(bullet.damage, applyIFrames: true);
+        }
 
         collision.gameObject.SetActive(false);
     }

@@ -11,10 +11,19 @@ public static class RuneEffectRegistry
 	{
 		{ RuneType.Homing, typeof(EffectHoming) },
 		{ RuneType.Orbit, typeof(EffectOrbit) },
+		{ RuneType.Wave, typeof(EffectWave) },
+		{ RuneType.Spiral, typeof(EffectSpiral) },
 		{ RuneType.Split, typeof(EffectSplit) },
 		{ RuneType.Ricochet, typeof(EffectRicochet) },
 		{ RuneType.Recursion, typeof(EffectRecursion) },
 		{ RuneType.Vampire, typeof(EffectVampire) },
+		{ RuneType.Freeze, typeof(EffectFreeze) },
+		{ RuneType.Chain, typeof(EffectChain) },
+		{ RuneType.Explode, typeof(EffectExplode) },
+		{ RuneType.Gravity, typeof(EffectGravity) },
+		{ RuneType.Growth, typeof(EffectGrowth) },
+		{ RuneType.Blink, typeof(EffectBlink) },
+		{ RuneType.Boing, typeof(EffectBoing) },
 	};
 
 	public static bool TryGetEffectType(RuneType runeType, out Type effectType) =>

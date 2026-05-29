@@ -7,10 +7,13 @@ using UnityEngine;
 public class DroppedCoin : MonoBehaviour
 {
     [SerializeField] CoinType coinType = CoinType.Bronze;
+    [SerializeField] float magnetMaxSpeed = 10f;
+    [SerializeField] float magnetAcceleration = 30f;
 
     CoinDropSettings settings;
     Animator anim;
     bool collected;
+    float currentMagnetSpeed;
 
     public CoinType Type => coinType;
 
@@ -26,8 +29,42 @@ public class DroppedCoin : MonoBehaviour
         coinType = type;
         settings = dropSettings;
         collected = false;
+        currentMagnetSpeed = 0f;
 
         RestartDefaultAnimation();
+    }
+
+    void Update()
+    {
+        if (collected || GameManager.instance == null || !GameManager.instance.isLive)
+            return;
+
+        Player player = GameManager.instance.player;
+        PlayerStats stats = PlayerStats.Instance;
+        if (player == null || stats == null)
+            return;
+
+        Vector3 playerPosition = player.transform.position;
+        Vector3 coinPosition = transform.position;
+        float distance = Vector2.Distance(playerPosition, coinPosition);
+
+        if (distance > stats.MagnetRange)
+        {
+            currentMagnetSpeed = 0f;
+            return;
+        }
+
+        currentMagnetSpeed = Mathf.MoveTowards(
+            currentMagnetSpeed,
+            magnetMaxSpeed,
+            magnetAcceleration * Time.deltaTime
+        );
+
+        transform.position = Vector2.MoveTowards(
+            coinPosition,
+            playerPosition,
+            currentMagnetSpeed * Time.deltaTime
+        );
     }
 
     void RestartDefaultAnimation()

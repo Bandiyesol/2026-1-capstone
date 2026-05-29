@@ -35,6 +35,7 @@ public static class RuneDataAccess
 		VampireRuneData v when v.interval > 0f => v.interval,
 		ExplodeRuneData e when e.interval > 0f => e.interval,
 		FreezeRuneData f when f.interval > 0f => f.interval,
+		ChainRuneData c when c.interval > 0f => c.interval,
 		LogicRuneData l when l.interval > 0f => l.interval,
 		_ => 0f
 	};
@@ -52,5 +53,86 @@ public static class RuneDataAccess
 		RicochetRuneData r when r.bounceCount > 0 => r.bounceCount,
 		{ runeType: RuneType.Ricochet } => DefaultBounceCount,
 		_ => 0
+	};
+
+	public static float GetFreezeRadius(RuneData data) => data switch
+	{
+		FreezeRuneData f when f.freezeRadius > 0f => f.freezeRadius,
+		{ runeType: RuneType.Freeze } => 2f,
+		_ => 0f
+	};
+
+	public static float GetFreezeDuration(RuneData data) => data switch
+	{
+		FreezeRuneData f when f.freezeDuration > 0f => f.freezeDuration,
+		{ runeType: RuneType.Freeze } => 1f,
+		_ => 0f
+	};
+
+	public static int GetChainCount(RuneData data) => data switch
+	{
+		ChainRuneData c when c.chainCount > 0 => c.chainCount,
+		{ runeType: RuneType.Chain } => 3,
+		_ => 0
+	};
+
+	public static float GetChainRadius(RuneData data) => data switch
+	{
+		{ valueA: > 0f } => data.valueA,
+		{ runeType: RuneType.Chain } => 3f,
+		_ => 0f
+	};
+
+	public static float GetExplodeRadius(RuneData data) => data switch
+	{
+		ExplodeRuneData e when e.explodeRadius > 0f => e.explodeRadius,
+		{ valueA: > 0f } => data.valueA,
+		{ runeType: RuneType.Explode } => 2.5f,
+		_ => 0f
+	};
+
+	public static float GetLogicDistance(RuneData data) => data switch
+	{
+		LogicRuneData l when l.distance > 0f => l.distance,
+		{ valueA: > 0f } => data.valueA,
+		_ => 2f
+	};
+
+	public static float GetPullForce(RuneData data) => data switch
+	{
+		GravityRuneData g when g.pullForce > 0f => g.pullForce,
+		{ valueB: > 0f } => data.valueB,
+		{ runeType: RuneType.Gravity } => 5f,
+		_ => 0f
+	};
+
+	public static float GetGravityRadius(RuneData data) => data switch
+	{
+		{ valueA: > 0f } => data.valueA,
+		{ runeType: RuneType.Gravity } => 3f,
+		_ => 0f
+	};
+
+	public static float GetGrowthDuration(RuneData data) => data switch
+	{
+		GrowthRuneData g when g.maxGrowthTime > 0f => g.maxGrowthTime,
+		{ valueB: > 0f } => data.valueB,
+		{ runeType: RuneType.Growth } => 3f,
+		_ => 0f
+	};
+
+	public static float GetGrowthScaleRatio(RuneData data) => data switch
+	{
+		GrowthRuneData g when g.maxScaleRatio > 1f => g.maxScaleRatio,
+		{ valueA: > 1f } => data.valueA,
+		{ runeType: RuneType.Growth } => 2f,
+		_ => 1f
+	};
+
+	public static float GetGrowthDamageRatio(RuneData data) => data switch
+	{
+		{ power: > 0f } => data.power,
+		{ runeType: RuneType.Growth } => 1.5f,
+		_ => 1f
 	};
 }
