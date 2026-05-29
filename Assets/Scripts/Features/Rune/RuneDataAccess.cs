@@ -1,14 +1,13 @@
 using UnityEngine;
 
-/// <summary>
-/// 서브클래스 SO 필드를 Effect에서 읽기 위한 접근자.
-/// 타입마다 필드가 달라서 switch/type-pattern 사용 (enum switch보다 서브클래스와 1:1).
-/// </summary>
+// [RuneDataAccess.cs]
+// 형변환이나 패턴 매칭을 통해 하위 타입의 룬 데이터에 안전하게 접근하는 유틸 클래스
 public static class RuneDataAccess
 {
 	const float DefaultActiveDuration = 3f;
 	const int DefaultBounceCount = 3;
 
+	// 룬 종류별로 '지속 시간'을 가져옴 (설정값이 없으면 기본값 반환)
 	public static float GetDuration(RuneData data) => data switch
 	{
 		ActiveRuneData a when a.duration > 0f => a.duration,
@@ -17,18 +16,21 @@ public static class RuneDataAccess
 		_ => 0f
 	};
 
+	// 룬 종류별 '속도 배율' 가져오기
 	public static float GetSpeedMultiplier(RuneData data) => data switch
 	{
 		ActiveRuneData a when a.speedMultiplier > 0f => a.speedMultiplier,
 		_ => 1f
 	};
 
+	// 룬 종류별 '적용 범위(반경)' 가져오기
 	public static float GetAffectedRange(RuneData data) => data switch
 	{
 		ActiveRuneData a when a.affectedRange > 0f => a.affectedRange,
 		_ => 0f
 	};
 
+	// 룬의 내부 재사용 대기시간(쿨타임) 가져오기
 	public static float GetInterval(RuneData data) => data switch
 	{
 		RicochetRuneData r when r.interval > 0f => r.interval,
@@ -38,14 +40,15 @@ public static class RuneDataAccess
 		_ => 0f
 	};
 
-	/// <summary>분열: 충돌·쿨마다 한 번에 생성할 발 수. 부모는 생존 동안 반복.</summary>
+	// 분열: 트리거 1회당 복제할 총알 수
 	public static int GetSpawnsPerTrigger(RuneData data) => data switch
 	{
 		SplitRuneData s when s.spawnsPerTrigger > 0 => s.spawnsPerTrigger,
-		{ runeType: RuneType.Split } => 3,
+		{ runeType: RuneType.Split } => 3, // 기본 3갈래
 		_ => 0
 	};
 
+	// 도탄: 최대 튕기는 횟수
 	public static int GetBounceCount(RuneData data) => data switch
 	{
 		RicochetRuneData r when r.bounceCount > 0 => r.bounceCount,

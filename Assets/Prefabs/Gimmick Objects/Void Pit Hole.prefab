@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea0c9c98b056e74b89f45666401e14e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VoidPitGimmick
-  lifeTime: 5
+  lifeTime: 10
   warningZone: {fileID: 4049316155565953509}
   pitVisual: {fileID: 7620379813685154156}
   hitCollider: {fileID: 6643428458078843455}

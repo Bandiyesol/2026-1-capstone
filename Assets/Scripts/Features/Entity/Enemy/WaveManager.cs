@@ -1,33 +1,33 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    [Header("½ºÅ×ÀÌÁö °ü¸®ÀÚ")]
+    [Header("ìŠ¤í…Œì´ì§€ ê´€ë¦¬ì")]
     public StageManager stageManager;
 
-    [Header("½ºÆù µ¥ÀÌÅÍ")]
+    [Header("ìŠ¤í° ë°ì´í„°")]
     public Spawner spawner;
 
-    [Header("¿şÀÌºê µô·¹ÀÌ ½Ã°£")]
+    [Header("ì›¨ì´ë¸Œ ë”œë ˆì´ ì‹œê°„")]
     public float nextWaveDelay = 1.5f;
 
-    [Header("´ÙÀ½ ½ºÅ×ÀÌÁö ´ë±â ½Ã°£")]
+    [Header("ë‹¤ìŒ ìŠ¤í…Œì´ì§€ ëŒ€ê¸° ì‹œê°„")]
     public float nextStageDelay = 3f;
 
-    // ÇöÀç ¿şÀÌºê ¹øÈ£
+    // í˜„ì¬ ì›¨ì´ë¸Œ ë²ˆí˜¸
     public int currentWave;
 
-    // ÇöÀç »ì¾ÆÀÖ´Â Àû ¼ö
+    // í˜„ì¬ ì‚´ì•„ìˆëŠ” ì  ìˆ˜
     int aliveEnemyCount;
 
-    // ÇöÀç ½ºÆù ÁßÀÎÁö
+    // í˜„ì¬ ìŠ¤í° ì¤‘ì¸ì§€
     bool isSpawning;
-    // °ÔÀÓ ½ÃÀÛµÈ °ÍÀÎÁö
+    // ê²Œì„ ì‹œì‘ëœ ê²ƒì¸ì§€
     bool started;
 
-    // ½ºÅ×ÀÌÁö ½ÃÀÛ
+    // ìŠ¤í…Œì´ì§€ ì‹œì‘
     public void StartStage()
     {
         currentWave = 0;
@@ -42,7 +42,7 @@ public class WaveManager : MonoBehaviour
         StartStage();
     }
 
-    // ¿şÀÌºê ½ÃÀÛ
+    // ì›¨ì´ë¸Œ ì‹œì‘
     void StartWave()
     {
         StartCoroutine(SpawnWave());
@@ -53,15 +53,15 @@ public class WaveManager : MonoBehaviour
         isSpawning = true;
         aliveEnemyCount = 0;
 
-        // ÇöÀç ¿şÀÌºê µ¥ÀÌÅÍ
+        // í˜„ì¬ ì›¨ì´ë¸Œ ë°ì´í„°
         WaveData wave =
             stageManager.stageDatas[stageManager.stageIndex]
             .waves[currentWave];
 
-        // ½ÇÁ¦ ½ºÆù ¼ø¼­ Å¥
+        // ì‹¤ì œ ìŠ¤í° ìˆœì„œ í
         List<int> spawnQueue = new List<int>();
 
-        // ¿şÀÌºê Àû Á¤º¸¸¦ Å¥¿¡ ³Ö±â
+        // ì›¨ì´ë¸Œ ì  ì •ë³´ë¥¼ íì— ë„£ê¸°
         for (int i = 0; i < wave.enemies.Length; i++)
         {
             EnemySpawnInfo info = wave.enemies[i];
@@ -73,7 +73,7 @@ public class WaveManager : MonoBehaviour
             }
         }
 
-        // ¼¯¾î¼­ ÀÚ¿¬½º·´°Ô µîÀå
+        // ì„ì–´ì„œ ìì—°ìŠ¤ëŸ½ê²Œ ë“±ì¥
         for (int i = spawnQueue.Count - 1; i > 0; i--)
         {
             int rand = Random.Range(0, i + 1);
@@ -83,7 +83,7 @@ public class WaveManager : MonoBehaviour
             spawnQueue[rand] = temp;
         }
 
-        // Å¥ ¼ø¼­´ë·Î ½ºÆù
+        // í ìˆœì„œëŒ€ë¡œ ìŠ¤í°
         for (int i = 0; i < spawnQueue.Count; i++)
         {
             SpawnData data =
@@ -92,11 +92,11 @@ public class WaveManager : MonoBehaviour
             GameObject enemy =
                 spawner.Spawn(spawnQueue[i]);
 
-            // ·£´ı ½ºÆù Æ÷ÀÎÆ®
+            // ëœë¤ ìŠ¤í° í¬ì¸íŠ¸
             enemy.transform.position =
                 spawner.GetRandomPoint().position;
 
-            // ÀÏ¹İ Àû ¿¬°á
+            // ì¼ë°˜ ì  ì—°ê²°
             Enemy enemyScript =
                 enemy.GetComponent<Enemy>();
 
@@ -105,7 +105,7 @@ public class WaveManager : MonoBehaviour
                 enemyScript.waveManager = this;
             }
 
-            // º¸½º ¿¬°á
+            // ë³´ìŠ¤ ì—°ê²°
             BossBase bossScript =
                 enemy.GetComponent<BossBase>();
 
@@ -114,33 +114,33 @@ public class WaveManager : MonoBehaviour
                 bossScript.waveManager = this;
             }
 
-            // Àû¸¶´Ù ÁöÁ¤µÈ ½ºÆù °£°İ
+            // ì ë§ˆë‹¤ ì§€ì •ëœ ìŠ¤í° ê°„ê²©
             yield return new WaitForSeconds(data.spawnTime);
         }
 
-        // ½ºÆù ³¡
+        // ìŠ¤í° ë
         isSpawning = false;
 
-        // ½ºÆùÀÌ ³¡³µ´Âµ¥ ÀÌ¹Ì ÀûÀÌ ÀüºÎ Á×¾ú´Ù¸é ´ÙÀ½ ¿şÀÌºê
+        // ìŠ¤í°ì´ ëë‚¬ëŠ”ë° ì´ë¯¸ ì ì´ ì „ë¶€ ì£½ì—ˆë‹¤ë©´ ë‹¤ìŒ ì›¨ì´ë¸Œ
         if (aliveEnemyCount <= 0)
         {
             NextWave();
         }
     }
 
-    // Àû »ç¸Á ¾Ë¸²
+    // ì  ì‚¬ë§ ì•Œë¦¼
     public void OnEnemyDead()
     {
         aliveEnemyCount--;
 
-        // ½ºÆù ³¡ + »ì¾ÆÀÖ´Â Àû ¾øÀ½
+        // ìŠ¤í° ë + ì‚´ì•„ìˆëŠ” ì  ì—†ìŒ
         if (!isSpawning && aliveEnemyCount <= 0)
         {
             NextWave();
         }
     }
 
-    // ´ÙÀ½ ¿şÀÌºê
+    // ë‹¤ìŒ ì›¨ì´ë¸Œ
     void NextWave()
     {
         currentWave++;
@@ -148,7 +148,7 @@ public class WaveManager : MonoBehaviour
         StageData stage =
             stageManager.stageDatas[stageManager.stageIndex];
 
-        // ÇöÀç ½ºÅ×ÀÌÁö ¿şÀÌºê Á¾·á
+        // í˜„ì¬ ìŠ¤í…Œì´ì§€ ì›¨ì´ë¸Œ ì¢…ë£Œ
         if (currentWave >= stage.waves.Length)
         {
             StartCoroutine(NextStageDelayed());
@@ -164,12 +164,12 @@ public class WaveManager : MonoBehaviour
     }
     IEnumerator NextStageDelayed()
     {
-        // ´ÙÀ½ ½ºÅ×ÀÌÁö ÀüÈ¯ Àü ´ë±â
+        // ë‹¤ìŒ ìŠ¤í…Œì´ì§€ ì „í™˜ ì „ ëŒ€ê¸°
         yield return new WaitForSeconds(nextStageDelay);
 
         bool moved = stageManager.NextStage();
 
-        // ´ÙÀ½ ½ºÅ×ÀÌÁö ÀÖÀ¸¸é ½ÃÀÛ
+        // ë‹¤ìŒ ìŠ¤í…Œì´ì§€ ìˆìœ¼ë©´ ì‹œì‘
         if (moved)
         {
             StartStage();

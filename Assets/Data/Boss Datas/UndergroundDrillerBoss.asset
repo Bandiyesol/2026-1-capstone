@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UndergroundDrillerBoss
   m_EditorClassIdentifier: Assembly-CSharp::BossData
   maxHealth: 450
-  moveSpeed: 4.5
+  moveSpeed: 4
   attackDamage: 10
   damageReduction: 0.3
   patternCooldown: 1
