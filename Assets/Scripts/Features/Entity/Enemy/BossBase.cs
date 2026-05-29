@@ -179,6 +179,15 @@ public class BossBase : MonoBehaviour, IDamageable
 
         isDead = true;
 
+        if (GameManager.instance != null)
+            GameManager.instance.Kill++;
+
+        if (CoinDropManager.Instance != null)
+            CoinDropManager.Instance.TryDropFromBoss(transform.position);
+
+        if (ChestDropManager.Instance != null)
+            ChestDropManager.Instance.TryDropFromBoss(transform.position);
+
         // 웨이브 알림
         waveManager?.OnEnemyDead();
 

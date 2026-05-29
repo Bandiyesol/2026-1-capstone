@@ -34,6 +34,7 @@ public static class RuneDataAccess
 	public static float GetInterval(RuneData data) => data switch
 	{
 		RicochetRuneData r when r.interval > 0f => r.interval,
+		VampireRuneData v when v.interval > 0f => v.interval,
 		ExplodeRuneData e when e.interval > 0f => e.interval,
 		FreezeRuneData f when f.interval > 0f => f.interval,
 		LogicRuneData l when l.interval > 0f => l.interval,

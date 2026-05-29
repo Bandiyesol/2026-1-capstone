@@ -102,3 +102,13 @@ InitTestScene*.unity*
 .plastic/
 Assets/_Recovery/
 ignore.conf
+
+# Firebase Unity SDK (GitHub 100MB/file limit — import locally, see Assets/Docs/FirebaseAuthSetup_KO.md)
+/[Aa]ssets/Firebase/
+/[Aa]ssets/Firebase.meta
+/[Aa]ssets/Plugins/iOS/Firebase/
+/[Aa]ssets/Plugins/iOS/Firebase.meta
+/[Aa]ssets/Plugins/tvOS/Firebase/
+/[Aa]ssets/Plugins/tvOS/Firebase.meta
+/[Aa]ssets/Editor Default Resources/Firebase/
+/[Aa]ssets/Editor Default Resources/Firebase.meta
