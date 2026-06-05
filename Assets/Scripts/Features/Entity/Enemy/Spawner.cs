@@ -54,6 +54,6 @@ public class SpawnData
     public bool isBoss;
 
     [Header("스폰")]
-    public float spawnTime;
+    public float spawnTime = 0.2f;
     public int prefabIndex;
 }

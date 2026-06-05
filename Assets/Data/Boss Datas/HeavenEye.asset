@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324b913c2f1cb564781b9a00dd2fc114, type: 3}
   m_Name: HeavenEye
   m_EditorClassIdentifier: Assembly-CSharp::BossData
-  maxHealth: 300
+  maxHealth: 100
   moveSpeed: 3
   attackDamage: 10
   damageReduction: 0.15

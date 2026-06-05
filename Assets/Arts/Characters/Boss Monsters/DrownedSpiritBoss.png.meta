@@ -1,0 +1,936 @@
+fileFormatVersion: 2
+guid: a843ea8a85050e54ba7438ecc05df999
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7160159427258279502
+    second: DrownedSpiritBoss_0
+  - first:
+      213: 4272614024105824276
+    second: DrownedSpiritBoss_1
+  - first:
+      213: -2755972925339012040
+    second: DrownedSpiritBoss_2
+  - first:
+      213: 1477312105889592382
+    second: DrownedSpiritBoss_3
+  - first:
+      213: -1907049676542808369
+    second: DrownedSpiritBoss_4
+  - first:
+      213: -7819629604707605760
+    second: DrownedSpiritBoss_5
+  - first:
+      213: 2384621847879493505
+    second: DrownedSpiritBoss_6
+  - first:
+      213: 1115103659092007258
+    second: DrownedSpiritBoss_7
+  - first:
+      213: 3170733999605873696
+    second: DrownedSpiritBoss_8
+  - first:
+      213: -970932477640471866
+    second: DrownedSpiritBoss_9
+  - first:
+      213: 2822967339015809169
+    second: DrownedSpiritBoss_10
+  - first:
+      213: 7370975850576107033
+    second: DrownedSpiritBoss_11
+  - first:
+      213: 7844776246653807931
+    second: DrownedSpiritBoss_12
+  - first:
+      213: 3699885913148368733
+    second: DrownedSpiritBoss_13
+  - first:
+      213: 5174896742566359443
+    second: DrownedSpiritBoss_14
+  - first:
+      213: 8751512278491270172
+    second: DrownedSpiritBoss_15
+  - first:
+      213: -945479403251484598
+    second: DrownedSpiritBoss_16
+  - first:
+      213: -4568936208313253474
+    second: DrownedSpiritBoss_17
+  - first:
+      213: -2396635989570325546
+    second: DrownedSpiritBoss_18
+  - first:
+      213: -3560810666291371235
+    second: DrownedSpiritBoss_19
+  - first:
+      213: 3253032563762326330
+    second: DrownedSpiritBoss_20
+  - first:
+      213: -7983764855051653135
+    second: DrownedSpiritBoss_21
+  - first:
+      213: 4738653871482185237
+    second: DrownedSpiritBoss_22
+  - first:
+      213: 3062858492345771059
+    second: DrownedSpiritBoss_23
+  - first:
+      213: 8296349628439727027
+    second: DrownedSpiritBoss_24
+  - first:
+      213: -6842812992993657281
+    second: DrownedSpiritBoss_25
+  - first:
+      213: -2913589713113671757
+    second: DrownedSpiritBoss_26
+  - first:
+      213: -7945872573834288483
+    second: DrownedSpiritBoss_27
+  - first:
+      213: 3178690844532067364
+    second: DrownedSpiritBoss_28
+  - first:
+      213: 2699252553407508571
+    second: DrownedSpiritBoss_29
+  - first:
+      213: 5325672155855571142
+    second: DrownedSpiritBoss_30
+  - first:
+      213: -1600905614836692147
+    second: DrownedSpiritBoss_31
+  - first:
+      213: -3142272592252837574
+    second: DrownedSpiritBoss_32
+  - first:
+      213: 3164998931556026959
+    second: DrownedSpiritBoss_33
+  - first:
+      213: -4458708784670812394
+    second: DrownedSpiritBoss_34
+  - first:
+      213: 8088104484292463788
+    second: DrownedSpiritBoss_35
+  - first:
+      213: 3115709192274451948
+    second: DrownedSpiritBoss_36
+  - first:
+      213: -4791030904153878374
+    second: DrownedSpiritBoss_37
+  - first:
+      213: -5172361647923481798
+    second: DrownedSpiritBoss_38
+  - first:
+      213: 4739081225912688684
+    second: DrownedSpiritBoss_39
+  - first:
+      213: 7187515533491520383
+    second: DrownedSpiritBoss_40
+  - first:
+      213: -1854784117368411394
+    second: DrownedSpiritBoss_41
+  - first:
+      213: -7223805619636638589
+    second: DrownedSpiritBoss_42
+  - first:
+      213: 5289523098926226413
+    second: DrownedSpiritBoss_43
+  - first:
+      213: 434742654430791665
+    second: DrownedSpiritBoss_44
+  - first:
+      213: -2066107135078665816
+    second: DrownedSpiritBoss_45
+  - first:
+      213: -7177587824113915093
+    second: DrownedSpiritBoss_46
+  - first:
+      213: -2074157638019394346
+    second: DrownedSpiritBoss_47
+  - first:
+      213: -5958534155888033449
+    second: DrownedSpiritBoss_48
+  - first:
+      213: 6574284429388114623
+    second: DrownedSpiritBoss_49
+  - first:
+      213: -2801288603552248130
+    second: DrownedSpiritBoss_50
+  - first:
+      213: -4688127446082332789
+    second: DrownedSpiritBoss_51
+  - first:
+      213: 3371993578535224665
+    second: DrownedSpiritBoss_52
+  - first:
+      213: -216308704088896968
+    second: DrownedSpiritBoss_53
+  - first:
+      213: -2032995502630894821
+    second: DrownedSpiritBoss_54
+  - first:
+      213: 3247660117650692554
+    second: DrownedSpiritBoss_55
+  - first:
+      213: -4459425498238596729
+    second: DrownedSpiritBoss_56
+  - first:
+      213: 8583073545789630086
+    second: DrownedSpiritBoss_57
+  - first:
+      213: -8266031530846152412
+    second: DrownedSpiritBoss_58
+  - first:
+      213: 2960046329012216556
+    second: DrownedSpiritBoss_59
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b91b13efe002ac90800000000000000
+      internalID: -7160159427258279502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4101e2151df5b4b30800000000000000
+      internalID: 4272614024105824276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 834f296e931d0c9d0800000000000000
+      internalID: -2755972925339012040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e34feed7887708410800000000000000
+      internalID: 1477312105889592382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fce64a45c6cc885e0800000000000000
+      internalID: -1907049676542808369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00366400e481b7390800000000000000
+      internalID: -7819629604707605760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_6
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1872e76bfe0e71120800000000000000
+      internalID: 2384621847879493505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_7
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a59daefaed4a97f00800000000000000
+      internalID: 1115103659092007258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02cf2cbf5c5b00c20800000000000000
+      internalID: 3170733999605873696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_9
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ca89594e0e8682f0800000000000000
+      internalID: -970932477640471866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 198219e86d13d2720800000000000000
+      internalID: 2822967339015809169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_11
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9165295ab77fa4660800000000000000
+      internalID: 7370975850576107033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_12
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3de834de6e3edc60800000000000000
+      internalID: 7844776246653807931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_13
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d572eaa92a2a85330800000000000000
+      internalID: 3699885913148368733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3917ef96b2de0d740800000000000000
+      internalID: 5174896742566359443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_15
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1c01febc0e937970800000000000000
+      internalID: 8751512278491270172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_16
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a483fbafd7bf0e2f0800000000000000
+      internalID: -945479403251484598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_17
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e91811ec9b0e790c0800000000000000
+      internalID: -4568936208313253474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_18
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d37eb1f3407dbed0800000000000000
+      internalID: -2396635989570325546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_19
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d13e743a095759ec0800000000000000
+      internalID: -3560810666291371235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3be4d5a1e7152d20800000000000000
+      internalID: 3253032563762326330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ffe5640a28f33190800000000000000
+      internalID: -7983764855051653135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_22
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 516a933f69413c140800000000000000
+      internalID: 4738653871482185237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_23
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 334ee813295718a20800000000000000
+      internalID: 3062858492345771059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_24
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bb0897f70e822370800000000000000
+      internalID: 8296349628439727027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DrownedSpiritBoss_25
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3e7f2076d17901a0800000000000000
+      internalID: -6842812992993657281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4c3a23acb9690ca4e820c238469673b5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":128.0,"y":128.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      DrownedSpiritBoss_0: -7160159427258279502
+      DrownedSpiritBoss_1: 4272614024105824276
+      DrownedSpiritBoss_10: 2822967339015809169
+      DrownedSpiritBoss_11: 7370975850576107033
+      DrownedSpiritBoss_12: 7844776246653807931
+      DrownedSpiritBoss_13: 3699885913148368733
+      DrownedSpiritBoss_14: 5174896742566359443
+      DrownedSpiritBoss_15: 8751512278491270172
+      DrownedSpiritBoss_16: -945479403251484598
+      DrownedSpiritBoss_17: -4568936208313253474
+      DrownedSpiritBoss_18: -2396635989570325546
+      DrownedSpiritBoss_19: -3560810666291371235
+      DrownedSpiritBoss_2: -2755972925339012040
+      DrownedSpiritBoss_20: 3253032563762326330
+      DrownedSpiritBoss_21: -7983764855051653135
+      DrownedSpiritBoss_22: 4738653871482185237
+      DrownedSpiritBoss_23: 3062858492345771059
+      DrownedSpiritBoss_24: 8296349628439727027
+      DrownedSpiritBoss_25: -6842812992993657281
+      DrownedSpiritBoss_3: 1477312105889592382
+      DrownedSpiritBoss_4: -1907049676542808369
+      DrownedSpiritBoss_5: -7819629604707605760
+      DrownedSpiritBoss_6: 2384621847879493505
+      DrownedSpiritBoss_7: 1115103659092007258
+      DrownedSpiritBoss_8: 3170733999605873696
+      DrownedSpiritBoss_9: -970932477640471866
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -372,6 +372,8 @@ MonoBehaviour:
   maxHealth: 200
   health: 200
   warningTime: 1
+  playerDamage: 25
+  pushDistance: 1.2
   warningCircle: {fileID: 2746385713242864413}
   rock: {fileID: 3239919429545392852}
   damageColl: {fileID: 7832219279406544215}

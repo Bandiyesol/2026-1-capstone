@@ -196,10 +196,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UndergroundDrillerBoss
   waveManager: {fileID: 0}
   data: {fileID: 11400000, guid: b28dac78c893e7c4fab2a76e9fc3b388, type: 2}
+  portalGimmickIndex: 13
+  spawnDelay: 2
   health: 0
   maxHealth: 0
   undergroundSmoke: {fileID: 6363014529325848330}
-  fallingRockIndex: 1
+  fallingRockIndex: 2
   rockCount: 20
   rockSpawnRadius: 7.5
   undergroundDuration: 5

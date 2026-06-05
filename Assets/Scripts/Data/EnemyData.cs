@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 
+// 적 스탯 데이터 저장용
 [CreateAssetMenu(
     fileName = "EnemyData",
     menuName = "Scriptable/EnemyData")]
 public class EnemyData : ScriptableObject
 {
-    [Header("애니메이터 타입")]
-    public int spriteType;
-
     [Header("최대 체력")]
     public float maxHealth = 10f;
 

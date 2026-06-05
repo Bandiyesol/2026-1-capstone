@@ -330,6 +330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FallingRock
   lifeTime: 5
+  fallDamage: 10
   warningTime: 1
   warningCircle: {fileID: 1755208047002986536}
   stone: {fileID: 5258114803358370841}
