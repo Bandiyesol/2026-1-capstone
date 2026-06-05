@@ -173,6 +173,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DesertGuardianBoss
   waveManager: {fileID: 0}
   data: {fileID: 11400000, guid: bda96bf92c74c484f9476135f9a826fe, type: 2}
+  portalGimmickIndex: 13
+  spawnDelay: 2
   health: 0
   maxHealth: 0
   sandstormGimmickIndex: 4

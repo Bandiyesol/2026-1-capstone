@@ -128,8 +128,34 @@ public class GiantRock : BiomeGimmick, IDamageable
         // 부모 처리
         base.OnTriggerEnter2D(collision);
 
-        // 종료 상태
-        if (dead || !fallingDanger)
+        // 이미 파괴된 암석이라면 충돌 무시
+        if (dead)
+            return;
+
+        // 단, 무기가 이 기믹을 때릴 수 있게 하려면 인스펙터에서 이 오브젝트의 Tag가 "Enemy"여야 작동합니다.
+        // --- [추가] 플레이어 무기(투사체) 소멸 및 관통 차단 로직 ---
+        Motion weaponMotion = collision.GetComponent<Motion>();
+        if (weaponMotion != null && weaponMotion.instance != null && weaponMotion.instance.info != null)
+        {
+            string weaponType = weaponMotion.instance.info.type;
+
+            // 암석에 부딪혀도 파괴되지 않는 예외 무기 리스트
+            bool isExempt = weaponType == "Sword" || // 검
+                            weaponType == "Hammer" || // 망치
+                            weaponType == "Scythe" || // 낫
+                            weaponType == "Orb" || // 오브
+                            weaponType == "Grimoire";  // 마도서
+
+            // 예외 무기가 아니라면(일반 화살, 총알 등) 투사체를 소멸시켜 관통을 막음
+            if (!isExempt)
+            {
+                collision.gameObject.SetActive(false);
+            }
+        }
+        // ------------------------------------------------------
+
+        // 낙하 중이 아니라면(바닥에 이미 안착한 상태라면) 아래의 플레이어/적 압사 피해 로직은 실행하지 않음
+        if (!fallingDanger)
             return;
 
         // 플레이어 충돌

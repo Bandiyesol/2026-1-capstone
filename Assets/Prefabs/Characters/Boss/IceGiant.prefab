@@ -287,6 +287,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IceGiantBoss
   waveManager: {fileID: 0}
   data: {fileID: 11400000, guid: 3d2c7c4dbf2aa2d498186e3a901abdb9, type: 2}
+  portalGimmickIndex: 13
+  spawnDelay: 2
   health: 0
   maxHealth: 0
   slamBulletIndex: 6

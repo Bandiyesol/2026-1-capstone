@@ -10,6 +10,9 @@ public class HomingBossBullet : BossBullet
     // 초당 회전 속도
     [SerializeField] float rotateSpeed = 360f;
 
+    // 대기 시간
+    [SerializeField] float homingStartDelay;
+
     // 플레이어
     Transform target;
 
@@ -31,11 +34,16 @@ public class HomingBossBullet : BossBullet
 
     protected override void Update()
     {
-        // 추적 시간 동안만 유도
+        // 대기 시간 카운트
+        homingTimer += Time.deltaTime;
+
+        // 대기 시간이 지나고
+        // 유도 가능 시간 안에 있을 때만 추적
         if (target != null &&
-            homingTimer < homingDuration)
+            homingTimer >= homingStartDelay &&
+            homingTimer <= homingStartDelay + homingDuration)
         {
-            // 목표 방향 계산
+            // 플레이어 방향 계산
             Vector2 targetDir =
                 ((Vector2)target.position -
                 (Vector2)transform.position).normalized;
@@ -48,7 +56,7 @@ public class HomingBossBullet : BossBullet
             float targetAngle =
                 Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
-            // 자연스럽게 회전
+            // 부드럽게 회전
             float newAngle =
                 Mathf.MoveTowardsAngle(
                     currentAngle,
@@ -56,21 +64,18 @@ public class HomingBossBullet : BossBullet
                     rotateSpeed * Time.deltaTime
                 );
 
-            // 회전값을 방향 벡터로 변환
+            // 방향 갱신
             moveDir = new Vector2(
                 Mathf.Cos(newAngle * Mathf.Deg2Rad),
                 Mathf.Sin(newAngle * Mathf.Deg2Rad)
             ).normalized;
 
-            // 탄 회전 적용
+            // 스프라이트 회전
             transform.rotation =
                 Quaternion.Euler(0, 0, newAngle);
-
-            // 타이머 증가
-            homingTimer += Time.deltaTime;
         }
 
-        // 부모 이동 처리
+        // 이동 처리
         base.Update();
     }
 

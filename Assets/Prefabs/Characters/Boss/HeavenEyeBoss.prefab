@@ -195,6 +195,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeavenEyeBoss
   waveManager: {fileID: 0}
   data: {fileID: 11400000, guid: 0cba880d2161bec4882e9a30f8eea296, type: 2}
+  portalGimmickIndex: 13
+  spawnDelay: 2
   health: 0
   maxHealth: 0
   bulletIndex: 0

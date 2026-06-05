@@ -173,6 +173,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbyssalPredator
   waveManager: {fileID: 0}
   data: {fileID: 11400000, guid: 199a39920e307a045bf1196dd73aa49d, type: 2}
+  portalGimmickIndex: 13
+  spawnDelay: 2
   health: 0
   maxHealth: 0
   isInvincible: 1

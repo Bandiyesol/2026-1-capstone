@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class GiantRockAnimationEvent : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class GiantRockAnimationEvent : MonoBehaviour
         giantRock = GetComponentInParent<GiantRock>();
     }
 
-    // Animation Event¿ë
+    // Animation Eventìš©
     public void EndFall()
     {
         if (giantRock != null)

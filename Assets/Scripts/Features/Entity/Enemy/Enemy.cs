@@ -6,8 +6,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [Header("데이터")]
     [SerializeField] EnemyData data;
 
-    [Header("애니메이터")]
-    public RuntimeAnimatorController[] animCon;
+    [Header("기타")]
     public Rigidbody2D target;
     public WaveManager waveManager;
 
@@ -48,6 +47,7 @@ public class Enemy : MonoBehaviour, IDamageable
         coll.enabled = true;
         rigid.simulated = true;
         spriter.sortingOrder = 2;
+        spriter.color = originColor;
         ApplyData();
     }
 
@@ -56,7 +56,6 @@ public class Enemy : MonoBehaviour, IDamageable
         if (data == null)
             return;
 
-        anim.runtimeAnimatorController = animCon[data.spriteType];
         speed = data.moveSpeed;
         maxHealth = data.maxHealth;
         health = maxHealth;
