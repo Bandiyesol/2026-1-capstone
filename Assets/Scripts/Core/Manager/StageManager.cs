@@ -10,6 +10,14 @@ public class StageManager : MonoBehaviour
     [Header("스테이지 오브젝트")]
     public GameObject[] stages;
 
+    /// <summary>
+    /// stageDates -> 모든 웨이브 데이터를 넣는 데이터
+    /// isBossWave -> 보스 웨이브인지 아닌지를 구분해 주는 플래그 변수
+    /// bossSpawnIndexes -> Spawner 안의 보스로 취급하는 SpawnerData 배열 인덱스 번호를 여러 개 입력 시, 랜덤으로 한마리 소환
+    /// enemies -> 소환할 일반 몬스터 설정
+    /// enemies.spawnDataIndex -> 일반 몬스터에 해당하는 Spawner.spawnData 인덱스 입력 (첫번째 줄)
+    /// enemies.spawnCount -> 등장할 몬스터 수
+    /// </summary>
     [Header("스테이지 데이터")]
     public StageData[] stageDatas;
 
