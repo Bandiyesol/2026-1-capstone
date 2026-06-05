@@ -287,9 +287,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   data: {fileID: 11400000, guid: 0b71653ae5cb2c3408c91470b3ab0541, type: 2}
-  animCon:
-  - {fileID: 1600354260203534546, guid: a74716a5297eb7d4ead354e42a64b4c9, type: 3}
-  - {fileID: 7879929638669668491, guid: 3a1d7953ae307604daa1d90dc1db0df7, type: 3}
   target: {fileID: 0}
   waveManager: {fileID: 0}
   health: 0
@@ -307,8 +304,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Reposition
-  enemyFarFromPlayerDistance: 10.5
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
   gameplayCamera: {fileID: 0}
-  pastScreenEdge: 1.25
-  lateralPastScreen: 1.5

@@ -180,12 +180,9 @@ public class WaveManager : MonoBehaviour
         StageData stage =
             stageManager.stageDatas[stageManager.stageIndex];
 
-        // 스테이지 종료
+        // 스테이지 종료 시 아무것도 안 함 (포탈 활성화는 다른 곳에서 처리)
         if (currentWave >= stage.waves.Length)
-        {
-            StartCoroutine(NextStageDelayed());
             return;
-        }
 
         StartCoroutine(StartWaveDelayed());
     }
@@ -195,16 +192,5 @@ public class WaveManager : MonoBehaviour
     {
         yield return new WaitForSeconds(nextWaveDelay);
         StartWave();
-    }
-
-    // 스테이지 딜레이
-    IEnumerator NextStageDelayed()
-    {
-        yield return new WaitForSeconds(nextStageDelay);
-
-        bool moved = stageManager.NextStage();
-
-        if (moved)
-            StartStage();
     }
 }

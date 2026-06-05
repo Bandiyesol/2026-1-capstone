@@ -4,21 +4,17 @@ public class StageManager : MonoBehaviour
 {
     public static StageManager instance;
 
+    [Header("웨이브 매니저")]
+    public WaveManager waveManager;
+
     [Header("현재 스테이지")]
     public int stageIndex;
 
     [Header("스테이지 오브젝트")]
     public GameObject[] stages;
 
-    /// <summary>
-    /// stageDates -> 모든 웨이브 데이터를 넣는 데이터
-    /// isBossWave -> 보스 웨이브인지 아닌지를 구분해 주는 플래그 변수
-    /// bossSpawnIndexes -> Spawner 안의 보스로 취급하는 SpawnerData 배열 인덱스 번호를 여러 개 입력 시, 랜덤으로 한마리 소환
-    /// enemies -> 소환할 일반 몬스터 설정
-    /// enemies.spawnDataIndex -> 일반 몬스터에 해당하는 Spawner.spawnData 인덱스 입력 (첫번째 줄)
-    /// enemies.spawnCount -> 등장할 몬스터 수
-    /// </summary>
     [Header("스테이지 데이터")]
+    [Tooltip("모든 스테이지 데이터를 넣는 데이터")]
     public StageData[] stageDatas;
 
     public int CurrentStage => stageIndex + 1;
@@ -44,7 +40,9 @@ public class StageManager : MonoBehaviour
 
     void Start()
     {
-        UpdateStage();
+        // 처음엔 그냥 인덱스 0만 켜고 나머지는 끄기
+        for (int i = 0; i < stages.Length; i++)
+            stages[i].SetActive(i == 0);
     }
 
     // 첫 스테이지 초기화
@@ -61,12 +59,19 @@ public class StageManager : MonoBehaviour
     void UpdateStage()
     {
         for (int i = 0; i < stages.Length; i++)
-            stages[i].SetActive(i == stageIndex);
+        {
+            bool shouldBeActive = (i == stageIndex);
+            // 이미 원하는 상태면 SetActive 호출 자체를 스킵
+            if (stages[i].activeSelf != shouldBeActive)
+                stages[i].SetActive(shouldBeActive);
+        }
     }
 
     // 다음 스테이지 이동
     public bool NextStage()
     {
+        Debug.Log($"NextStage 호출 - stageIndex: {stageIndex}, stages.Length: {stages.Length}");
+
         // 마지막 스테이지 클리어
         if (stageIndex >= stages.Length - 1)
         {

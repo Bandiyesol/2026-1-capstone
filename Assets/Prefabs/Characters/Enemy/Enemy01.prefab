@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 3482437394989722534}
   - component: {fileID: 2598242311232953111}
   - component: {fileID: 2447831315397657886}
-  - component: {fileID: 7708622900765237060}
+  - component: {fileID: 3428766869914424625}
   m_Layer: 6
   m_Name: Enemy01
   m_TagString: Enemy
@@ -293,7 +293,7 @@ MonoBehaviour:
   maxHealth: 0
   attackDamage: 0
   speed: 0
---- !u!114 &7708622900765237060
+--- !u!114 &3428766869914424625
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -304,8 +304,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Reposition
-  enemyFarFromPlayerDistance: 10.5
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
   gameplayCamera: {fileID: 0}
-  pastScreenEdge: 1.25
-  lateralPastScreen: 1.5

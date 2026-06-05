@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5237227133245095166}
   - component: {fileID: 595915269758723310}
   - component: {fileID: -3888982820536536801}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Stage Portal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ CircleCollider2D:
     m_Bits: 4294967295
   m_CallbackLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1024
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
