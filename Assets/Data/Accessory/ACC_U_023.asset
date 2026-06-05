@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9946f9a81c0e4d448fac36432289e49, type: 3}
+  m_Name: ACC_U_023
+  m_EditorClassIdentifier: Assembly-CSharp::AccessoryData
+  displayName: "\uD0DC\uC591\uC758 \uB3CC"
+  grade: 2
+  accessoryType: "\uD2B9\uC218"
+  description: "\uBC1D\uC740 \uACF3 \uBAA8\uB4E0 \uC2A4\uD0EF +30%, \uC5B4\uB450\uC6B4
+    \uACF3 \uC0AC\uAC70\uB9AC +30%"
+  icon: {fileID: -9175329347432342523, guid: 6046da62a9e13f342a2660199dc91263, type: 3}
+  modifiers:
+  - statType: 4
+    value: 0.3
+    isMulti: 1
+  effectType: 0

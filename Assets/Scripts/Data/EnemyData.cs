@@ -20,4 +20,8 @@ public class EnemyData : ScriptableObject
     [Header("방어력")]
     [Range(0f, 1f)]
     public float defense = 0f;
+
+    [Header("[ 유니크 몬스터 ]")]
+    [Tooltip("유니크 몬스터 여부 — 사망 시 ChestDropManager.TryDropFromBoss() 호출 (높은 등급 상자)")]
+    public bool isUnique = false;
 }

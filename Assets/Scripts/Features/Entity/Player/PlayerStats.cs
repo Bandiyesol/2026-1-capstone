@@ -132,6 +132,15 @@ public class PlayerStats : MonoBehaviour
     [Tooltip("포션/흡혈 등으로 회복되는 체력에 곱해지는 배율")]
     [SerializeField] private StatValue healingBonus     = new StatValue { baseValue = 1.0f };
 
+    [Tooltip("방어력 무시 수치 — 적 방어력에서 이 값만큼 차감 후 계산")]
+    [SerializeField] private StatValue armorPenetration  = new StatValue { baseValue = 0f };
+
+    [Tooltip("장판(도트 피해 지역) 피해 감소율 (0~1)")]
+    [SerializeField] private StatValue dotDamageReduction = new StatValue { baseValue = 0f };
+
+    [Tooltip("피격 시 받은 피해의 일부를 반사 (0~1)")]
+    [SerializeField] private StatValue damageReflect     = new StatValue { baseValue = 0f };
+
     // ─────────────────────────────────────────
     //  ③ 유틸리티 (Utility)
     // ─────────────────────────────────────────
@@ -148,6 +157,9 @@ public class PlayerStats : MonoBehaviour
 
     [Tooltip("안개 제거 시야 반경")]
     [SerializeField] private StatValue visionRange      = new StatValue { baseValue = 10f };
+
+    [Tooltip("골드 획득량 배율 (0.05 = +5%)")]
+    [SerializeField] private StatValue goldGainBonus    = new StatValue { baseValue = 0f };
 
     // ─────────────────────────────────────────
     //  ④ 속성 (Elemental) — 활성화 여부 + 세기
@@ -255,6 +267,15 @@ public class PlayerStats : MonoBehaviour
     /// <summary>회복량 배율</summary>
     public float HealingBonus      => healingBonus.Final;
 
+    /// <summary>방어 관통력 (적 방어력에서 차감)</summary>
+    public float ArmorPenetration  => armorPenetration.Final;
+
+    /// <summary>장판 피해 감소율 (0~1)</summary>
+    public float DotDamageReduction => Mathf.Clamp01(dotDamageReduction.Final);
+
+    /// <summary>피해 반사율 (0~1)</summary>
+    public float DamageReflect     => Mathf.Clamp01(damageReflect.Final);
+
     // ═════════════════════════════════════════
     //  유틸리티 스탯 — 외부 읽기 프로퍼티
     // ═════════════════════════════════════════
@@ -270,6 +291,9 @@ public class PlayerStats : MonoBehaviour
 
     /// <summary>시야 범위</summary>
     public float VisionRange       => visionRange.Final;
+
+    /// <summary>골드 획득량 배율</summary>
+    public float GoldGainBonus     => goldGainBonus.Final;
 
     // ═════════════════════════════════════════
     //  속성 스탯 — 외부 읽기 프로퍼티
@@ -422,12 +446,16 @@ public class PlayerStats : MonoBehaviour
             case StatType.Evasion:              evasion.flatBonus              += flat; evasion.multiBonus              += multi; break;
             case StatType.InvincibilityFrames:  invincibilityFrames.flatBonus  += flat; invincibilityFrames.multiBonus  += multi; break;
             case StatType.HealingBonus:         healingBonus.flatBonus         += flat; healingBonus.multiBonus         += multi; break;
+            case StatType.ArmorPenetration:     armorPenetration.flatBonus     += flat; armorPenetration.multiBonus     += multi; break;
+            case StatType.DotDamageReduction:   dotDamageReduction.flatBonus   += flat; dotDamageReduction.multiBonus   += multi; break;
+            case StatType.DamageReflect:        damageReflect.flatBonus        += flat; damageReflect.multiBonus        += multi; break;
 
             // 유틸
             case StatType.MovementSpeed:      movementSpeed.flatBonus      += flat; movementSpeed.multiBonus      += multi; break;
             case StatType.MagnetRange:        magnetRange.flatBonus        += flat; magnetRange.multiBonus        += multi; break;
             case StatType.CooldownReduction:  cooldownReduction.flatBonus  += flat; cooldownReduction.multiBonus  += multi; break;
             case StatType.VisionRange:        visionRange.flatBonus        += flat; visionRange.multiBonus        += multi; break;
+            case StatType.GoldGainBonus:      goldGainBonus.flatBonus      += flat; goldGainBonus.multiBonus      += multi; break;
 
             // 속성
             case StatType.FirePower:       firePower.flatBonus       += flat; firePower.multiBonus       += multi; break;
@@ -454,8 +482,8 @@ public class PlayerStats : MonoBehaviour
     {
         Debug.Log("─── PlayerStats 현재 최종값 ───");
         Debug.Log($"[공격] 공격력={AttackPower:F2}  공격속도={AttackSpeed:F2}  투사체수={ProjectileCount}  투사체속도={ProjectileSpeed:F2}  사거리={ProjectileRange:F2}  근접범위={MeleeRange:F2}  크리확률={CritChance:P0}  크리배율={CritDamage:F2}");
-        Debug.Log($"[방어] 방어력={Defense:F2}  최대HP={MaxHP:F0}  현재HP={currentHP:F0}  피해감소={DamageReduction:P0}  회피={Evasion:P0}  무적={InvincibilityFrames:F2}s  힐배율={HealingBonus:F2}");
-        Debug.Log($"[유틸] 이동속도={MovementSpeed:F2}  자석범위={MagnetRange:F2}  쿨감={CooldownReduction:P0}  시야={VisionRange:F2}");
+        Debug.Log($"[방어] 방어력={Defense:F2}  관통={ArmorPenetration:F2}  최대HP={MaxHP:F0}  현재HP={currentHP:F0}  피해감소={DamageReduction:P0}  장판감소={DotDamageReduction:P0}  반사={DamageReflect:P0}  회피={Evasion:P0}  무적={InvincibilityFrames:F2}s  힐배율={HealingBonus:F2}");
+        Debug.Log($"[유틸] 이동속도={MovementSpeed:F2}  자석범위={MagnetRange:F2}  쿨감={CooldownReduction:P0}  시야={VisionRange:F2}  골드획득={GoldGainBonus:P0}");
         Debug.Log($"[속성] 화염={fireEnabled}({FirePower:F2})  독={poisonEnabled}({PoisonPower:F2})  빙결={freezeEnabled}({FreezePower:F2})  물={waterEnabled}({WaterPower:F2})  번개={lightningEnabled}({LightningPower:F2})");
     }
 #endif
@@ -483,12 +511,16 @@ public enum StatType
     Evasion,
     InvincibilityFrames,
     HealingBonus,
+    ArmorPenetration,   // 방어 관통력 (거친 숫돌 등)
+    DotDamageReduction, // 장판 피해 감소 (단단한 신발 등)
+    DamageReflect,      // 피해 반사 (바늘 뭉치 등)
 
     // 유틸
     MovementSpeed,
     MagnetRange,
     CooldownReduction,
     VisionRange,
+    GoldGainBonus,      // 골드 획득량 (행운의 동전 등)
 
     // 속성
     FirePower,

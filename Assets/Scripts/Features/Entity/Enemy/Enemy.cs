@@ -143,11 +143,18 @@ public class Enemy : MonoBehaviour, IDamageable
         if (GameManager.instance != null)
             GameManager.instance.Kill++;
 
+        // 코인 드랍
         if (CoinDropManager.Instance != null)
             CoinDropManager.Instance.TryDropFromEnemy(transform.position);
 
+        // 상자 드랍 — 유니크 몬스터는 높은 등급 상자
         if (ChestDropManager.Instance != null)
-            ChestDropManager.Instance.TryDropFromEnemy(transform.position);
+        {
+            if (data != null && data.isUnique)
+                ChestDropManager.Instance.TryDropFromBoss(transform.position);
+            else
+                ChestDropManager.Instance.TryDropFromEnemy(transform.position);
+        }
 
         waveManager?.OnEnemyDead();
         gameObject.SetActive(false);

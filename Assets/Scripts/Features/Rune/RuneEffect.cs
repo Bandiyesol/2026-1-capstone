@@ -55,7 +55,13 @@ public abstract class RuneEffect : MonoBehaviour
 		currentCooltime = 0f;
 	}
 
-	public void ResetCooltime() => currentCooltime = RuneDataAccess.GetInterval(data);
+	public void ResetCooltime()
+	{
+		float interval = RuneDataAccess.GetInterval(data);
+		// 특수 물약 버프 시 CooldownMultiplier가 0.5f → 쿨타임 절반
+		float multiplier = RuneManager.instance != null ? RuneManager.instance.CooldownMultiplier : 1f;
+		currentCooltime = interval * multiplier;
+	}
 
 	protected void UpdateCooltime() 
 	{
