@@ -8,27 +8,67 @@ public static class WeaponRewardService
 {
 	public static WeaponInstance CreateInstance(string weaponId)
 	{
+		return CreateInstanceWithGrade(weaponId, ParseGradeFromInfo(weaponId));
+	}
+
+	public static WeaponInstance CreateInstanceWithGrade(string weaponId, ShopItemGrade grade)
+	{
 		if (WeaponManager.Instance == null)
 		{
 			Debug.LogError("[WeaponRewardService] WeaponManager.Instance가 없습니다.");
 			return null;
 		}
 
-		WeaponInfo info = WeaponManager.Instance.GetWeaponInfo(weaponId);
-		if (info == null)
+		WeaponInfo baseInfo = WeaponManager.Instance.GetWeaponInfo(weaponId);
+		if (baseInfo == null)
 		{
 			Debug.LogWarning($"[WeaponRewardService] 알 수 없는 무기 id: {weaponId}");
 			return null;
 		}
 
-		WeaponBalance balance = WeaponManager.Instance.GetWeaponBalance(info.balanceKey);
+		WeaponInfo shopInfo = CloneWeaponInfo(baseInfo, grade);
+		WeaponBalance balance = WeaponManager.Instance.GetWeaponBalance(shopInfo.balanceKey);
 		if (balance == null)
 		{
-			Debug.LogWarning($"[WeaponRewardService] balance 없음: {info.balanceKey}");
-			return null;
+			Debug.LogWarning($"[WeaponRewardService] balance 없음: {shopInfo.balanceKey}");
+			balance = WeaponManager.Instance.GetWeaponBalance(baseInfo.balanceKey);
 		}
 
-		return new WeaponInstance(info, balance);
+		if (balance == null)
+			return null;
+
+		return new WeaponInstance(shopInfo, balance);
+	}
+
+	static ShopItemGrade ParseGradeFromInfo(string weaponId)
+	{
+		if (WeaponManager.Instance == null)
+			return ShopItemGrade.Common;
+
+		WeaponInfo info = WeaponManager.Instance.GetWeaponInfo(weaponId);
+		if (info == null || string.IsNullOrEmpty(info.grade))
+			return ShopItemGrade.Common;
+
+		return ShopGradeUtility.Parse(info.grade);
+	}
+
+	static WeaponInfo CloneWeaponInfo(WeaponInfo source, ShopItemGrade grade)
+	{
+		string gradeName = ShopGradeUtility.ToGradeName(grade);
+		string balanceKey = ShopGradeUtility.BuildBalanceKey(source.type, grade);
+
+		return new WeaponInfo
+		{
+			id = source.id,
+			name = source.name,
+			spriteId = source.spriteId,
+			motionId = source.motionId,
+			type = source.type,
+			grade = gradeName,
+			balanceKey = balanceKey,
+			weaponCategory = source.weaponCategory,
+			legendaryPassiveId = grade == ShopItemGrade.Legendary ? source.legendaryPassiveId : null,
+		};
 	}
 
 	public static List<WeaponInstance> RollCandidates(IReadOnlyList<string> pool, int count = 3)

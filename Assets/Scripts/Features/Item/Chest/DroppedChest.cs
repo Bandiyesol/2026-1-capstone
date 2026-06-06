@@ -82,7 +82,7 @@ public class DroppedChest : MonoBehaviour
         else
         {
             Debug.LogWarning("[DroppedChest] WeaponSelectUI가 없어 게임을 재개합니다.");
-            GameManager.instance.Resume();
+            GameManager.instance.ResumeGameplayFromOverlay();
         }
 
         gameObject.SetActive(false);

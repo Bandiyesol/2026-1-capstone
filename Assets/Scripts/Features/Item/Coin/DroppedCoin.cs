@@ -55,14 +55,19 @@ public class DroppedCoin : MonoBehaviour
     {
         collected = true;
 
-        int value = settings != null ? settings.GetValue(coinType) : GetDefaultValue();
+        int value = settings != null ? settings.GetValue(coinType) : GetDefaultValue(coinType);
         GameManager.instance.AddCoin(value);
 
         gameObject.SetActive(false);
     }
 
-    static int GetDefaultValue()
+    static int GetDefaultValue(CoinType type)
     {
-        return 1;
+        return type switch
+        {
+            CoinType.Gold => 10,
+            CoinType.Silver => 5,
+            _ => 1,
+        };
     }
 }

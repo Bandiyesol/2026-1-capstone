@@ -135,6 +135,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void Die()
     {
+        BossBase.RecordEnemyDeath(transform.position);
+
         isLive = false;
         coll.enabled = false;
         rigid.simulated = false;

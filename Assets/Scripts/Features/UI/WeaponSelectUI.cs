@@ -201,7 +201,7 @@ public class WeaponSelectUI : MonoBehaviour
 		if (openedFromChest)
 		{
 			openedFromChest = false;
-			GameManager.instance.Resume();
+			GameManager.instance.ResumeGameplayFromOverlay();
 			return;
 		}
 

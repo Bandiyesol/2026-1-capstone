@@ -9,14 +9,35 @@ public class Result : MonoBehaviour
 
     public void Lose()
     {
-        // 패배 타이틀 표시
-        titles[0].SetActive(true);
+        ShowDefeatInterstitial();
     }
 
     public void Win()
     {
         // 승리 타이틀 표시
-        titles[1].SetActive(true);
+        titles[0].SetActive(false);
+        if (titles.Length > 1)
+            titles[1].SetActive(true);
     }
-    
+
+    /// <summary>패배 연출 — Title Over만 표시하고 Victory는 숨깁니다.</summary>
+    public void ShowDefeatInterstitial()
+    {
+        if (titles.Length > 1)
+            titles[1].SetActive(false);
+
+        titles[0].SetActive(true);
+    }
+
+    public void ResetTitles()
+    {
+        if (titles == null)
+            return;
+
+        for (int i = 0; i < titles.Length; i++)
+        {
+            if (titles[i] != null)
+                titles[i].SetActive(false);
+        }
+    }
 }

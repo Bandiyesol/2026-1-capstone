@@ -204,12 +204,17 @@ public class Player : MonoBehaviour
         ResetStatusTint();
         speed = baseSpeed;
 
-        for (int index = 2; index < transform.childCount; index++)
+        if (spriter != null)
+            spriter.enabled = true;
+
+        for (int index = 0; index < transform.childCount; index++)
             transform.GetChild(index).gameObject.SetActive(true);
 
         if (anim != null)
         {
             anim.ResetTrigger("Dead");
+            anim.Rebind();
+            anim.Update(0f);
             anim.SetFloat("Speed", 0f);
         }
     }

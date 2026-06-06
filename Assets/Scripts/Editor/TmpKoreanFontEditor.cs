@@ -5,10 +5,22 @@ using UnityEngine;
 
 public static class TmpKoreanFontEditor
 {
-	const string MenuPath = "Tools/Game/Add Status UI Korean Glyphs (neodgm)";
+	const string StatusMenuPath = "Tools/Game/Add Status UI Korean Glyphs (neodgm)";
+	const string StoryMenuPath = "Tools/Game/Add Story UI Korean Glyphs (neodgm)";
 
-	[MenuItem(MenuPath)]
+	[MenuItem(StatusMenuPath)]
 	static void AddStatusGlyphsToNeoDgm()
+	{
+		AddGlyphsToNeoDgm(TmpKoreanFontUtility.StatusUiGlyphs, "Status UI");
+	}
+
+	[MenuItem(StoryMenuPath)]
+	static void AddStoryGlyphsToNeoDgm()
+	{
+		AddGlyphsToNeoDgm(TmpKoreanFontUtility.StoryUiGlyphs, "Story UI");
+	}
+
+	static void AddGlyphsToNeoDgm(string glyphs, string label)
 	{
 		var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TmpKoreanFontUtility.NeoDgmAssetPath);
 		if (font == null)
@@ -20,28 +32,29 @@ public static class TmpKoreanFontEditor
 		EnsureDynamicAtlas(font);
 		EnsureSourceFontLinked(font);
 
-		string beforeMissing = TmpKoreanFontUtility.GetMissingCharacters(font, TmpKoreanFontUtility.StatusUiGlyphs);
-		bool ok = TmpKoreanFontUtility.TryAddStringCharacters(font, TmpKoreanFontUtility.StatusUiGlyphs);
-		string afterMissing = TmpKoreanFontUtility.GetMissingCharacters(font, TmpKoreanFontUtility.StatusUiGlyphs);
+		string beforeMissing = TmpKoreanFontUtility.GetMissingCharacters(font, glyphs);
+		bool ok = TmpKoreanFontUtility.TryAddStringCharacters(font, glyphs);
+		string afterMissing = TmpKoreanFontUtility.GetMissingCharacters(font, glyphs);
 
 		if (!ok || !string.IsNullOrEmpty(afterMissing))
 		{
 			Debug.LogWarning(
-				$"[TmpKoreanFont] 글리프 추가 실패 또는 누락: [{afterMissing}] (추가 전: [{beforeMissing}])\n" +
+				$"[TmpKoreanFont] {label} 글리프 추가 실패 또는 누락: [{afterMissing}] (추가 전: [{beforeMissing}])\n" +
 				"Window > TextMeshPro > Font Asset Creator에서 neodgm SDF를 열고 Character Set에 한글을 포함해 Generate Font Atlas 하세요.");
 		}
 		else if (!string.IsNullOrEmpty(beforeMissing))
 		{
-			Debug.Log($"[TmpKoreanFont] 추가 완료. 이전 누락: {beforeMissing}");
+			Debug.Log($"[TmpKoreanFont] {label} 추가 완료. 이전 누락: {beforeMissing}");
 		}
 
 		EditorUtility.SetDirty(font);
 		AssetDatabase.SaveAssets();
-		Debug.Log("[TmpKoreanFont] neodgm SDF (Dynamic)에 Status UI 한글을 반영했습니다.");
+		Debug.Log($"[TmpKoreanFont] neodgm SDF (Dynamic)에 {label} 한글을 반영했습니다.");
 	}
 
-	[MenuItem(MenuPath, true)]
-	static bool ValidateAddStatusGlyphs()
+	[MenuItem(StatusMenuPath, true)]
+	[MenuItem(StoryMenuPath, true)]
+	static bool ValidateAddGlyphs()
 	{
 		return AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TmpKoreanFontUtility.NeoDgmAssetPath) != null;
 	}

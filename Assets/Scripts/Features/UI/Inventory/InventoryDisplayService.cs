@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// 인벤토리 표시 규칙 — 등급(낮은 순) → 이름(가나다), 동일 이름 스택(*n) 및 스탯 합산.
+/// 인벤토리 표시 규칙 — 등급(높은 순) → 이름(가나다), 동일 이름 스택(*n) 및 스탯 합산.
 /// </summary>
 public static class InventoryDisplayService
 {
@@ -16,6 +16,7 @@ public static class InventoryDisplayService
 		["Common"] = 0,
 		["Uncommon"] = 1,
 		["Rare"] = 2,
+		["Unique"] = 3,
 		["Epic"] = 3,
 		["Legendary"] = 4,
 	};
@@ -88,6 +89,37 @@ public static class InventoryDisplayService
 		return result;
 	}
 
+	/// <summary>동일 이름을 인벤토리 슬롯처럼 "이름 *n" 형식으로 묶어 표시합니다.</summary>
+	public static string FormatStackedNames(IReadOnlyList<string> names)
+	{
+		if (names == null || names.Count == 0)
+			return "—";
+
+		var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (string name in names)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				continue;
+
+			string key = NormalizeName(name);
+			counts.TryGetValue(key, out int count);
+			counts[key] = count + 1;
+		}
+
+		if (counts.Count == 0)
+			return "—";
+
+		var labels = new List<string>(counts.Count);
+		foreach (KeyValuePair<string, int> pair in counts)
+		{
+			string label = pair.Value > 1 ? $"{pair.Key} *{pair.Value}" : pair.Key;
+			labels.Add(label);
+		}
+
+		labels.Sort((a, b) => CompareKorean(a, b));
+		return string.Join(", ", labels);
+	}
+
 	public static List<InventorySlotViewData> BuildPotionSlots(IReadOnlyList<PotionInventory.PotionStack> stacks)
 	{
 		var result = new List<InventorySlotViewData>();
@@ -111,20 +143,28 @@ public static class InventoryDisplayService
 
 	static int CompareWeaponGroups(WeaponStackGroup a, WeaponStackGroup b)
 	{
-		int grade = GetGradeRank(a.Grade).CompareTo(GetGradeRank(b.Grade));
+		int grade = GetGradeRank(b.Grade).CompareTo(GetGradeRank(a.Grade));
 		if (grade != 0)
 			return grade;
 
-		return CompareKorean(a.DisplayName, b.DisplayName);
+		int name = CompareKorean(a.DisplayName, b.DisplayName);
+		if (name != 0)
+			return name;
+
+		return string.Compare(a.Type, b.Type, StringComparison.OrdinalIgnoreCase);
 	}
 
 	static int CompareAccessoryGroups(AccessoryStackGroup a, AccessoryStackGroup b)
 	{
-		int grade = GetGradeRank(a.Grade).CompareTo(GetGradeRank(b.Grade));
+		int grade = GetGradeRank(b.Grade).CompareTo(GetGradeRank(a.Grade));
 		if (grade != 0)
 			return grade;
 
-		return CompareKorean(a.DisplayName, b.DisplayName);
+		int name = CompareKorean(a.DisplayName, b.DisplayName);
+		if (name != 0)
+			return name;
+
+		return string.Compare(a.Type, b.Type, StringComparison.OrdinalIgnoreCase);
 	}
 
 	static int GetGradeRank(string grade)
@@ -141,6 +181,9 @@ public static class InventoryDisplayService
 	}
 
 	static string NormalizeName(string name) => string.IsNullOrWhiteSpace(name) ? "(이름 없음)" : name.Trim();
+
+	static string NormalizeGrade(string grade) =>
+		string.IsNullOrWhiteSpace(grade) ? "Unknown" : grade.Trim();
 
 	static string GetPotionDisplayName(PotionInventory.PotionStack stack)
 	{
@@ -186,9 +229,9 @@ public static class InventoryDisplayService
 
 		public WeaponStackGroup(WeaponInstance first)
 		{
-			DisplayName = first.info.name;
-			Grade = first.info.grade;
-			Type = first.info.type;
+			DisplayName = NormalizeName(first.info.name);
+			Grade = NormalizeGrade(first.info.grade);
+			Type = first.info.type ?? string.Empty;
 			icon = WeaponRewardService.GetIcon(first);
 			Add(first);
 		}
@@ -245,9 +288,9 @@ public static class InventoryDisplayService
 
 		public AccessoryStackGroup(AccessoryData first)
 		{
-			DisplayName = first.displayName;
-			Grade = first.grade;
-			Type = first.accessoryType;
+			DisplayName = NormalizeName(first.displayName);
+			Grade = NormalizeGrade(first.grade);
+			Type = first.accessoryType ?? string.Empty;
 			icon = first.icon;
 			Add(first);
 		}

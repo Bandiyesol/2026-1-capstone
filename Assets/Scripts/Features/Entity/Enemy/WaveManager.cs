@@ -31,6 +31,7 @@ public class WaveManager : MonoBehaviour
     public void StartStage()
     {
         currentWave = 0;
+        BossBase.ClearLastDeathPosition();
         StartWave();
     }
     public void Begin()
@@ -43,14 +44,15 @@ public class WaveManager : MonoBehaviour
     }
 
     /// <summary>���� �޴��� ���ư� �� ���̺ꡤ���� �ڷ�ƾ�� �ʱ�ȭ�մϴ�.</summary>
-    public void ResetForMainMenu()
-    {
-        StopAllCoroutines();
-        started = false;
-        isSpawning = false;
-        aliveEnemyCount = 0;
-        currentWave = 0;
-    }
+	public void ResetForMainMenu()
+	{
+		StopAllCoroutines();
+		started = false;
+		isSpawning = false;
+		aliveEnemyCount = 0;
+		currentWave = 0;
+		BossBase.ClearLastDeathPosition();
+	}
 
     // ���̺� ����
     void StartWave()
@@ -182,6 +184,7 @@ public class WaveManager : MonoBehaviour
         // ���� �������� ������ ����
         if (moved)
         {
+            GameRunSessionTracker.OnStageAdvanced(stageManager.stageIndex);
             StartStage();
         }
     }

@@ -7,23 +7,14 @@ using UnityEngine;
 /// </summary>
 public class WeaponInventory : MonoBehaviour
 {
-	[SerializeField] int maxWeapons = 6;
-
 	readonly List<WeaponInstance> weapons = new List<WeaponInstance>();
 
 	public IReadOnlyList<WeaponInstance> Weapons => weapons;
-	public int MaxWeapons => maxWeapons;
 	public event Action OnInventoryChanged;
 
 	public bool TryAdd(WeaponInstance instance)
 	{
 		if (instance == null) return false;
-
-		if (weapons.Count >= maxWeapons)
-		{
-			Debug.LogWarning($"[PlayerWeaponInventory] 무기 상한({maxWeapons})에 도달했습니다.");
-			return false;
-		}
 
 		weapons.Add(instance);
 		OnInventoryChanged?.Invoke();

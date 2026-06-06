@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChestDropSettings
   enemyDropChance: 0.08
   bossDropChance: 0.25
-  normalWeight: 70
-  rareWeight: 20
-  uniqueWeight: 8
-  legendaryWeight: 2
+  normalWeight: 100
+  rareWeight: 0
+  uniqueWeight: 0
+  legendaryWeight: 0
   normalWeaponIds:
   - SWORD_001
   - BOW_001

@@ -44,6 +44,10 @@ public class InventoryUI : MonoBehaviour
 	[SerializeField] AccessoryInventory accessoryInventory;
 	[SerializeField] PotionInventory potionInventory;
 
+	[Header("# 슬롯 프레임 (Panels_06 등)")]
+	[SerializeField] Sprite slotFrameSprite;
+	[SerializeField] float slotIconPadding = 12f;
+
 	[Header("# 폰트")]
 	[SerializeField] TMP_FontAsset koreanFont;
 
@@ -127,12 +131,26 @@ public class InventoryUI : MonoBehaviour
 		ResumeGameIfPausedByInventory();
 	}
 
+	/// <summary>Esc — CloseBtn 과 동일.</summary>
+	public bool TryHandleEscape()
+	{
+		if (!isOpen || panel == null || !panel.activeInHierarchy)
+			return false;
+
+		if (closeButton != null)
+			closeButton.onClick.Invoke();
+		else
+			Close();
+
+		return true;
+	}
+
 	void PauseGameIfLive()
 	{
 		if (GameManager.instance == null || !GameManager.instance.isLive)
 			return;
 
-		GameManager.instance.Stop();
+		GameManager.instance.PauseForOverlayPanel();
 		pausedByInventory = true;
 	}
 
@@ -142,7 +160,7 @@ public class InventoryUI : MonoBehaviour
 			return;
 
 		pausedByInventory = false;
-		GameManager.instance.Resume();
+		GameManager.instance.ResumeGameplayFromOverlay();
 	}
 
 	void EnsureInitialized()
@@ -179,6 +197,9 @@ public class InventoryUI : MonoBehaviour
 
 		EnsureTooltipOnTopLayer();
 		ApplySectionLabels();
+
+		EnsureSlotFrameSprite();
+		ApplySlotVisualSettingsToRows();
 
 		ResolveKoreanFont();
 		TmpKoreanFontUtility.ApplyFontToAll(
@@ -311,9 +332,11 @@ public class InventoryUI : MonoBehaviour
 			potionInventory.OnInventoryChanged -= Refresh;
 	}
 
-	public void Refresh()
+	public 	void Refresh()
 	{
 		ResolveInventories();
+		EnsureSlotFrameSprite();
+		ApplySlotVisualSettingsToRows();
 
 		HideTooltip();
 		RefreshGoldOnly();
@@ -510,6 +533,44 @@ public class InventoryUI : MonoBehaviour
 
 		int coin = GameManager.instance != null ? GameManager.instance.Coin : 0;
 		goldLabel.text = $"코인 {coin}";
+	}
+
+	void EnsureSlotFrameSprite()
+	{
+		if (slotFrameSprite != null)
+			return;
+
+		InventorySlotVisualSettings settings = InventorySlotVisualSettings.Instance;
+		if (settings != null && settings.slotFrameSprite != null)
+		{
+			slotFrameSprite = settings.slotFrameSprite;
+			if (slotIconPadding <= 0f)
+				slotIconPadding = settings.iconPadding;
+		}
+
+#if UNITY_EDITOR
+		if (slotFrameSprite == null)
+			slotFrameSprite = InventoryItemRow.LoadDefaultFrameSprite();
+#endif
+	}
+
+	void ApplySlotVisualSettingsToRows()
+	{
+		ConfigureRow(weaponRow);
+		ConfigureRow(accessoryRow);
+		ConfigureRow(potionRow);
+	}
+
+	static void ConfigureRow(InventoryItemRow row)
+	{
+		if (row == null)
+			return;
+
+		InventoryUI ui = activeInstance != null ? activeInstance : FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
+		if (ui == null || ui.slotFrameSprite == null)
+			return;
+
+		row.ConfigureSlotVisual(ui.slotFrameSprite, ui.slotIconPadding);
 	}
 
 	void RefreshWeaponRow()

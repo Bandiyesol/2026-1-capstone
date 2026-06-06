@@ -128,26 +128,31 @@ Canvas
 3. **LoginPanel / SignUpPanel / ForgotPasswordPanel** 은 **비활성**으로 두고, **PressAnyKeyPanel만 활성**으로 시작  
 4. 키·마우스·터치·패드 입력 시 → 로딩 → **LoginPanel** 로 전환 (`AuthFlowController`가 처리)
 
-### 4-4. LoginPanel (AuthScreen 자식, 비활성)
+### 4-4. StatusText (AuthScreen 직계 자식, 공용)
+
+1. **AuthScreen** 우클릭 → **UI → Text - TextMeshPro** → `StatusText`  
+2. 로그인·회원가입·비밀번호 찾기 **모든** 상태 메시지를 여기에 표시합니다.  
+3. **SignUpPanel / LoginPanel 안에는 StatusText 를 두지 않습니다** (있으면 삭제).
+
+### 4-5. LoginPanel (AuthScreen 자식, 비활성)
 
 1. **AuthScreen** 우클릭 → **UI → Panel** → `LoginPanel` → **체크 해제**  
 2. 자식 추가:
    - **TMP_InputField**: `LoginIdInput`, `LoginPasswordInput` (Password 타입)  
    - **Button**: `LoginButton`(로그인), `GoSignUpButton`(회원가입), `ForgotPasswordButton`(비밀번호 찾기), `QuitButton`(끝내기)  
-   - **TMP_Text**: `StatusText`  
 
-### 4-5. SignUpPanel (AuthScreen 자식, 비활성)
+### 4-6. SignUpPanel (AuthScreen 자식, 비활성)
 
 1. **UI → Panel** → `SignUpPanel` → **체크 해제**  
 2. 입력 5개 + `SignUpButton`, `BackToLoginButton`  
 
-### 4-6. ForgotPasswordPanel (AuthScreen 자식, 비활성)
+### 4-7. ForgotPasswordPanel (AuthScreen 자식, 비활성)
 
 1. **UI → Panel** → `ForgotPasswordPanel` → **체크 해제**  
 2. **TMP_InputField**: `ForgotPasswordInput` (아이디 또는 이메일)  
 3. **Button**: `SendResetEmailButton`, `ForgotBackToLoginButton`  
 
-### 4-7. AuthFlowController 연결
+### 4-8. AuthFlowController 연결
 
 1. **AuthScreen** 선택 → **Add Component** → `AuthFlowController`  
 2. Inspector 연결:
@@ -171,10 +176,7 @@ Canvas
 | Forgot Password Id Or Email Input | ForgotPasswordInput |
 | Send Reset Email Button | SendResetEmailButton |
 | Forgot Back To Login Button | ForgotBackToLoginButton |
-| Status Text | StatusText |
-| Sign Up Email Input | ... |
-| (나머지 회원가입 필드) | ... |
-| Status Text | StatusText |
+| Status Text | AuthScreen 직계 자식 **StatusText** |
 | Logout Button | (선택) |
 
 3. **Play** 후 Console에 `[FirebaseBootstrap] Firebase 초기화 완료` 가 보이는지 확인  

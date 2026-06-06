@@ -1,6 +1,8 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,6 +26,15 @@ public class GameManager : MonoBehaviour
     public WeaponSelectUI uiWeaponSelect;
     public RuneSelectUI uiRuneSelect;
 
+    [Header("# Boss briefing (스토리 → 보스 알리미 → 무기·룬)")]
+    [Tooltip("비우면 스크립트 기본 문구(BossBriefingDefaults) 사용")]
+    public StageBossBriefDatabase bossBriefDatabase;
+    [Tooltip("비우면 씬에서 BossAlarmUI 탐색")]
+    public BossAlarmUI bossAlarmUI;
+
+    [Tooltip("스테이지 순서대로 보스 프리팹 — HUD 툴팁 초상용")]
+    public GameObject[] bossPortraitPrefabs;
+
     [Header("# Main Menu (비우면 이름으로 탐색)")]
     public GameObject mainMenuRoot;
     public GameObject gameplayHud;
@@ -36,6 +47,55 @@ public class GameManager : MonoBehaviour
             uiWeaponSelect = FindFirstObjectByType<WeaponSelectUI>(FindObjectsInactive.Include);
         if (uiRuneSelect == null)
             uiRuneSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+        if (bossAlarmUI == null)
+            bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
+
+        EnsureBossPortraitPrefabsFromPool();
+        EnsureOverlayEscapeInput();
+        EnsureEndingSequenceController();
+        WireGameResultButton();
+    }
+
+    void WireGameResultButton()
+    {
+        if (uiResult == null)
+            return;
+
+        Transform retry = uiResult.transform.Find("ButtonRetry");
+        if (retry == null)
+            return;
+
+        Button button = retry.GetComponent<Button>();
+        if (button == null)
+            return;
+
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(OnGameResultContinueToRecord);
+
+        TextMeshProUGUI label = retry.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (label != null)
+            label.text = "기록 보기";
+    }
+
+    void EnsureEndingSequenceController()
+    {
+        if (GetComponent<EndingSequenceController>() == null)
+            gameObject.AddComponent<EndingSequenceController>();
+    }
+
+    void EnsureOverlayEscapeInput()
+    {
+        if (GetComponent<OverlayPanelEscapeInput>() == null)
+            gameObject.AddComponent<OverlayPanelEscapeInput>();
+    }
+
+    void EnsureBossPortraitPrefabsFromPool()
+    {
+        if (bossPortraitPrefabs != null && bossPortraitPrefabs.Length > 0)
+            return;
+
+        if (pool != null && pool.bossPrefabs != null && pool.bossPrefabs.Length > 0)
+            bossPortraitPrefabs = pool.bossPrefabs;
     }
 
     /// <summary>스토리/메뉴 표시 전 무기·룬 선택 UI를 숨깁니다.</summary>
@@ -45,6 +105,10 @@ public class GameManager : MonoBehaviour
             uiWeaponSelect.gameObject.SetActive(false);
         if (uiRuneSelect != null)
             uiRuneSelect.gameObject.SetActive(false);
+
+        if (bossAlarmUI == null)
+            bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
+        bossAlarmUI?.Hide();
     }
 
     /// <summary>메인 메뉴 시작 버튼 — 오프닝 스토리 후 게임 진입.</summary>
@@ -70,12 +134,70 @@ public class GameManager : MonoBehaviour
         GameSessionReset.ResetAll(this);
         Health = maxHealth;
 
+        StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
+        int stageIdx = stage != null ? stage.stageIndex : 0;
+        BossBriefingRuntime.ApplyStage(stageIdx, bossBriefDatabase, bossPortraitPrefabs);
+
+        if (bossAlarmUI == null)
+            bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
+
+        if (bossAlarmUI != null && BossBriefingRuntime.HasBrief)
+        {
+            bossAlarmUI.Show(() =>
+            {
+                RefreshBossBriefingHudTip();
+                OpenWeaponOrRuneSelect();
+            });
+            return;
+        }
+
+        RefreshBossBriefingHudTip();
+        OpenWeaponOrRuneSelect();
+    }
+
+    void OpenWeaponOrRuneSelect()
+    {
+        if (uiWeaponSelect == null)
+            uiWeaponSelect = FindFirstObjectByType<WeaponSelectUI>(FindObjectsInactive.Include);
+        if (uiRuneSelect == null)
+            uiRuneSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+
         if (uiWeaponSelect != null)
+        {
+            uiWeaponSelect.gameObject.SetActive(true);
+            uiWeaponSelect.transform.SetAsLastSibling();
             uiWeaponSelect.Show();
-        else if (uiRuneSelect != null)
+            return;
+        }
+
+        if (uiRuneSelect != null)
+        {
+            uiRuneSelect.gameObject.SetActive(true);
+            uiRuneSelect.transform.SetAsLastSibling();
             uiRuneSelect.Show();
-        else
-            Resume();
+            return;
+        }
+
+        Debug.LogWarning("[GameManager] WeaponSelectUI / RuneSelectUI를 찾지 못해 바로 플레이를 시작합니다.");
+        Resume();
+    }
+
+    /// <summary>스테이지 전환 후 HUD 보스 툴팁이 다음 보스를 가리키도록 갱신합니다.</summary>
+    public void RefreshBossBriefingForCurrentStage()
+    {
+        StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
+        if (stage == null)
+            return;
+
+        BossBriefingRuntime.ApplyStage(stage.stageIndex, bossBriefDatabase, bossPortraitPrefabs);
+        RefreshBossBriefingHudTip();
+    }
+
+    void RefreshBossBriefingHudTip()
+    {
+        BossBriefingHudTip tip = FindFirstObjectByType<BossBriefingHudTip>(FindObjectsInactive.Include);
+        if (tip != null)
+            tip.RefreshVisibility();
     }
 
     public void GameOver()
@@ -87,8 +209,14 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         yield return new WaitForSeconds(0.5f);
-        uiResult.gameObject.SetActive(true);
-        uiResult.Lose();
+
+        if (uiResult != null)
+        {
+            uiResult.gameObject.SetActive(true);
+            uiResult.ResetTitles();
+            uiResult.ShowDefeatInterstitial();
+        }
+
         Stop();
     }
 
@@ -101,14 +229,114 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         yield return new WaitForSeconds(0.5f);
-        uiResult.gameObject.SetActive(true);
-        uiResult.Win();
-        Stop();
+
+        EndingSequenceController ending = GetComponent<EndingSequenceController>();
+        if (ending == null)
+            ending = FindFirstObjectByType<EndingSequenceController>(FindObjectsInactive.Include);
+
+        if (ending != null)
+        {
+            Vector3 origin = ResolveEndingFlashOrigin();
+            ending.PlayFromBoss(origin);
+            yield break;
+        }
+
+        ShowGameRecordAfterRun(cleared: true);
+    }
+
+    static Vector3 ResolveEndingFlashOrigin()
+    {
+        if (BossBase.LastDeathWorldPosition is Vector3 bossPosition)
+            return bossPosition;
+
+        if (BossBase.LastEnemyDeathWorldPosition is Vector3 enemyPosition)
+            return enemyPosition;
+
+        if (instance != null && instance.player != null)
+            return instance.player.transform.position;
+
+        return Vector3.zero;
     }
 
     public void GameRetry()
     {
+        Time.timeScale = 1f;
+        if (player != null)
+            player.ResetForMainMenu();
+
         SceneManager.LoadScene("ProtoType_LTG");
+    }
+
+    /// <summary>패배 화면(Title Over)에서 기록창으로 이동합니다.</summary>
+    public void OnGameResultContinueToRecord()
+    {
+        if (uiResult != null)
+            uiResult.gameObject.SetActive(false);
+
+        ShowGameRecordAfterRun(cleared: false);
+    }
+
+    /// <summary>플레이 기록을 저장한 뒤 기록창을 엽니다.</summary>
+    public void ShowGameRecordAfterRun(bool cleared)
+    {
+        _ = SaveRunRecordAndShowAsync(cleared);
+    }
+
+    async System.Threading.Tasks.Task SaveRunRecordAndShowAsync(bool cleared)
+    {
+        await UserAccountDisplay.RefreshAsync();
+
+        GameRunRecord record = GameRunSnapshotBuilder.Build(cleared);
+        GameRunRecordStore.Save(record);
+        RefreshMainMenuLeaderboard();
+
+        GameRecordUI ui = GameRecordUIBootstrap.Ensure();
+        if (ui == null)
+        {
+            ReturnToMainMenu();
+            return;
+        }
+
+        ui.Show(record.id, ReturnToMainMenu, singleRunOnly: true);
+    }
+
+    /// <summary>메인 메뉴에서 기록만 열 때 — 확인 시 메뉴 유지.</summary>
+    public void ShowGameRecordFromMenu()
+    {
+        GameRecordUI ui = GameRecordUIBootstrap.Ensure();
+        if (ui == null)
+            return;
+
+        ui.Show(null, () =>
+        {
+            ui.Hide();
+            Time.timeScale = 1f;
+            RefreshMainMenuLeaderboard();
+        });
+    }
+
+    /// <summary>랭킹·기록에서 특정 판 상세(기록 UI)를 엽니다.</summary>
+    public void ShowGameRecordDetail(string recordId)
+    {
+        if (string.IsNullOrEmpty(recordId))
+            return;
+
+        GameRecordUI ui = GameRecordUIBootstrap.Ensure();
+        if (ui == null)
+            return;
+
+        ui.Show(recordId, () =>
+        {
+            ui.Hide();
+            Time.timeScale = 1f;
+            RefreshMainMenuLeaderboard();
+        }, singleRunOnly: true);
+    }
+
+    public static void RefreshMainMenuLeaderboard()
+    {
+        MainMenuLeaderboardView view = Object.FindFirstObjectByType<MainMenuLeaderboardView>(FindObjectsInactive.Include);
+        view?.Refresh();
     }
 
     /// <summary>게임 시작 화면(GameStart)으로 돌아갑니다.</summary>
@@ -125,11 +353,25 @@ public class GameManager : MonoBehaviour
         if (uiResult != null)
             uiResult.gameObject.SetActive(false);
 
+        GameRecordUI recordUi = FindFirstObjectByType<GameRecordUI>(FindObjectsInactive.Include);
+        recordUi?.Hide();
+
+        if (bossAlarmUI == null)
+            bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
+        bossAlarmUI?.Hide();
+        BossBriefingRuntime.Clear();
+        RefreshBossBriefingHudTip();
+
         CloseOverlayPanels();
+
+        EndingStoryUI endingStory = FindFirstObjectByType<EndingStoryUI>(FindObjectsInactive.Include);
+        endingStory?.ForceClose();
 
         HideGameplayHud();
         if (mainMenuRoot != null)
             mainMenuRoot.SetActive(true);
+
+        RefreshMainMenuLeaderboard();
     }
 
     void ResolveMainMenuReferences()
@@ -149,7 +391,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    static void CloseOverlayPanels()
+    public static void CloseOverlayPanels()
     {
         StatusUI status = FindFirstObjectByType<StatusUI>(FindObjectsInactive.Include);
         if (status != null)
@@ -158,6 +400,10 @@ public class GameManager : MonoBehaviour
         InventoryUI inventory = FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
         if (inventory != null)
             inventory.Close();
+
+        ShopUI shop = FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);
+        if (shop != null)
+            shop.Close();
 
         SettingsUI settings = FindFirstObjectByType<SettingsUI>(FindObjectsInactive.Include);
         if (settings != null)
@@ -189,12 +435,59 @@ public class GameManager : MonoBehaviour
         isLive = true;
     }
 
+    public static void FreezePlayerMovement()
+    {
+        if (instance?.player == null)
+            return;
+
+        Player player = instance.player;
+        player.inputVec = Vector2.zero;
+
+        if (player.TryGetComponent(out Rigidbody2D rigid))
+            rigid.linearVelocity = Vector2.zero;
+    }
+
+    /// <summary>상점·인벤·스테이터스 등 — 월드·기록·웨이브는 그대로 둡니다.</summary>
+    public void PauseForOverlayPanel()
+    {
+        if (!isLive)
+            return;
+
+        PauseOverlay();
+        FreezePlayerMovement();
+    }
+
+    /// <summary>오버레이 패널을 닫은 뒤 게임만 재개합니다.</summary>
+    public void ResumeGameplayFromOverlay()
+    {
+        isLive = true;
+        Time.timeScale = 1f;
+        ShowGameplayHud();
+    }
+
+    /// <summary>룬 선택 후 첫 플레이 진입 — 기록 추적·웨이브 시작.</summary>
+    public void BeginGameplaySession()
+    {
+        isLive = true;
+        Time.timeScale = 1f;
+        ShowGameplayHud();
+
+        if (!GameRunSessionTracker.IsActive)
+            GameRunSessionTracker.BeginRun();
+
+        WaveManager wave = FindFirstObjectByType<WaveManager>();
+        if (wave != null)
+            wave.Begin();
+    }
+
     public void ShowGameplayHud()
     {
         ResolveMainMenuReferences();
 
         if (gameplayHud != null)
             gameplayHud.SetActive(true);
+
+        RefreshBossBriefingHudTip();
     }
 
     public void HideGameplayHud()
@@ -205,22 +498,31 @@ public class GameManager : MonoBehaviour
             gameplayHud.SetActive(false);
     }
 
+    /// <summary>룬 선택 직후 등 — <see cref="BeginGameplaySession"/> 과 동일.</summary>
     public void Resume()
     {
-        isLive = true;
-        Time.timeScale = 1;
-        ShowGameplayHud();
-
-        WaveManager wave = FindFirstObjectByType<WaveManager>();
-        if (wave != null)
-            wave.Begin();
+        BeginGameplaySession();
     }
 
-    public void AddCoin(int amount)
-    {
-        if (amount <= 0)
-            return;
+	public void AddCoin(int amount)
+	{
+		if (amount <= 0)
+			return;
 
-        Coin += amount;
-    }
+		Coin += amount;
+		GameRunSessionTracker.AddCoinsEarned(amount);
+	}
+
+	public bool TrySpendCoin(int amount)
+	{
+		if (amount <= 0)
+			return true;
+
+		if (Coin < amount)
+			return false;
+
+		Coin -= amount;
+		GameRunSessionTracker.AddCoinsSpent(amount);
+		return true;
+	}
 }

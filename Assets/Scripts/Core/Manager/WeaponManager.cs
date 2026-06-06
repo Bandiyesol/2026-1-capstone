@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 public class WeaponManager : MonoBehaviour
@@ -81,6 +81,8 @@ public class WeaponManager : MonoBehaviour
 	}
 
 	public WeaponInfo GetWeaponInfo(string id) => infoDatabase.GetValueOrDefault(id);
+
+	public IEnumerable<WeaponInfo> GetAllWeaponInfos() => infoDatabase.Values;
 	
 	public WeaponBalance GetWeaponBalance(string key) => balanceDatabase.GetValueOrDefault(key);
 

@@ -10,11 +10,11 @@ public class ChestDropSettings : ScriptableObject
     [Range(0f, 1f)]
     public float bossDropChance = 0.25f;
 
-    [Header("등급별 가중치 (드랍 성공 시, 높을수록 자주)")]
-    public float normalWeight = 70f;
-    public float rareWeight = 20f;
-    public float uniqueWeight = 8f;
-    public float legendaryWeight = 2f;
+    [Header("등급별 가중치 (추후 확장용 — 현재는 일반 상자만)")]
+    public float normalWeight = 100f;
+    public float rareWeight = 0f;
+    public float uniqueWeight = 0f;
+    public float legendaryWeight = 0f;
 
     [Header("등급별 무기 ID 풀 (WeaponInfo.json id)")]
     public string[] normalWeaponIds = { "SWORD_001", "BOW_001", "ORB_001" };
@@ -30,19 +30,8 @@ public class ChestDropSettings : ScriptableObject
 
     public ChestGrade RollGrade()
     {
-        float total = normalWeight + rareWeight + uniqueWeight + legendaryWeight;
-        if (total <= 0f)
-            return ChestGrade.Normal;
-
-        float roll = Random.Range(0f, total);
-
-        if (roll < normalWeight) return ChestGrade.Normal;
-        roll -= normalWeight;
-        if (roll < rareWeight) return ChestGrade.Rare;
-        roll -= rareWeight;
-        if (roll < uniqueWeight) return ChestGrade.Unique;
-
-        return ChestGrade.Legendary;
+        // 현재 무기는 WeaponInfo.json 등급(Common)만 사용합니다.
+        return ChestGrade.Normal;
     }
 
     public string[] GetWeaponPool(ChestGrade grade)

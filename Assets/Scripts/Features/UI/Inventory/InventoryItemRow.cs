@@ -1,23 +1,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
-/// 인벤토리 한 줄 — 아이콘을 왼쪽·위부터 배치하고, 가로 공간이 넘치면 다음 줄로 줄바꿈합니다.
+/// 인벤토리 한 줄 — 슬롯 프레임 안에 아이콘을 표시하고, 가로 공간이 넘치면 줄바꿈합니다.
 /// </summary>
 public class InventoryItemRow : MonoBehaviour
 {
+	const string DefaultFrameAssetPath =
+		"Assets/Arts/UI/Vol 6 Ui Expansion Pack/Panels/Panels_06.png";
+
+	const string DefaultFrameSpriteName = "Panels_06_0";
+
 	[SerializeField] RectTransform slotContainer;
 	[SerializeField] GameObject slotPrefab;
+	[SerializeField] Sprite slotFrameSprite;
 	[SerializeField] float slotSize = 64f;
 	[SerializeField] float slotSpacing = 8f;
+	[SerializeField] float iconPadding = 12f;
 	[SerializeField] float fallbackRowWidth = 960f;
 
 	readonly List<GameObject> spawnedSlots = new List<GameObject>();
 	GridLayoutGroup gridLayout;
 
+	public void ConfigureSlotVisual(Sprite frame, float padding)
+	{
+		if (frame != null)
+			slotFrameSprite = frame;
+
+		if (padding > 0f)
+			iconPadding = padding;
+	}
+
 	public void Rebuild(IReadOnlyList<InventorySlotViewData> items)
 	{
+		EnsureSlotFrameSprite();
 		ClearSpawned();
 
 		if (items == null || items.Count == 0)
@@ -32,19 +52,9 @@ public class InventoryItemRow : MonoBehaviour
 			if (data == null || data.icon == null)
 				continue;
 
-			GameObject slotGo = CreateSlotObject(parent, i);
+			GameObject slotGo = CreateSlotObject(parent, spawnedSlots.Count);
 			spawnedSlots.Add(slotGo);
-
-			Image image = slotGo.GetComponent<Image>();
-			image.sprite = data.icon;
-			image.enabled = true;
-			image.preserveAspect = true;
-			image.raycastTarget = true;
-
-			if (!slotGo.TryGetComponent(out InventorySlotHover hover))
-				hover = slotGo.AddComponent<InventorySlotHover>();
-
-			hover.SetTooltip(data.tooltip);
+			ApplySlotVisuals(slotGo, data);
 		}
 
 		if (gridLayout == null)
@@ -53,6 +63,156 @@ public class InventoryItemRow : MonoBehaviour
 		Canvas.ForceUpdateCanvases();
 		gridLayout.constraintCount = CalculateColumnCount(parent);
 		LayoutRebuilder.ForceRebuildLayoutImmediate(parent);
+	}
+
+	void ApplySlotVisuals(GameObject slotGo, InventorySlotViewData data)
+	{
+		if (!TryGetSlotImages(slotGo, out Image frameImage, out Image iconImage))
+			BuildSlotHierarchy(slotGo, out frameImage, out iconImage);
+
+		if (frameImage != null)
+		{
+			frameImage.sprite = slotFrameSprite;
+			frameImage.type = Image.Type.Simple;
+			frameImage.preserveAspect = false;
+			frameImage.color = Color.white;
+			frameImage.enabled = slotFrameSprite != null;
+			frameImage.raycastTarget = true;
+			StretchToParent(frameImage.rectTransform);
+		}
+
+		if (iconImage != null)
+		{
+			iconImage.sprite = data.icon;
+			iconImage.enabled = true;
+			iconImage.preserveAspect = true;
+			iconImage.color = Color.white;
+			iconImage.raycastTarget = false;
+			ApplyIconInset(iconImage.rectTransform);
+		}
+
+		InventorySlotHover hover = frameImage != null
+			? frameImage.GetComponent<InventorySlotHover>()
+			: slotGo.GetComponent<InventorySlotHover>();
+
+		if (hover == null)
+		{
+			GameObject hoverHost = frameImage != null ? frameImage.gameObject : slotGo;
+			hover = hoverHost.AddComponent<InventorySlotHover>();
+		}
+
+		hover.SetTooltip(data.tooltip);
+	}
+
+	static bool TryGetSlotImages(GameObject slotGo, out Image frameImage, out Image iconImage)
+	{
+		frameImage = null;
+		iconImage = null;
+
+		Transform frame = slotGo.transform.Find("Frame");
+		Transform icon = slotGo.transform.Find("Icon");
+
+		if (frame != null)
+			frame.TryGetComponent(out frameImage);
+		if (icon != null)
+			icon.TryGetComponent(out iconImage);
+
+		return frameImage != null && iconImage != null;
+	}
+
+	void BuildSlotHierarchy(GameObject slotGo, out Image frameImage, out Image iconImage)
+	{
+		if (slotGo.TryGetComponent(out Image legacyRootImage))
+		{
+			legacyRootImage.enabled = false;
+			legacyRootImage.raycastTarget = false;
+		}
+
+		if (slotGo.TryGetComponent(out InventorySlotHover legacyHover))
+			DestroyLayoutGroupImmediate(legacyHover);
+
+		GameObject frameGo = GetOrCreateChild(slotGo.transform, "Frame");
+		frameImage = GetOrAddImage(frameGo);
+		StretchToParent(frameGo.GetComponent<RectTransform>());
+
+		GameObject iconGo = GetOrCreateChild(slotGo.transform, "Icon");
+		iconImage = GetOrAddImage(iconGo);
+		ApplyIconInset(iconGo.GetComponent<RectTransform>());
+	}
+
+	static GameObject GetOrCreateChild(Transform parent, string childName)
+	{
+		Transform existing = parent.Find(childName);
+		if (existing != null)
+			return existing.gameObject;
+
+		var go = new GameObject(childName, typeof(RectTransform));
+		go.transform.SetParent(parent, false);
+		return go;
+	}
+
+	static Image GetOrAddImage(GameObject go)
+	{
+		if (!go.TryGetComponent(out Image image))
+			image = go.AddComponent<Image>();
+
+		return image;
+	}
+
+	void ApplyIconInset(RectTransform iconRect)
+	{
+		iconRect.anchorMin = Vector2.zero;
+		iconRect.anchorMax = Vector2.one;
+		iconRect.offsetMin = new Vector2(iconPadding, iconPadding);
+		iconRect.offsetMax = new Vector2(-iconPadding, -iconPadding);
+		iconRect.localScale = Vector3.one;
+	}
+
+	static void StretchToParent(RectTransform rect)
+	{
+		rect.anchorMin = Vector2.zero;
+		rect.anchorMax = Vector2.one;
+		rect.offsetMin = Vector2.zero;
+		rect.offsetMax = Vector2.zero;
+		rect.localScale = Vector3.one;
+	}
+
+	void EnsureSlotFrameSprite()
+	{
+		if (slotFrameSprite != null)
+			return;
+
+		InventorySlotVisualSettings settings = InventorySlotVisualSettings.Instance;
+		if (settings != null && settings.slotFrameSprite != null)
+		{
+			slotFrameSprite = settings.slotFrameSprite;
+			if (iconPadding <= 0f)
+				iconPadding = settings.iconPadding;
+		}
+
+#if UNITY_EDITOR
+		if (slotFrameSprite == null)
+			slotFrameSprite = LoadDefaultFrameSprite();
+#endif
+	}
+
+	public static Sprite LoadDefaultFrameSprite()
+	{
+#if UNITY_EDITOR
+		Object[] assets = AssetDatabase.LoadAllAssetsAtPath(DefaultFrameAssetPath);
+		foreach (Object asset in assets)
+		{
+			if (asset is Sprite sprite && sprite.name == DefaultFrameSpriteName)
+				return sprite;
+		}
+
+		foreach (Object asset in assets)
+		{
+			if (asset is Sprite sprite)
+				return sprite;
+		}
+#endif
+		return null;
 	}
 
 	void EnsureGridLayout(RectTransform parent)
@@ -114,7 +274,7 @@ public class InventoryItemRow : MonoBehaviour
 		}
 		else
 		{
-			slotGo = new GameObject($"ItemSlot_{index}", typeof(RectTransform), typeof(Image), typeof(InventorySlotHover));
+			slotGo = new GameObject($"ItemSlot_{index}", typeof(RectTransform));
 			slotGo.transform.SetParent(parent, false);
 		}
 
@@ -148,4 +308,12 @@ public class InventoryItemRow : MonoBehaviour
 	{
 		ClearSpawned();
 	}
+
+#if UNITY_EDITOR
+	void OnValidate()
+	{
+		if (slotFrameSprite == null)
+			slotFrameSprite = LoadDefaultFrameSprite();
+	}
+#endif
 }

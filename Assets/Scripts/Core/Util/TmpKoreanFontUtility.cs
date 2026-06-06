@@ -15,20 +15,104 @@ public static class TmpKoreanFontUtility
 		"물리 마법 배율 개수 관통 처형 임계치 발동률 강화 없음 ATK ASPD PROJ AREA CRIT DEF EVA HEAL BUFF RUNE EXEC ELEM SPD " +
 		"찾을 수 없습니다 PlayerStats 오브젝트에 PlayerStats가 있는지 확인하세요";
 
+	/// <summary>메인·엔딩 스토리 본문에 쓰인 글자 (에디터 글리프 추가용).</summary>
+	public static string StoryUiGlyphs =>
+		MainStoryDefaults.OpeningStory +
+		EndingStoryDefaults.Title +
+		EndingStoryDefaults.RuneReturnLine +
+		EndingStoryDefaults.StoryBody;
+
+	static TMP_FontAsset cachedNeoDgm;
+
 #if UNITY_EDITOR
 	public const string NeoDgmAssetPath = "Assets/Arts/UI/Fonts/neodgm SDF.asset";
 #endif
 
+	public static void EnsureGlyphs(TextMeshProUGUI tmp, TMP_FontAsset font, string text)
+	{
+		if (tmp == null)
+			return;
+
+		font = ResolveNeoDgmFont(font);
+		if (font != null)
+			tmp.font = font;
+
+		EnsureGlyphsInFont(tmp.font, text, tmp.name);
+		tmp.ForceMeshUpdate();
+	}
+
+	/// <summary>Inspector 미연결 시 neodgm SDF를 찾습니다.</summary>
+	public static TMP_FontAsset ResolveNeoDgmFont(TMP_FontAsset preferred)
+	{
+		if (preferred != null)
+			return preferred;
+
+		if (cachedNeoDgm != null)
+			return cachedNeoDgm;
+
+#if UNITY_EDITOR
+		cachedNeoDgm = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(NeoDgmAssetPath);
+		if (cachedNeoDgm != null)
+			return cachedNeoDgm;
+#endif
+
+		MainStoryUI mainStory = Object.FindFirstObjectByType<MainStoryUI>(FindObjectsInactive.Include);
+		if (mainStory != null)
+		{
+			TMP_FontAsset fromMain = mainStory.KoreanFont;
+			if (fromMain != null)
+			{
+				cachedNeoDgm = fromMain;
+				return cachedNeoDgm;
+			}
+		}
+
+		EndingStoryUI endingStory = Object.FindFirstObjectByType<EndingStoryUI>(FindObjectsInactive.Include);
+		if (endingStory != null)
+		{
+			TMP_FontAsset fromEnding = endingStory.KoreanFont;
+			if (fromEnding != null)
+			{
+				cachedNeoDgm = fromEnding;
+				return cachedNeoDgm;
+			}
+		}
+
+		return null;
+	}
+
+	public static void EnsureGlyphsInFont(TMP_FontAsset font, string text, string logContext = null)
+	{
+		if (font == null || string.IsNullOrEmpty(text))
+			return;
+
+		string missing = GetMissingCharacters(font, text);
+		if (!string.IsNullOrEmpty(missing))
+			TryAddMissingCharactersRuntime(font, missing);
+
+		missing = GetMissingCharacters(font, text);
+		if (!string.IsNullOrEmpty(missing))
+		{
+			Debug.LogWarning(
+				$"[TmpKoreanFont] '{logContext ?? font.name}' 폰트에 없는 글자: {missing}\n" +
+				"에디터에서 Tools > Game > Add Story UI Korean Glyphs (neodgm) 실행 후 저장하세요.");
+		}
+	}
+
 	public static void ApplyFont(TMP_Text tmp, TMP_FontAsset font)
 	{
-		if (tmp == null || font == null)
+		if (tmp == null)
+			return;
+
+		font = ResolveNeoDgmFont(font);
+		if (font == null)
 			return;
 
 		tmp.font = font;
 	}
-
 	public static void ApplyFontToAll(TMP_FontAsset font, params TextMeshProUGUI[] labels)
 	{
+		font = ResolveNeoDgmFont(font);
 		if (font == null || labels == null)
 			return;
 
@@ -36,38 +120,9 @@ public static class TmpKoreanFontUtility
 			ApplyFont(label, font);
 	}
 
-	/// <summary>런타임: 폰트 적용 + 누락 글자 경고만 (TryAddCharacters 호출 없음).</summary>
-	public static void EnsureGlyphs(TextMeshProUGUI tmp, TMP_FontAsset font, string text)
-	{
-		if (tmp == null)
-			return;
-
-		if (font != null)
-			tmp.font = font;
-
-		if (tmp.font == null || string.IsNullOrEmpty(text))
-			return;
-
-		string missing = GetMissingCharacters(tmp.font, text);
-		if (!string.IsNullOrEmpty(missing))
-		{
-			TryAddMissingCharactersRuntime(tmp.font, missing);
-			missing = GetMissingCharacters(tmp.font, text);
-		}
-
-		if (!string.IsNullOrEmpty(missing))
-		{
-			Debug.LogWarning(
-				$"[TmpKoreanFont] '{tmp.name}' 폰트에 없는 글자: {missing}\n" +
-				"에디터에서 Tools > Game > Add Status UI Korean Glyphs (neodgm) 실행 후 저장하세요.",
-				tmp);
-		}
-
-		tmp.ForceMeshUpdate();
-	}
-
 	public static void EnsureStatusPanelFonts(TMP_FontAsset font, TextMeshProUGUI stats, string dynamicText)
 	{
+		font = ResolveNeoDgmFont(font);
 		ApplyFont(stats, font);
 		EnsureGlyphs(stats, font, StatusUiGlyphs + (dynamicText ?? ""));
 	}
