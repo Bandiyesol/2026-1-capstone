@@ -12,32 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: Void_Tiles
   m_EditorClassIdentifier: Unity.2D.Tilemap.Extras::UnityEngine.RuleTile
-  m_DefaultSprite: {fileID: -1390541146, guid: 671a6efe5e7feb74a94dd17c7524f168, type: 3}
+  m_DefaultSprite: {fileID: 1357907817, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules:
   - m_Id: 0
     m_Sprites:
-    - {fileID: -317936067, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -2022283065, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1957143367, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1692715625, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1163497295, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1761777321, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1092511624, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1064262259, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1208737982, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1761024915, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1763220158, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1867638266, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 686838146, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1740056756, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 941807802, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 1920882318, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1656353281, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1685611903, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: 917437316, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
-    - {fileID: -1961493405, guid: 75b46239d51eea945ada56bfd49671ee, type: 3}
+    - {fileID: 1357907817, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 705863403, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: -846570758, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: -1906815907, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: -1578269203, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: -2106314566, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: -602070141, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 562472899, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 1287779540, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 2099499866, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 1748778560, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 1032875203, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 1089313592, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 555606997, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 6541174, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 1195429283, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 942740120, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 1549795185, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: 49019479, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
+    - {fileID: -1513084539, guid: b275c1ad990608343af0e14bc99e5170, type: 3}
     m_GameObject: {fileID: 0}
     m_MinAnimationSpeed: 1
     m_MaxAnimationSpeed: 1

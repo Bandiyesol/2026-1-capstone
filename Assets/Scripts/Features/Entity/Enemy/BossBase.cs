@@ -1,38 +1,31 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class BossBase : MonoBehaviour, IDamageable
 {
-    // 웨이브 매니저
     [HideInInspector]
     public WaveManager waveManager;
 
-    // 보스 데이터
     public BossData data;
 
-    // 현재 체력
+    [Header("마법진 풀링 설정")]
+    [Tooltip("PoolManager의 GimmickPrefabs 배열에서 마법진이 위치한 인덱스 번호")]
+    [SerializeField] private int portalGimmickIndex = 13;
+    [SerializeField] private float spawnDelay = 2.0f;
+
+    [Header("보스 스텟(소환될 때 자동으로 설정)")]
     public float health;
-    // 최대 체력
     public float maxHealth;
-    // 이동 속도
     protected float moveSpeed;
-    // 공격력
     protected float attackDamage;
-    // 공격력 반환
     public float AttackDamage => attackDamage;
-    // 방어력
     protected float defense;
 
-    // 플레이어
     protected Transform target;
-    // 이동 가능 여부
     protected bool canMove = true;
-    // 패턴 실행 여부
     protected bool isPatternPlaying;
-    // 패턴 쿨타임
     protected float patternCooldown;
-    // 패턴 타이머
     protected float patternTimer;
-    // 이미 죽었는지
     bool isDead;
 
     /// <summary>마지막으로 쓰러진 보스의 월드 좌표 (엔딩 연출용).</summary>
@@ -52,89 +45,66 @@ public class BossBase : MonoBehaviour, IDamageable
         LastEnemyDeathWorldPosition = null;
     }
 
-    // 리지드바디
     protected Rigidbody2D rigid;
-    // 스프라이트
     protected SpriteRenderer spriter;
-    // 애니메이터
     protected Animator anim;
+    protected Collider2D col;
 
-    protected virtual void Start()
-    {
-
-    }
+    protected virtual void Start() { }
 
     protected virtual void Awake()
     {
-        // 컴포넌트 저장
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
     }
 
     protected virtual void OnEnable()
     {
-        // 플레이어 저장
         if (GameManager.instance != null)
         {
-            target =
-                GameManager.instance.player.transform;
+            target = GameManager.instance.player.transform;
         }
 
-        // 데이터 적용
         if (data != null)
         {
-            // 체력
             maxHealth = data.maxHealth;
             health = maxHealth;
-
-            // 이동 속도
             moveSpeed = data.moveSpeed;
-
-            // 공격력
             attackDamage = data.attackDamage;
-
-            // 방어력
             defense = data.damageReduction;
-
-            // 패턴 쿨타임
-            patternCooldown =
-                data.patternCooldown;
+            patternCooldown = data.patternCooldown;
         }
 
-        // 상태 초기화
         canMove = true;
         isPatternPlaying = false;
         isDead = false;
-
-        // 타이머 초기화
         patternTimer = 0f;
 
-        // 이동 정지
+        if (spriter != null) spriter.enabled = true;
+        if (col != null) col.enabled = true;
+
         rigid.linearVelocity = Vector2.zero;
     }
 
     protected virtual void Update()
     {
-        // 패턴 중이면 대기
-        if (isPatternPlaying)
-            return;
+        if (isDead || isPatternPlaying) return;
 
-        // 타이머 증가
         patternTimer += Time.deltaTime;
 
-        // 패턴 발동
         if (patternTimer >= patternCooldown)
         {
             patternTimer = 0f;
-
             StartRandomPattern();
         }
     }
 
     protected virtual void FixedUpdate()
     {
-        // 이동 불가
+        if (isDead) return;
+
         if (!canMove)
         {
             rigid.linearVelocity = Vector2.zero;
@@ -142,58 +112,33 @@ public class BossBase : MonoBehaviour, IDamageable
             return;
         }
 
-        // 플레이어 없음
-        if (target == null)
-            return;
+        if (target == null) return;
 
-        // 플레이어 추적
-        Vector2 dir =
-            ((Vector2)target.position -
-            rigid.position).normalized;
+        Vector2 dir = ((Vector2)target.position - rigid.position).normalized;
+        rigid.MovePosition(rigid.position + dir * moveSpeed * Time.fixedDeltaTime);
 
-        rigid.MovePosition(
-            rigid.position +
-            dir * moveSpeed * Time.fixedDeltaTime
-        );
-
-        // 애니메이션 작동
         anim.SetInteger("Moving", 1);
-
-        // 좌우 반전
-        spriter.flipX =
-            target.position.x < transform.position.x;
+        spriter.flipX = target.position.x < transform.position.x;
     }
 
-    // 랜덤 패턴
-    protected virtual void StartRandomPattern()
-    {
+    protected virtual void StartRandomPattern() { }
 
-    }
-
-    // 데미지 처리
     public virtual void TakeDamage(float damage)
     {
-        // 방어력 적용
-        float finalDamage =
-            damage * (1f - defense);
+        if (isDead) return;
 
-        // 체력 감소
+        float finalDamage = damage * (1f - defense);
         health -= finalDamage;
 
-        // 사망
         if (health <= 0)
         {
             Dead();
         }
     }
 
-    // 사망 처리
     protected virtual void Dead()
     {
-        // 중복 방지
-        if (isDead)
-            return;
-
+        if (isDead) return;
         isDead = true;
 
         LastDeathWorldPosition = transform.position;
@@ -208,14 +153,40 @@ public class BossBase : MonoBehaviour, IDamageable
         if (ChestDropManager.Instance != null)
             ChestDropManager.Instance.TryDropFromBoss(transform.position);
 
-        // 웨이브 알림
         waveManager?.OnEnemyDead();
 
-        // 이동 정지
         rigid.linearVelocity = Vector2.zero;
+        canMove = false;
 
-        // 비활성화
-        gameObject.SetActive(false);
+        if (spriter != null) spriter.enabled = false;
+        if (col != null) col.enabled = false;
+
+        // 풀 매니저를 사용하는 코루틴 실행
+        StartCoroutine(SpawnPortalRoutine());
     }
 
+    // [수정] 대기 후 PoolManager에서 마법진을 활성화하는 코루틴
+    private IEnumerator SpawnPortalRoutine()
+    {
+        yield return new WaitForSeconds(spawnDelay);
+
+        if (PoolManager.Instance != null)
+        {
+            // PoolManager에서 기믹 오브젝트 풀을 통해 마법진을 꺼내옴 (자동 SetActive(true) 처리됨)
+            GameObject portal = PoolManager.Instance.GetGimmick(portalGimmickIndex);
+
+            if (portal != null)
+            {
+                // 보스가 사망한 현재 위치로 마법진 순간이동
+                portal.transform.position = transform.position;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("PoolManager 인스턴스를 찾을 수 없습니다.");
+        }
+
+        // 보스 오브젝트 비활성화 (풀로 반환 가능한 상태가 됨)
+        gameObject.SetActive(false);
+    }
 }

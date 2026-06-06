@@ -6,8 +6,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [Header("데이터")]
     [SerializeField] EnemyData data;
 
-    [Header("애니메이터")]
-    public RuntimeAnimatorController[] animCon;
+    [Header("기타")]
     public Rigidbody2D target;
     public WaveManager waveManager;
 
@@ -48,6 +47,7 @@ public class Enemy : MonoBehaviour, IDamageable
         coll.enabled = true;
         rigid.simulated = true;
         spriter.sortingOrder = 2;
+        spriter.color = originColor;
         ApplyData();
     }
 
@@ -56,7 +56,6 @@ public class Enemy : MonoBehaviour, IDamageable
         if (data == null)
             return;
 
-        anim.runtimeAnimatorController = animCon[data.spriteType];
         speed = data.moveSpeed;
         maxHealth = data.maxHealth;
         health = maxHealth;
@@ -145,11 +144,18 @@ public class Enemy : MonoBehaviour, IDamageable
         if (GameManager.instance != null)
             GameManager.instance.Kill++;
 
+        // 코인 드랍
         if (CoinDropManager.Instance != null)
             CoinDropManager.Instance.TryDropFromEnemy(transform.position);
 
+        // 상자 드랍 — 유니크 몬스터는 높은 등급 상자
         if (ChestDropManager.Instance != null)
-            ChestDropManager.Instance.TryDropFromEnemy(transform.position);
+        {
+            if (data != null && data.isUnique)
+                ChestDropManager.Instance.TryDropFromBoss(transform.position);
+            else
+                ChestDropManager.Instance.TryDropFromEnemy(transform.position);
+        }
 
         waveManager?.OnEnemyDead();
         gameObject.SetActive(false);

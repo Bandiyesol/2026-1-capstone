@@ -73,16 +73,45 @@ public class DroppedChest : MonoBehaviour
             yield return new WaitForSecondsRealtime(wait);
         }
 
-        WeaponSelectUI weaponUi = GameManager.instance.uiWeaponSelect;
-        if (weaponUi != null)
+        // RewardRollService로 무기·악세사리·성물 후보 3개 뽑기
+        if (RewardRollService.instance != null)
         {
-            string[] pool = settings != null ? settings.GetWeaponPool(grade) : null;
-            weaponUi.ShowFromChest(grade, pool);
+            var candidates = RewardRollService.instance.Roll(grade);
+
+            // 비활성화 상태 포함해서 RewardSelectUI 탐색
+            RewardSelectUI rewardUi = RewardSelectUI.GetOrFind();
+
+            if (rewardUi != null)
+                rewardUi.Show(candidates);
+            else
+            {
+                // RewardSelectUI 없으면 기존 WeaponSelectUI로 폴백
+                WeaponSelectUI weaponUi = GameManager.instance.uiWeaponSelect;
+                if (weaponUi != null)
+                {
+                    string[] pool = settings != null ? settings.GetWeaponPool(grade) : null;
+                    weaponUi.ShowFromChest(grade, pool);
+                }
+                else
+                {
+                    Debug.LogWarning("[DroppedChest] RewardSelectUI, WeaponSelectUI 모두 없어 게임을 재개합니다.");
+                    GameManager.instance.Resume();
+                }
+            }
         }
         else
         {
-            Debug.LogWarning("[DroppedChest] WeaponSelectUI가 없어 게임을 재개합니다.");
-            GameManager.instance.ResumeGameplayFromOverlay();
+            WeaponSelectUI weaponUi = GameManager.instance.uiWeaponSelect;
+            if (weaponUi != null)
+            {
+                string[] pool = settings != null ? settings.GetWeaponPool(grade) : null;
+                weaponUi.ShowFromChest(grade, pool);
+            }
+            else
+            {
+                Debug.LogWarning("[DroppedChest] RewardRollService가 없어 게임을 재개합니다.");
+                GameManager.instance.ResumeGameplayFromOverlay();
+            }
         }
 
         gameObject.SetActive(false);

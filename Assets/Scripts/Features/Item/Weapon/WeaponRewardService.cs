@@ -119,4 +119,25 @@ public static class WeaponRewardService
 			return null;
 		return WeaponManager.Instance.GetWeaponSprite(w.info.spriteId);
 	}
+
+	/// <summary>
+	/// WeaponManager에 등록된 전체 무기 ID 목록 반환.
+	/// RewardRollService에서 무기 풀로 사용.
+	/// </summary>
+	public static List<string> GetAllWeaponIds()
+	{
+		if (WeaponManager.Instance == null) return new List<string>();
+		return WeaponManager.Instance.GetAllWeaponIds();
+	}
+
+	/// <summary>
+	/// 무기 ID로 등급(string) 반환.
+	/// RewardRollService에서 등급 필터링에 사용.
+	/// </summary>
+	public static string GetWeaponGrade(string weaponId)
+	{
+		if (WeaponManager.Instance == null) return string.Empty;
+		WeaponInfo info = WeaponManager.Instance.GetWeaponInfo(weaponId);
+		return info?.grade ?? string.Empty;
+	}
 }

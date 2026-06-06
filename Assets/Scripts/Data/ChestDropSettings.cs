@@ -5,7 +5,7 @@ public class ChestDropSettings : ScriptableObject
 {
     [Header("상자 드랍 확률 (몬스터 처치 시)")]
     [Range(0f, 1f)]
-    public float enemyDropChance = 0.08f;
+    public float enemyDropChance = 1;
 
     [Range(0f, 1f)]
     public float bossDropChance = 0.25f;

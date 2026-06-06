@@ -282,9 +282,9 @@ public static class InventoryDisplayService
 		public int Count { get; private set; }
 		Sprite icon;
 
-		float statA;
-		float statB;
 		readonly List<string> descriptions = new List<string>();
+		// StatModifier 합산용 (StatType → 누적값)
+		readonly Dictionary<string, float> statSums = new Dictionary<string, float>();
 
 		public AccessoryStackGroup(AccessoryData first)
 		{
@@ -298,8 +298,17 @@ public static class InventoryDisplayService
 		public void Add(AccessoryData data)
 		{
 			Count++;
-			statA += data.statA;
-			statB += data.statB;
+
+			// StatModifier 합산
+			if (data.modifiers != null)
+			{
+				foreach (StatModifier mod in data.modifiers)
+				{
+					string key = $"{mod.statType}_{(mod.isMulti ? "%" : "+")}";
+					statSums.TryGetValue(key, out float cur);
+					statSums[key] = cur + mod.value;
+				}
+			}
 
 			if (!string.IsNullOrEmpty(data.description) && !descriptions.Contains(data.description))
 				descriptions.Add(data.description);
@@ -316,15 +325,15 @@ public static class InventoryDisplayService
 			sb.AppendLine(title);
 			if (!string.IsNullOrEmpty(Grade) || !string.IsNullOrEmpty(Type))
 				sb.AppendLine($"{Grade} · {Type}");
-			if (Count > 1)
+
+			foreach (var kv in statSums)
 			{
-				sb.AppendLine($"스탯 A {statA:F1} (합산)");
-				sb.AppendLine($"스탯 B {statB:F1} (합산)");
-			}
-			else
-			{
-				sb.AppendLine($"스탯 A {statA:F1}");
-				sb.AppendLine($"스탯 B {statB:F1}");
+				// key 형식: "AttackPower_%" or "Defense_+"
+				string[] parts = kv.Key.Split('_');
+				string statName = parts.Length > 0 ? parts[0] : kv.Key;
+				string unit     = parts.Length > 1 ? parts[1] : "";
+				string display  = unit == "%" ? $"{kv.Value * 100f:F0}%" : $"{kv.Value:F1}";
+				sb.AppendLine($"{statName}: {display}{(Count > 1 ? " (합산)" : "")}");
 			}
 
 			if (descriptions.Count > 0)
@@ -332,9 +341,9 @@ public static class InventoryDisplayService
 
 			return new InventorySlotViewData
 			{
-				icon = icon,
+				icon       = icon,
 				stackCount = Count,
-				tooltip = sb.ToString().TrimEnd()
+				tooltip    = sb.ToString().TrimEnd()
 			};
 		}
 	}

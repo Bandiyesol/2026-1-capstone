@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9946f9a81c0e4d448fac36432289e49, type: 3}
+  m_Name: ACC_L_012
+  m_EditorClassIdentifier: Assembly-CSharp::AccessoryData
+  displayName: The Last Rune
+  grade: 3
+  accessoryType: "\uD2B9\uC218"
+  description: "[\uC124\uACC4\uB3C4\uC758 \uC644\uC131] \uBAA8\uB4E0 \uB8EC \uD6A8\uACFC
+    \uCD5C\uB300 \uC218\uCE58 \uACE0\uC815, \uB8EC \uBC1C\uB3D9\uB960 100%"
+  icon: {fileID: -7552053112640023639, guid: 6df94b07fba6ac847917b92e370f1c53, type: 3}
+  modifiers: []
+  effectType: 50
