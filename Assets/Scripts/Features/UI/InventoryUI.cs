@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -33,16 +34,21 @@ public class InventoryUI : MonoBehaviour
 	[SerializeField] GameObject tooltipPanel;
 	[SerializeField] TextMeshProUGUI tooltipLabel;
 	[SerializeField] Vector2 tooltipOffset = new Vector2(8f, 0f);
-	[SerializeField] Vector2 tooltipPadding = new Vector2(20f, 16f);
+	[SerializeField] Vector2 tooltipPadding = new Vector2(24f, 20f);
 	[SerializeField] float tooltipMinWidth = 140f;
-	[SerializeField] float tooltipMinHeight = 48f;
+	[SerializeField] float tooltipMinHeight = 96f;
 	[SerializeField] float tooltipMaxWidth = 360f;
+	[SerializeField] float tooltipExtraHeight = 24f;
 	[SerializeField] int tooltipSortingOrder = 200;
 
 	[Header("# 데이터 (비우면 Player 에서 자동 탐색)")]
 	[SerializeField] WeaponInventory weaponInventory;
 	[SerializeField] AccessoryInventory accessoryInventory;
 	[SerializeField] PotionInventory potionInventory;
+
+	[Header("# 슬롯 프레임 (Panels_06 등)")]
+	[SerializeField] Sprite slotFrameSprite;
+	[SerializeField] float slotIconPadding = 12f;
 
 	[Header("# 폰트")]
 	[SerializeField] TMP_FontAsset koreanFont;
@@ -127,12 +133,26 @@ public class InventoryUI : MonoBehaviour
 		ResumeGameIfPausedByInventory();
 	}
 
+	/// <summary>Esc — CloseBtn 과 동일.</summary>
+	public bool TryHandleEscape()
+	{
+		if (!isOpen || panel == null || !panel.activeInHierarchy)
+			return false;
+
+		if (closeButton != null)
+			closeButton.onClick.Invoke();
+		else
+			Close();
+
+		return true;
+	}
+
 	void PauseGameIfLive()
 	{
 		if (GameManager.instance == null || !GameManager.instance.isLive)
 			return;
 
-		GameManager.instance.Stop();
+		GameManager.instance.PauseForOverlayPanel();
 		pausedByInventory = true;
 	}
 
@@ -142,7 +162,7 @@ public class InventoryUI : MonoBehaviour
 			return;
 
 		pausedByInventory = false;
-		GameManager.instance.Resume();
+		GameManager.instance.ResumeGameplayFromOverlay();
 	}
 
 	void EnsureInitialized()
@@ -180,6 +200,10 @@ public class InventoryUI : MonoBehaviour
 		EnsureTooltipOnTopLayer();
 		ApplySectionLabels();
 
+		EnsureSlotFrameSprite();
+		ApplySlotVisualSettingsToRows();
+		InventoryPanelLayout.Apply(panel != null ? panel.transform : transform);
+
 		ResolveKoreanFont();
 		TmpKoreanFontUtility.ApplyFontToAll(
 			koreanFont,
@@ -188,6 +212,7 @@ public class InventoryUI : MonoBehaviour
 			weaponRowLabel,
 			accessoryRowLabel,
 			potionRowLabel);
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
 	}
 
 	void AutoBindReferences()
@@ -311,19 +336,36 @@ public class InventoryUI : MonoBehaviour
 			potionInventory.OnInventoryChanged -= Refresh;
 	}
 
-	public void Refresh()
+	public 	void Refresh()
 	{
 		ResolveInventories();
+		EnsureSlotFrameSprite();
+		ApplySlotVisualSettingsToRows();
 
 		HideTooltip();
 		RefreshGoldOnly();
 		RefreshWeaponRow();
 		RefreshAccessoryRow();
 		RefreshPotionRow();
+		InventoryPanelLayout.Apply(panel != null ? panel.transform : transform);
 		ApplySectionLabels();
 
 		if (goldLabel != null)
 			TmpKoreanFontUtility.EnsureGlyphs(goldLabel, koreanFont, goldLabel.text);
+
+		EnsureInventoryGlyphs();
+	}
+
+	void EnsureInventoryGlyphs()
+	{
+		if (koreanFont == null)
+			return;
+
+		IEnumerable<AccessoryData> owned = accessoryInventory?.Accessories;
+		TmpKoreanFontUtility.EnsureAllAccessoryGlyphs(koreanFont, owned);
+
+		if (tooltipLabel != null)
+			TmpKoreanFontUtility.EnsureGlyphs(tooltipLabel, koreanFont, tooltipLabel.text);
 	}
 
 	public static void ShowTooltipStatic(string text, Transform anchor)
@@ -359,6 +401,7 @@ public class InventoryUI : MonoBehaviour
 
 		if (!sameAnchor || tooltipLabel.text != text)
 		{
+			tooltipLabel.richText = true;
 			tooltipLabel.text = text;
 			TmpKoreanFontUtility.EnsureGlyphs(tooltipLabel, koreanFont, text);
 		}
@@ -463,25 +506,64 @@ public class InventoryUI : MonoBehaviour
 		if (tooltipRect == null || tooltipLabel == null)
 			return;
 
+		DisableTooltipAutoLayout();
+
 		tooltipLabel.textWrappingMode = TextWrappingModes.Normal;
 		tooltipLabel.overflowMode = TextOverflowModes.Overflow;
-		tooltipLabel.ForceMeshUpdate();
+		tooltipLabel.verticalAlignment = VerticalAlignmentOptions.Top;
+		tooltipLabel.ForceMeshUpdate(true, true);
 
-		Vector2 preferred = tooltipLabel.GetPreferredValues(tooltipMaxWidth, 0f);
-		if (preferred.x <= 1f || preferred.y <= 1f)
-			preferred = tooltipLabel.GetPreferredValues();
+		Vector2 unconstrained = tooltipLabel.GetPreferredValues(0f, 0f);
+		float width = Mathf.Clamp(unconstrained.x + tooltipPadding.x * 2f, tooltipMinWidth, tooltipMaxWidth);
+		float innerWidth = Mathf.Max(1f, width - tooltipPadding.x * 2f);
 
-		float width = Mathf.Clamp(preferred.x + tooltipPadding.x, tooltipMinWidth, tooltipMaxWidth);
-		float height = Mathf.Max(tooltipMinHeight, preferred.y + tooltipPadding.y);
+		tooltipRect.sizeDelta = new Vector2(width, tooltipMinHeight);
+		ApplyTooltipLabelInsets();
+
+		tooltipLabel.ForceMeshUpdate(true, true);
+		float textHeight = tooltipLabel.GetPreferredValues(innerWidth, 0f).y;
+		textHeight = Mathf.Max(
+			textHeight,
+			tooltipLabel.preferredHeight,
+			tooltipLabel.GetRenderedValues(false).y);
+
+		float height = Mathf.Max(
+			tooltipMinHeight,
+			textHeight + tooltipPadding.y * 2f + tooltipExtraHeight);
+
 		tooltipRect.sizeDelta = new Vector2(width, height);
+		ApplyTooltipLabelInsets();
+		tooltipLabel.ForceMeshUpdate(true, true);
+
+		LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
+	}
+
+	void ApplyTooltipLabelInsets()
+	{
+		if (tooltipLabel == null)
+			return;
 
 		RectTransform labelRect = tooltipLabel.rectTransform;
 		labelRect.anchorMin = Vector2.zero;
 		labelRect.anchorMax = Vector2.one;
-		labelRect.offsetMin = new Vector2(tooltipPadding.x * 0.5f, tooltipPadding.y * 0.5f);
-		labelRect.offsetMax = new Vector2(-tooltipPadding.x * 0.5f, -tooltipPadding.y * 0.5f);
+		labelRect.offsetMin = new Vector2(tooltipPadding.x, tooltipPadding.y);
+		labelRect.offsetMax = new Vector2(-tooltipPadding.x, -tooltipPadding.y);
+	}
 
-		LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
+	void DisableTooltipAutoLayout()
+	{
+		if (tooltipPanel == null)
+			return;
+
+		if (tooltipPanel.TryGetComponent(out ContentSizeFitter fitter))
+			fitter.enabled = false;
+
+		if (tooltipPanel.TryGetComponent(out LayoutElement layoutElement))
+		{
+			layoutElement.minHeight = -1f;
+			layoutElement.preferredHeight = -1f;
+			layoutElement.flexibleHeight = -1f;
+		}
 	}
 
 	void PositionTooltipNear(Transform anchor)
@@ -510,6 +592,44 @@ public class InventoryUI : MonoBehaviour
 
 		int coin = GameManager.instance != null ? GameManager.instance.Coin : 0;
 		goldLabel.text = $"코인 {coin}";
+	}
+
+	void EnsureSlotFrameSprite()
+	{
+		if (slotFrameSprite != null)
+			return;
+
+		InventorySlotVisualSettings settings = InventorySlotVisualSettings.Instance;
+		if (settings != null && settings.slotFrameSprite != null)
+		{
+			slotFrameSprite = settings.slotFrameSprite;
+			if (slotIconPadding <= 0f)
+				slotIconPadding = settings.iconPadding;
+		}
+
+#if UNITY_EDITOR
+		if (slotFrameSprite == null)
+			slotFrameSprite = InventoryItemRow.LoadDefaultFrameSprite();
+#endif
+	}
+
+	void ApplySlotVisualSettingsToRows()
+	{
+		ConfigureRow(weaponRow);
+		ConfigureRow(accessoryRow);
+		ConfigureRow(potionRow);
+	}
+
+	static void ConfigureRow(InventoryItemRow row)
+	{
+		if (row == null)
+			return;
+
+		InventoryUI ui = activeInstance != null ? activeInstance : FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
+		if (ui == null || ui.slotFrameSprite == null)
+			return;
+
+		row.ConfigureSlotVisual(ui.slotFrameSprite, ui.slotIconPadding);
 	}
 
 	void RefreshWeaponRow()

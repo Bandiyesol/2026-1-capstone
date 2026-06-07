@@ -29,10 +29,10 @@ public class PoolManager : MonoBehaviour
         else Destroy(gameObject);
 
         // 각 프리팹 개수에 맞춰 오브젝트 풀(리스트 배열) 생성
-        enemyPools = CreatePools(enemyPrefabs.Length);
-        bossPools = CreatePools(bossPrefabs.Length);
-        bossBulletPools = CreatePools(bossBulletPrefabs.Length);
-        gimmickPools = CreatePools(gimmickPrefabs.Length);
+        enemyPools = CreatePools(enemyPrefabs != null ? enemyPrefabs.Length : 0);
+        bossPools = CreatePools(bossPrefabs != null ? bossPrefabs.Length : 0);
+        bossBulletPools = CreatePools(bossBulletPrefabs != null ? bossBulletPrefabs.Length : 0);
+        gimmickPools = CreatePools(gimmickPrefabs != null ? gimmickPrefabs.Length : 0);
         coinPools = CreatePools(coinPrefabs != null ? coinPrefabs.Length : 0);
         chestPools = CreatePools(chestPrefabs != null ? chestPrefabs.Length : 0);
     }
@@ -47,27 +47,134 @@ public class PoolManager : MonoBehaviour
     }
 
     #region 오브젝트 풀 가져오기 메서드들 (Get)
-    public GameObject GetEnemy(int index) => GetFromPool(enemyPrefabs, enemyPools, index);
-    public GameObject GetBoss(int index) => GetFromPool(bossPrefabs, bossPools, index);
-    public GameObject GetBossBullet(int index) => GetFromPool(bossBulletPrefabs, bossBulletPools, index);
-    public GameObject GetGimmick(int index) => GetFromPool(gimmickPrefabs, gimmickPools, index);
+    public GameObject GetEnemy(int index)
+    {
+        EnsurePoolCapacity(ref enemyPools, enemyPrefabs);
+        return GetFromPool(enemyPrefabs, enemyPools, index, "Enemy");
+    }
+
+    public GameObject GetBoss(int index)
+    {
+        EnsurePoolCapacity(ref bossPools, bossPrefabs);
+        return GetFromPool(bossPrefabs, bossPools, index, "Boss");
+    }
+    public GameObject GetBossBullet(int index)
+    {
+        EnsurePoolCapacity(ref bossBulletPools, bossBulletPrefabs);
+        return GetFromPool(bossBulletPrefabs, bossBulletPools, index, "BossBullet");
+    }
+
+    public GameObject GetGimmick(int index)
+    {
+        int resolved = ResolveGimmickIndex(index);
+        if (resolved < 0) return null;
+        return GetFromPool(gimmickPrefabs, gimmickPools, resolved, "Gimmick");
+    }
+
+    /// <summary>Stage Portal 프리팹이 gimmickPrefabs에 있으면 해당 인덱스를 반환합니다.</summary>
+    public int FindStagePortalGimmickIndex()
+    {
+        if (gimmickPrefabs == null) return -1;
+
+        for (int i = 0; i < gimmickPrefabs.Length; i++)
+        {
+            GameObject prefab = gimmickPrefabs[i];
+            if (prefab != null && prefab.GetComponent<StagePortal>() != null)
+                return i;
+        }
+
+        return -1;
+    }
+
+    /// <summary>ShopkeeperNpc 프리팹이 gimmickPrefabs에 있으면 해당 인덱스를 반환합니다.</summary>
+    public int FindShopkeeperGimmickIndex()
+    {
+        if (gimmickPrefabs == null) return -1;
+
+        for (int i = 0; i < gimmickPrefabs.Length; i++)
+        {
+            GameObject prefab = gimmickPrefabs[i];
+            if (prefab != null && prefab.GetComponent<ShopkeeperNpc>() != null)
+                return i;
+        }
+
+        return -1;
+    }
+
+    int ResolveGimmickIndex(int index)
+    {
+        if (gimmickPrefabs == null || gimmickPrefabs.Length == 0)
+        {
+            Debug.LogWarning("[PoolManager] gimmickPrefabs가 비어 있습니다.");
+            return -1;
+        }
+
+        if (index >= 0 && index < gimmickPrefabs.Length && gimmickPrefabs[index] != null)
+            return index;
+
+        int portalIndex = FindStagePortalGimmickIndex();
+        if (portalIndex >= 0)
+        {
+            Debug.LogWarning(
+                $"[PoolManager] gimmickPrefabs[{index}]를 사용할 수 없어 Stage Portal(index {portalIndex})로 대체합니다.");
+            return portalIndex;
+        }
+
+        Debug.LogError(
+            $"[PoolManager] gimmickPrefabs[{index}]가 범위를 벗어났고 Stage Portal 프리팹도 없습니다. " +
+            "PoolManager.gimmickPrefabs에 Stage Portal.prefab을 추가하세요.");
+        return -1;
+    }
 
     public GameObject GetCoin(int index)
     {
         if (coinPrefabs == null || index < 0 || index >= coinPrefabs.Length) return null;
-        return GetFromPool(coinPrefabs, coinPools, index);
+        return GetFromPool(coinPrefabs, coinPools, index, "Coin");
     }
 
     public GameObject GetChest(int index)
     {
         if (chestPrefabs == null || index < 0 || index >= chestPrefabs.Length) return null;
-        return GetFromPool(chestPrefabs, chestPools, index);
+        return GetFromPool(chestPrefabs, chestPools, index, "Chest");
     }
     #endregion
 
-    // 풀에서 비활성화된 오브젝트를 찾거나, 없으면 새로 생성해서 반환하는 핵심 로직
-    GameObject GetFromPool(GameObject[] prefabs, List<GameObject>[] pools, int index)
+    void EnsurePoolCapacity(ref List<GameObject>[] pools, GameObject[] prefabs)
     {
+        if (prefabs == null)
+            return;
+
+        if (pools != null && pools.Length == prefabs.Length)
+            return;
+
+        List<GameObject>[] resized = CreatePools(prefabs.Length);
+        if (pools != null)
+        {
+            int copyCount = Mathf.Min(pools.Length, resized.Length);
+            for (int i = 0; i < copyCount; i++)
+                resized[i] = pools[i];
+        }
+
+        pools = resized;
+    }
+
+    // 풀에서 비활성화된 오브젝트를 찾거나, 없으면 새로 생성해서 반환하는 핵심 로직
+    GameObject GetFromPool(GameObject[] prefabs, List<GameObject>[] pools, int index, string label)
+    {
+        if (prefabs == null || pools == null || index < 0 || index >= prefabs.Length || index >= pools.Length)
+        {
+            Debug.LogError(
+                $"[PoolManager] {label} index {index} 범위 초과 " +
+                $"(prefabs={(prefabs != null ? prefabs.Length : 0)}, pools={(pools != null ? pools.Length : 0)}).");
+            return null;
+        }
+
+        if (prefabs[index] == null)
+        {
+            Debug.LogError($"[PoolManager] {label} prefabs[{index}]가 null입니다. Inspector에서 프리팹을 연결하세요.");
+            return null;
+        }
+
         GameObject select = null;
 
         // 1. 기존 풀에 쉬고 있는(비활성화) 오브젝트가 있다면 재사용

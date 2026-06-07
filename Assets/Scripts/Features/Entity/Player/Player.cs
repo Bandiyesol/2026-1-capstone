@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     Color currentTint; // 현재 적용 색상
 
     Rigidbody2D rigid; // 물리 이동 담당
+    CapsuleCollider2D bodyCollider; // 충돌체 (적 접촉 피해용, Trigger 아님)
     public SpriteRenderer spriter; // 스프라이트 렌더러
     Animator anim; // 애니메이션 제어기
 
@@ -47,6 +48,11 @@ public class Player : MonoBehaviour
     {
         // 필수 컴포넌트 캐싱
         rigid = GetComponent<Rigidbody2D>();
+        bodyCollider = GetComponent<CapsuleCollider2D>();
+
+        // 씬/에디터에서 Trigger가 켜져 있으면 적 충돌(OnCollisionStay2D)이 동작하지 않음
+        if (bodyCollider != null)
+            bodyCollider.isTrigger = false;
 
         // 렌더러 캐싱
         spriter = GetComponent<SpriteRenderer>();
@@ -112,10 +118,13 @@ public class Player : MonoBehaviour
             return;
         }
 
-        // 게임 멈춤 상태면 종료
+        // 게임 멈춤 상태면 이동·입력 정지
         if (GameManager.instance == null ||
             !GameManager.instance.isLive)
+        {
+            rigid.linearVelocity = Vector2.zero;
             return;
+        }
 
         // 최종 이동속도 계산
         float finalSpeed =
@@ -141,6 +150,12 @@ public class Player : MonoBehaviour
 
     void OnMove(InputValue value)
     {
+        if (GameManager.instance != null && !GameManager.instance.isLive)
+        {
+            inputVec = Vector2.zero;
+            return;
+        }
+
         // 입력 읽기
         Vector2 input = value.Get<Vector2>();
 
@@ -157,10 +172,14 @@ public class Player : MonoBehaviour
 
     void LateUpdate()
     {
-        // 게임 중 아닐 때 종료
+        // 게임 중 아닐 때 애니메이션·입력 표시 정지
         if (GameManager.instance == null ||
             !GameManager.instance.isLive)
+        {
+            if (anim != null)
+                anim.SetFloat("Speed", 0f);
             return;
+        }
 
         // 이동값을 애니메이션에 전달
         anim.SetFloat("Speed", inputVec.magnitude);
@@ -501,10 +520,9 @@ public class Player : MonoBehaviour
 
         if (anim != null)
         {
-            // 애니 상태 초기화
             anim.ResetTrigger("Dead");
-
-            // 정지 상태
+            anim.Rebind();
+            anim.Update(0f);
             anim.SetFloat("Speed", 0f);
         }
     }

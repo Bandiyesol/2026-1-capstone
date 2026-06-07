@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,8 @@ public class MainStoryUI : MonoBehaviour
 
 	bool isOpen;
 
+	public TMP_FontAsset KoreanFont => koreanFont;
+
 	void Awake()
 	{
 		EnsureReferences();
@@ -44,7 +47,18 @@ public class MainStoryUI : MonoBehaviour
 			skipButton.onClick.RemoveListener(Skip);
 	}
 
-	/// <summary>스토리 표시 후 완료 시 GameManager.GameStart() 호출.</summary>
+	void Update()
+	{
+		if (!isOpen || panel == null || !panel.activeInHierarchy)
+			return;
+
+		if (!PanelKeyboardShortcutUtility.WasEscapeOrEnterPressedThisFrame())
+			return;
+
+		TryInvokeSkip();
+	}
+
+	/// <summary>스토리 표시 후 완료 시 보스 알리미 → 무기/룬 플로우(<see cref="GameManager.GameStart"/>).</summary>
 	public void ShowThenStartGame()
 	{
 		if (isOpen)
@@ -68,8 +82,36 @@ public class MainStoryUI : MonoBehaviour
 		panel.SetActive(true);
 		panel.transform.SetAsLastSibling();
 
+		RefreshStoryScroll();
+	}
+
+	void RefreshStoryScroll()
+	{
+		if (scrollRect == null)
+			return;
+
+		EnsureScrollLayout();
+		ScrollRectContentUtility.RefreshAndScrollToTop(scrollRect);
+		StartCoroutine(ScrollToTopAfterLayout());
+	}
+
+	IEnumerator ScrollToTopAfterLayout()
+	{
+		yield return null;
 		if (scrollRect != null)
-			scrollRect.verticalNormalizedPosition = 1f;
+			ScrollRectContentUtility.RefreshAndScrollToTop(scrollRect);
+	}
+
+	void EnsureScrollLayout()
+	{
+		if (scrollRect == null || scrollRect.content == null)
+			return;
+
+		ScrollRectContentUtility.ApplyVerticalOnlyScroll(scrollRect);
+		ScrollRectContentUtility.ApplyTopDownContentDefaults(scrollRect.content);
+
+		if (storyText != null)
+			ScrollRectContentUtility.ApplyTopDownTextDefaults(storyText);
 	}
 
 	public void Skip()
@@ -78,6 +120,17 @@ public class MainStoryUI : MonoBehaviour
 			return;
 
 		FinishAndStartGame();
+	}
+
+	void TryInvokeSkip()
+	{
+		if (skipButton != null && skipButton.isActiveAndEnabled && skipButton.interactable)
+		{
+			skipButton.onClick.Invoke();
+			return;
+		}
+
+		Skip();
 	}
 
 	void FinishAndStartGame()
@@ -124,6 +177,7 @@ public class MainStoryUI : MonoBehaviour
 		storyText.text = body;
 		TmpKoreanFontUtility.ApplyFont(storyText, koreanFont);
 		TmpKoreanFontUtility.EnsureGlyphs(storyText, koreanFont, body);
+		ScrollRectContentUtility.ApplyTopDownTextDefaults(storyText);
 
 		if (titleText != null)
 		{

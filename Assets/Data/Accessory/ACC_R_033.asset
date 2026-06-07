@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9946f9a81c0e4d448fac36432289e49, type: 3}
   m_Name: ACC_R_033
   m_EditorClassIdentifier: Assembly-CSharp::AccessoryData
-  displayName: "\uCE58\uC988"
+  displayName: "\uBE5B\uB098\uB294 \uC774\uB07C"
   grade: 1
   accessoryType: "\uC720\uD2F8"
   description: "\uC774\uB3D9 \uC18D\uB3C4 +15%"
-  icon: {fileID: 1137663184413077332, guid: 46a9df4d981625640a6cdb1f8444c36d, type: 3}
+  icon: {fileID: 21300000, guid: 46a9df4d981625640a6cdb1f8444c36d, type: 3}
   modifiers:
   - statType: 17
     value: 0.15

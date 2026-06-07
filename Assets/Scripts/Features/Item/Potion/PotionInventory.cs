@@ -18,7 +18,7 @@ public class PotionInventory : MonoBehaviour
 		public int count = 1;
 	}
 
-	[SerializeField] int maxStacks = 12;
+	[SerializeField] int maxStacks = 999;
 
 	readonly List<PotionStack> stacks = new List<PotionStack>();
 
@@ -35,6 +35,9 @@ public class PotionInventory : MonoBehaviour
 		}
 
 		Instance = this;
+
+		if (maxStacks <= 12)
+			maxStacks = 999;
 	}
 
 	public bool TryAdd(string potionId, Sprite icon, int count = 1, string displayName = null)

@@ -18,11 +18,16 @@ public class WaveManager : MonoBehaviour
     int aliveEnemyCount; // 생존 적 수
     bool isSpawning;     // 소환 중 여부
     bool started;        // 시작 여부
+    bool awaitingStagePortal; // 보스 처치 후 마법진 대기
+
+    public bool AwaitingStagePortal => awaitingStagePortal;
 
     // 스테이지 시작
     public void StartStage()
     {
+        awaitingStagePortal = false;
         currentWave = 0;
+        BossBase.ClearLastDeathPosition();
         StartWave();
     }
 
@@ -44,6 +49,8 @@ public class WaveManager : MonoBehaviour
         isSpawning = false;
         aliveEnemyCount = 0;
         currentWave = 0;
+        awaitingStagePortal = false;
+        BossBase.ClearLastDeathPosition();
     }
 
     // 웨이브 시작
@@ -135,17 +142,25 @@ public class WaveManager : MonoBehaviour
         int rand =
             Random.Range(0, wave.bossSpawnIndexes.Length);
 
-        SpawnEnemy(wave.bossSpawnIndexes[rand]);
+        if (!SpawnEnemy(wave.bossSpawnIndexes[rand]))
+        {
+            Debug.LogError(
+                $"[WaveManager] 보스 소환 실패 — stage {stageManager.stageIndex}, " +
+                $"spawnData index {wave.bossSpawnIndexes[rand]}.");
+            aliveEnemyCount = 0;
+            return;
+        }
 
         aliveEnemyCount = 1;
     }
 
     // 실제 적 생성
-    void SpawnEnemy(int index)
+    bool SpawnEnemy(int index)
     {
         GameObject enemy = spawner.Spawn(index);
 
-        if (enemy == null) return;
+        if (enemy == null)
+            return false;
 
         // 일반 몹 연결
         Enemy enemyScript =
@@ -160,6 +175,8 @@ public class WaveManager : MonoBehaviour
 
         if (bossScript != null)
             bossScript.waveManager = this;
+
+        return true;
     }
 
     // 적 사망 콜백
@@ -167,9 +184,61 @@ public class WaveManager : MonoBehaviour
     {
         aliveEnemyCount--;
 
-        // 소환 완료 + 전멸
-        if (!isSpawning && aliveEnemyCount <= 0)
-            NextWave();
+        if (isSpawning || aliveEnemyCount > 0)
+            return;
+
+        if (IsBossWaveAwaitingPortal())
+        {
+            awaitingStagePortal = true;
+            return;
+        }
+
+        NextWave();
+    }
+
+    bool IsBossWaveAwaitingPortal()
+    {
+        if (stageManager == null || stageManager.stageDatas == null)
+            return false;
+
+        int stageIdx = stageManager.stageIndex;
+        if (stageIdx < 0 || stageIdx >= stageManager.stageDatas.Length)
+            return false;
+
+        StageData stage = stageManager.stageDatas[stageIdx];
+        if (stage?.waves == null || stage.waves.Length == 0)
+            return false;
+
+        int lastWaveIndex = stage.waves.Length - 1;
+        if (currentWave != lastWaveIndex)
+            return false;
+
+        return stage.waves[currentWave].isBossWave;
+    }
+
+    /// <summary>스테이지 클리어 마법진을 밟았을 때 다음 스테이지로 진행합니다.</summary>
+    public void TryAdvanceStageViaPortal()
+    {
+        if (!awaitingStagePortal)
+            return;
+
+        awaitingStagePortal = false;
+        StopAllCoroutines();
+
+        GameManager.FreezePlayerMovement();
+
+        if (PoolManager.Instance != null)
+            PoolManager.Instance.ReturnAllActiveToPool();
+
+        bool moved = stageManager.NextStage();
+
+        if (!moved)
+            return;
+
+        if (GameManager.instance != null)
+            GameManager.instance.ShowBossAlarmForStageTransition(StartStage);
+        else
+            StartStage();
     }
 
     // 다음 웨이브
@@ -180,12 +249,9 @@ public class WaveManager : MonoBehaviour
         StageData stage =
             stageManager.stageDatas[stageManager.stageIndex];
 
-        // 스테이지 종료
+        // 스테이지 종료 — 보스 웨이브는 마법진으로만 넘어갑니다.
         if (currentWave >= stage.waves.Length)
-        {
-            StartCoroutine(NextStageDelayed());
             return;
-        }
 
         StartCoroutine(StartWaveDelayed());
     }
@@ -195,16 +261,5 @@ public class WaveManager : MonoBehaviour
     {
         yield return new WaitForSeconds(nextWaveDelay);
         StartWave();
-    }
-
-    // 스테이지 딜레이
-    IEnumerator NextStageDelayed()
-    {
-        yield return new WaitForSeconds(nextStageDelay);
-
-        bool moved = stageManager.NextStage();
-
-        if (moved)
-            StartStage();
     }
 }

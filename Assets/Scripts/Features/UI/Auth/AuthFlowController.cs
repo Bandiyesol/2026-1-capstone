@@ -49,9 +49,8 @@ public class AuthFlowController : MonoBehaviour
 	[SerializeField] Button forgotBackToLoginButton;
 
 	[Header("Status")]
+	[Tooltip("AuthScreen 직계 자식 StatusText 권장 (모든 패널 공용)")]
 	[SerializeField] TMP_Text statusText;
-	[Tooltip("비어 있으면 statusText만 사용. 회원가입 패널에 별도 메시지 Text가 있으면 연결")]
-	[SerializeField] TMP_Text signUpStatusText;
 
 	[Header("Loading")]
 	[Tooltip("로그인/가입/화면 전환 시 표시. AuthScreen 최상위에 두고 처음엔 비활성")]
@@ -69,12 +68,14 @@ public class AuthFlowController : MonoBehaviour
 	bool loadingPanelResolved;
 	bool loadingOverlayPrepared;
 	bool pressAnyKeyPanelResolved;
+	AuthFormKeyboardNavigation formKeyboardNavigation;
 
 	void Awake()
 	{
 		EnsureLoadingOverlay();
 		TryResolvePressAnyKeyPanel();
 		TryResolveStatusText();
+		EnsureFormKeyboardNavigation();
 		if (loginButton != null)
 			loginButton.onClick.AddListener(() => _ = OnLoginClickedAsync());
 
@@ -101,6 +102,44 @@ public class AuthFlowController : MonoBehaviour
 
 		if (logoutButton != null)
 			logoutButton.onClick.AddListener(() => _ = OnLogoutClickedAsync());
+	}
+
+	void EnsureFormKeyboardNavigation()
+	{
+		formKeyboardNavigation = GetComponent<AuthFormKeyboardNavigation>();
+		if (formKeyboardNavigation == null)
+			formKeyboardNavigation = gameObject.AddComponent<AuthFormKeyboardNavigation>();
+
+		formKeyboardNavigation.Initialize(
+			new[]
+			{
+				new AuthFormKeyboardNavigation.FormConfig
+				{
+					panel = loginPanel,
+					inputs = new[] { loginIdInput, loginPasswordInput },
+					submitButton = loginButton
+				},
+				new AuthFormKeyboardNavigation.FormConfig
+				{
+					panel = signUpPanel,
+					inputs = new[]
+					{
+						signUpUsernameInput,
+						signUpEmailInput,
+						signUpPasswordInput,
+						signUpPasswordConfirmInput,
+						signUpNicknameInput
+					},
+					submitButton = signUpButton
+				},
+				new AuthFormKeyboardNavigation.FormConfig
+				{
+					panel = forgotPasswordPanel,
+					inputs = new[] { forgotPasswordIdOrEmailInput },
+					submitButton = sendResetEmailButton
+				}
+			},
+			() => busy || loadingDepth > 0 || awaitingPressAnyKey);
 	}
 
 	async void Start()
@@ -146,6 +185,7 @@ public class AuthFlowController : MonoBehaviour
 	void ShowPressAnyKey()
 	{
 		awaitingPressAnyKey = true;
+		ClearAllAuthInputs();
 		SetPanelActive(pressAnyKeyPanel, true);
 		SetPanelActive(loginPanel, false);
 		SetPanelActive(signUpPanel, false);
@@ -159,6 +199,9 @@ public class AuthFlowController : MonoBehaviour
 	void ShowLogin(bool clearStatus = true)
 	{
 		awaitingPressAnyKey = false;
+		ClearSignUpInputs();
+		ClearForgotPasswordInputs();
+		ClearLoginInputs();
 		SetPanelActive(pressAnyKeyPanel, false);
 		SetPanelActive(loginPanel, true);
 		SetPanelActive(signUpPanel, false);
@@ -171,10 +214,14 @@ public class AuthFlowController : MonoBehaviour
 	void ShowSignUp(bool clearStatus = true)
 	{
 		awaitingPressAnyKey = false;
+		ClearLoginInputs();
+		ClearForgotPasswordInputs();
+		ClearSignUpInputs();
 		SetPanelActive(pressAnyKeyPanel, false);
 		SetPanelActive(loginPanel, false);
 		SetPanelActive(signUpPanel, true);
 		SetPanelActive(forgotPasswordPanel, false);
+		SetStatusTextVisible(true);
 		if (clearStatus)
 			SetStatus("");
 	}
@@ -182,10 +229,14 @@ public class AuthFlowController : MonoBehaviour
 	void ShowForgotPassword()
 	{
 		awaitingPressAnyKey = false;
+		ClearLoginInputs();
+		ClearSignUpInputs();
+		ClearForgotPasswordInputs();
 		SetPanelActive(pressAnyKeyPanel, false);
 		SetPanelActive(loginPanel, false);
 		SetPanelActive(signUpPanel, false);
 		SetPanelActive(forgotPasswordPanel, true);
+		SetStatusTextVisible(true);
 		SetStatus("");
 	}
 
@@ -210,6 +261,7 @@ public class AuthFlowController : MonoBehaviour
 	{
 		CloseSettingsIfOpen();
 		await WaitLoadingMinDisplayAsync();
+		await UserAccountDisplay.RefreshAsync();
 
 		if (authScreenRoot != null)
 			authScreenRoot.SetActive(false);
@@ -217,7 +269,9 @@ public class AuthFlowController : MonoBehaviour
 		if (gameStartRoot != null)
 			gameStartRoot.SetActive(true);
 
+		ClearAllAuthInputs();
 		SetStatus("");
+		GameManager.RefreshMainMenuLeaderboard();
 	}
 
 	/// <summary>GameStart 로그아웃 버튼에서 호출</summary>
@@ -249,6 +303,7 @@ public class AuthFlowController : MonoBehaviour
 	async Task ApplyExitToLoginAsync()
 	{
 		await WaitLoadingMinDisplayAsync();
+		UserAccountDisplay.ClearCache();
 
 		if (gameStartRoot != null)
 			gameStartRoot.SetActive(false);
@@ -583,6 +638,19 @@ public class AuthFlowController : MonoBehaviour
 			return;
 
 		Transform searchRoot = authScreenRoot != null ? authScreenRoot.transform : transform;
+
+		// AuthScreen 바로 아래 StatusText (패널 안 중복 오브젝트 제외)
+		for (int i = 0; i < searchRoot.childCount; i++)
+		{
+			Transform child = searchRoot.GetChild(i);
+			if (child.name != "StatusText")
+				continue;
+
+			statusText = child.GetComponent<TMP_Text>();
+			if (statusText != null)
+				return;
+		}
+
 		Transform found = FindDeep(searchRoot, "StatusText");
 		if (found != null)
 			statusText = found.GetComponent<TMP_Text>();
@@ -718,10 +786,34 @@ public class AuthFlowController : MonoBehaviour
 
 	void SetStatus(string message)
 	{
-		string text = message ?? "";
 		if (statusText != null)
-			statusText.text = text;
-		if (signUpStatusText != null)
-			signUpStatusText.text = text;
+			statusText.text = message ?? "";
+	}
+
+	void ClearLoginInputs()
+	{
+		AuthInputUtility.ClearAll(loginIdInput, loginPasswordInput);
+	}
+
+	void ClearSignUpInputs()
+	{
+		AuthInputUtility.ClearAll(
+			signUpUsernameInput,
+			signUpEmailInput,
+			signUpPasswordInput,
+			signUpPasswordConfirmInput,
+			signUpNicknameInput);
+	}
+
+	void ClearForgotPasswordInputs()
+	{
+		AuthInputUtility.ClearAll(forgotPasswordIdOrEmailInput);
+	}
+
+	void ClearAllAuthInputs()
+	{
+		ClearLoginInputs();
+		ClearSignUpInputs();
+		ClearForgotPasswordInputs();
 	}
 }

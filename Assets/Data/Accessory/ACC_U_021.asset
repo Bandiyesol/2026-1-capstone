@@ -17,6 +17,6 @@ MonoBehaviour:
   accessoryType: "\uD2B9\uC218"
   description: "\uB8EC \uC2AC\uB86F 1\uCE78 \uCD94\uAC00, \uB8EC \uBC1C\uB3D9\uB960
     +10%"
-  icon: {fileID: 8071032059951514126, guid: 87b2342e09ccad34ba68d6d9a836a38a, type: 3}
+  icon: {fileID: 21300000, guid: 87b2342e09ccad34ba68d6d9a836a38a, type: 3}
   modifiers: []
   effectType: 38

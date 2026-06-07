@@ -18,6 +18,42 @@ MonoBehaviour:
   rareWeight: 20
   uniqueWeight: 8
   legendaryWeight: 2
+  normalChestReward:
+    weapon: 50
+    accessory: 45
+    relic: 5
+  rareChestReward:
+    weapon: 45
+    accessory: 50
+    relic: 5
+  uniqueChestReward:
+    weapon: 40
+    accessory: 55
+    relic: 5
+  legendaryChestReward:
+    weapon: 35
+    accessory: 55
+    relic: 10
+  normalItemGrade:
+    common: 85
+    rare: 12
+    unique: 2
+    legendary: 1
+  rareItemGrade:
+    common: 40
+    rare: 40
+    unique: 15
+    legendary: 5
+  uniqueItemGrade:
+    common: 15
+    rare: 35
+    unique: 35
+    legendary: 15
+  legendaryItemGrade:
+    common: 5
+    rare: 25
+    unique: 40
+    legendary: 30
   normalWeaponIds:
   - SWORD_001
   - BOW_001

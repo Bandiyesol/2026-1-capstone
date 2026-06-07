@@ -21,11 +21,21 @@ public class CoinDropManager : MonoBehaviour
 
         Instance = this;
 
-        if (settings == null)
-            settings = Resources.Load<CoinDropSettings>("Data/CoinDropSettings");
-
+        ResolveSettings();
         if (pool == null && GameManager.instance != null)
             pool = GameManager.instance.pool;
+    }
+
+    void ResolveSettings()
+    {
+        if (settings != null)
+            return;
+
+        if (GameManager.instance != null && GameManager.instance.coinDropSettings != null)
+            settings = GameManager.instance.coinDropSettings;
+
+        if (settings == null)
+            settings = Resources.Load<CoinDropSettings>("Data/CoinDropSettings");
     }
 
     /// <summary>일반 몬스터 사망 시 호출</summary>
