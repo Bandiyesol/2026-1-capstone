@@ -21,10 +21,6 @@ public class LavaEffect : BiomeEffect
     [SerializeField]
     float blinkSpeed = 10f;
 
-    [SerializeField]
-    Color lavaTint =
-        new Color(1f, 0.45f, 0.45f, 1f);
-
     bool wasOnLava; // 직전 프레임 용암 여부
 
     protected override void ApplyEffect()
@@ -46,34 +42,20 @@ public class LavaEffect : BiomeEffect
             return;
 
         // 현재 용암 위 판정
-        bool onLava =
-            player.IsOnLava();
+        bool onLava = player.IsOnLava();
 
         // 용암 위에 있는 동안
         if (onLava)
         {
             // 방어 무시 지속 피해
-            GameManager.instance.Health -=
-                lavaDamagePerSecond *
-                Time.deltaTime;
-
-            // 용암 색 고정
-            player.SetStatusTint(
-                lavaTint
-            );
+            GameManager.instance.Health -= lavaDamagePerSecond * Time.deltaTime;
         }
 
         // 방금 용암에서 벗어났다면
         if (wasOnLava && !onLava)
         {
             // 플레이어 화상 시스템 호출
-            player.ApplyBurn(
-                burnDuration,
-                burnTickDamage,
-                burnTickInterval,
-                lavaTint,
-                blinkSpeed
-            );
+            player.ApplyBurn(burnDuration, burnTickDamage, burnTickInterval, blinkSpeed);
         }
 
         // 상태 저장

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5949158120226508834}
   - component: {fileID: 7857746856658252728}
   - component: {fileID: 7030396391325469204}
+  - component: {fileID: -450956872924804377}
   m_Layer: 6
   m_Name: StormDragonBoss
   m_TagString: Enemy
@@ -213,3 +214,19 @@ MonoBehaviour:
   homingCount: 8
   homingRadius: 2
   homingDelay: 0.5
+--- !u!114 &-450956872924804377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4790737316958003848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}

@@ -2,73 +2,83 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 스테이지별 웨이브 전개 및 일반/보스 몬스터 스폰을 총괄하는 웨이브 매니저
+/// </summary>
 public class WaveManager : MonoBehaviour
 {
     [Header("참조")]
-    public StageManager stageManager;
-    public Spawner spawner;
+    public StageManager stageManager; // 스테이지 데이터 및 인덱스 관리 컴포넌트
+    public Spawner spawner;           // 오브젝트 풀링 기반의 실질적인 몬스터 생성기
 
     [Header("딜레이")]
-    public float nextWaveDelay = 1.5f;
-    public float nextStageDelay = 3f;
+    public float nextWaveDelay = 1.5f;   // 하나의 웨이브 클리어 후 다음 웨이브 개시까지의 딜레이
+    public float nextStageDelay = 3f;    // 스테이지 완전 클리어 시 다음 단계 전환 딜레이
 
     [Header("상태")]
-    public int currentWave;
+    public int currentWave; // 현재 진행 중인 웨이브 번호 (인덱스)
 
-    int aliveEnemyCount; // 생존 적 수
-    bool isSpawning;     // 소환 중 여부
-    bool started;        // 시작 여부
+    int aliveEnemyCount; // 현재 필드(또는 해당 페이즈)에 살아있는 적의 총합 카운트
+    bool isSpawning;     // 현재 코루틴을 통해 몬스터들을 순차 소환하고 있는 중인지 여부
+    bool started;        // 스테이지 중복 실행을 막기 위한 가동 확인 플래그
 
-    // 스테이지 시작
     public void StartStage()
     {
         currentWave = 0;
         StartWave();
     }
 
-    // 최초 시작
     public void Begin()
     {
         if (started) return;
-
         started = true;
         StartStage();
     }
 
-    // 메인메뉴 복귀용 초기화
     public void ResetForMainMenu()
     {
         StopAllCoroutines();
-
         started = false;
         isSpawning = false;
         aliveEnemyCount = 0;
         currentWave = 0;
     }
 
-    // 웨이브 시작
     void StartWave()
     {
         StartCoroutine(SpawnWave());
     }
 
-    // 웨이브 소환 루프
+    /// <summary>
+    /// [메인 제어 루틴] 타이밍 버그가 수정된 안전한 스폰 제어 코루틴
+    /// </summary>
     IEnumerator SpawnWave()
     {
         isSpawning = true;
         aliveEnemyCount = 0;
 
-        // 현재 웨이브 로드
-        WaveData wave =
-            stageManager.stageDatas[stageManager.stageIndex]
-            .waves[currentWave];
+        WaveData wave = stageManager.stageDatas[stageManager.stageIndex].waves[currentWave];
 
-        // 보스 웨이브
+        // 🎯 [분기 1] 보스 웨이브인 경우
+        // WaveManager.cs 의 SpawnWave 코루틴 중 보스 웨이브 부분
         if (wave.isBossWave)
         {
+            // 1단계: 선결 잡몹 스폰 및 전멸 대기
+            if (wave.enemies != null && wave.enemies.Length > 0)
+            {
+                yield return StartCoroutine(SpawnNormalWave(wave));
+                // 잡몹들이 다 죽을 때까지 명확히 대기
+                yield return new WaitUntil(() => aliveEnemyCount <= 0);
+            }
+
+            // 2단계: 최종 보스 본체(코어) 소환
             SpawnBossWave(wave);
+
+            // 💡 중요: 코어 소환 직후 다음 웨이브 검사 로직으로 바로 넘어가지 않게 
+            // 코어가 스스로 죽음을 보고할 때까지 여기서 무한 대기합니다.
+            yield return new WaitUntil(() => aliveEnemyCount <= 0);
         }
-        // 일반 웨이브
+        // 🎯 [분기 2] 일반 잡몹 웨이브인 경우
         else
         {
             yield return StartCoroutine(SpawnNormalWave(wave));
@@ -76,21 +86,18 @@ public class WaveManager : MonoBehaviour
 
         isSpawning = false;
 
-        // 즉시 종료 체크
+        // 모든 소환 및 1프레임 안착 대기가 완전히 끝난 시점에만 적 수량을 체크합니다.
         if (aliveEnemyCount <= 0)
             NextWave();
     }
 
-    // 일반 적 웨이브
     IEnumerator SpawnNormalWave(WaveData wave)
     {
         List<int> spawnQueue = new List<int>();
 
-        // 소환 큐 생성
         for (int i = 0; i < wave.enemies.Length; i++)
         {
             EnemySpawnInfo info = wave.enemies[i];
-
             for (int j = 0; j < info.spawnCount; j++)
             {
                 spawnQueue.Add(info.spawnDataIndex);
@@ -98,96 +105,71 @@ public class WaveManager : MonoBehaviour
             }
         }
 
-        // 랜덤 셔플
         for (int i = spawnQueue.Count - 1; i > 0; i--)
         {
             int rand = Random.Range(0, i + 1);
-
             int temp = spawnQueue[i];
             spawnQueue[i] = spawnQueue[rand];
             spawnQueue[rand] = temp;
         }
 
-        // 순차 소환
         for (int i = 0; i < spawnQueue.Count; i++)
         {
             SpawnEnemy(spawnQueue[i]);
-
-            SpawnData data =
-                spawner.GetSpawnData(spawnQueue[i]);
-
+            SpawnData data = spawner.GetSpawnData(spawnQueue[i]);
             yield return new WaitForSeconds(data.spawnTime);
         }
     }
 
-    // 보스 웨이브
     void SpawnBossWave(WaveData wave)
     {
-        // 후보 없으면 스킵
-        if (wave.bossSpawnIndexes == null ||
-            wave.bossSpawnIndexes.Length == 0)
+        if (wave.bossSpawnIndexes == null || wave.bossSpawnIndexes.Length == 0)
         {
             NextWave();
             return;
         }
 
-        // 랜덤 보스 선택
-        int rand =
-            Random.Range(0, wave.bossSpawnIndexes.Length);
-
+        int rand = Random.Range(0, wave.bossSpawnIndexes.Length);
         SpawnEnemy(wave.bossSpawnIndexes[rand]);
 
+        // 보스 개체 카운트 설정
         aliveEnemyCount = 1;
     }
 
-    // 실제 적 생성
     void SpawnEnemy(int index)
     {
         GameObject enemy = spawner.Spawn(index);
-
         if (enemy == null) return;
 
-        // 일반 몹 연결
-        Enemy enemyScript =
-            enemy.GetComponent<Enemy>();
-
+        Enemy enemyScript = enemy.GetComponent<Enemy>();
         if (enemyScript != null)
             enemyScript.waveManager = this;
 
-        // 보스 연결
-        BossBase bossScript =
-            enemy.GetComponent<BossBase>();
-
+        BossBase bossScript = enemy.GetComponent<BossBase>();
         if (bossScript != null)
             bossScript.waveManager = this;
     }
 
-    // 적 사망 콜백
     public void OnEnemyDead()
     {
         aliveEnemyCount--;
 
-        // 소환 완료 + 전멸
         if (!isSpawning && aliveEnemyCount <= 0)
             NextWave();
     }
 
-    // 다음 웨이브
     void NextWave()
     {
         currentWave++;
 
-        StageData stage =
-            stageManager.stageDatas[stageManager.stageIndex];
+        StageData stage = stageManager.stageDatas[stageManager.stageIndex];
 
-        // 스테이지 종료 시 아무것도 안 함 (포탈 활성화는 다른 곳에서 처리)
         if (currentWave >= stage.waves.Length)
             return;
 
         StartCoroutine(StartWaveDelayed());
     }
 
-    // 웨이브 딜레이
     IEnumerator StartWaveDelayed()
     {
         yield return new WaitForSeconds(nextWaveDelay);

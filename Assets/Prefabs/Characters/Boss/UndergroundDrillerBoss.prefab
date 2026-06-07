@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6059231401899627201}
   - component: {fileID: 7474990588720823758}
   - component: {fileID: 8455070666229579016}
+  - component: {fileID: 2871559102769257860}
   m_Layer: 6
   m_Name: UndergroundDrillerBoss
   m_TagString: Enemy
@@ -206,6 +207,22 @@ MonoBehaviour:
   rockSpawnRadius: 7.5
   undergroundDuration: 5
   groundStayTime: 3
+--- !u!114 &2871559102769257860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5067197856464486941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}
 --- !u!1 &6363014529325848330
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,9 +15,6 @@ public class FreezeBiomeEffect : BiomeEffect
     [Header("회복 속도")]
     [SerializeField] float recoverPerSecond = 1.5f;
 
-    [Header("빙결 색상")]
-    [SerializeField] Color freezeTint = new Color(0.72f, 0.9f, 1f, 1f);
-
     // 추위 노출 누적 시간
     float exposureTime;
 
@@ -69,21 +66,14 @@ public class FreezeBiomeEffect : BiomeEffect
         {
             // [에러 수정] 감속 전에는 속도 배율을 정상(1.0)으로 유지
             player.moveSpeedMultiplier = 1f;
-            player.ResetStatusTint();
             return;
         }
-
-        // [상태 연출] 지연 시간을 초과하여 얼어붙기 시작하면 빙결 컬러 적용
-        player.SetStatusTint(freezeTint);
 
         // 지연 시간을 뺀 순수 동결 진행 시간 계산
         float freezeTime = exposureTime - exposureDelay;
 
         // [디버프 연산] 초당 감속량에 맞춰 떨어지는 배율 계산 (최소 속도 한계치 적용)
-        float targetMultiplier = Mathf.Max(
-            minSpeedMultiplier,
-            1f - (freezeTime * slowPerSecond)
-        );
+        float targetMultiplier = Mathf.Max(minSpeedMultiplier, 1f - (freezeTime * slowPerSecond));
 
         // [에러 수정] 계산된 동결 속도 배율을 플레이어 스크립트에 실시간 주입
         player.moveSpeedMultiplier = targetMultiplier;

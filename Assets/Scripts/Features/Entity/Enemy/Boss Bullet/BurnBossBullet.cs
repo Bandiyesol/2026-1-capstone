@@ -11,10 +11,6 @@ public class BurnBossBullet : BossBullet
     [Header("화상 연출")]
     [SerializeField] float blinkSpeed = 10f; // 깜빡임 속도
 
-    [SerializeField]
-    Color burnTint =
-        new Color(1f, 0.45f, 0.45f, 1f); // 화상 색상
-
     void OnCollisionEnter2D(Collision2D collision)
     {
         // 플레이어만 처리
@@ -30,13 +26,7 @@ public class BurnBossBullet : BossBullet
             return;
 
         // 플레이어 내부 화상 시스템 호출
-        player.ApplyBurn(
-            burnDuration,
-            burnTickDamage,
-            burnTickInterval,
-            burnTint,
-            blinkSpeed
-        );
+        player.ApplyBurn(burnDuration, burnTickDamage, burnTickInterval, blinkSpeed);
 
         // 탄 반환
         gameObject.SetActive(false);

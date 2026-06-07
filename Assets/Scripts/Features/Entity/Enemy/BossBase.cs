@@ -26,7 +26,7 @@ public class BossBase : MonoBehaviour, IDamageable
     protected bool isPatternPlaying;
     protected float patternCooldown;
     protected float patternTimer;
-    bool isDead;
+    protected bool isDead;
 
     protected Rigidbody2D rigid;
     protected SpriteRenderer spriter;
@@ -73,6 +73,9 @@ public class BossBase : MonoBehaviour, IDamageable
 
     protected virtual void Update()
     {
+        if (!GameManager.instance.isLive)
+            return;
+
         if (isDead || isPatternPlaying) return;
 
         patternTimer += Time.deltaTime;
@@ -86,6 +89,9 @@ public class BossBase : MonoBehaviour, IDamageable
 
     protected virtual void FixedUpdate()
     {
+        if (!GameManager.instance.isLive)
+            return;
+
         if (isDead) return;
 
         if (!canMove)

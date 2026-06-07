@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3058451057968016042}
   - component: {fileID: 7915627781399767996}
   - component: {fileID: 418143690687896136}
+  - component: {fileID: -7289603496247227216}
   m_Layer: 6
   m_Name: DesertGuardianBoss
   m_TagString: Enemy
@@ -209,3 +210,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-7289603496247227216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8109167241534672298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}

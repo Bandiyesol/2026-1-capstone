@@ -13,7 +13,6 @@ public class LavaHomingBullet : HomingBossBullet
 
     [Header("디버프 연출")]
     [SerializeField] float blinkSpeed = 10f;                            // 화상 상태일 때 플레이어 본체 깜빡임 속도
-    [SerializeField] Color burnTint = new Color(1f, 0.45f, 0.45f, 1f);  // 화상 중일 때 플레이어 스프라이트에 적용할 붉은 색조
 
     // ==========================================
     // 2D 물리 충돌 피격 이벤트 (일반 Collider 상호작용)
@@ -36,13 +35,7 @@ public class LavaHomingBullet : HomingBossBullet
         if (Random.Range(0f, 100f) <= burnChance)
         {
             // 주입 성공 시: 플레이어 본체에 화상 디버프 매개변수 일괄 적용
-            player.ApplyBurn(
-                burnDuration,
-                burnTickDamage,
-                burnTickInterval,
-                burnTint,
-                blinkSpeed
-            );
+            player.ApplyBurn(burnDuration, burnTickDamage, burnTickInterval, blinkSpeed);
         }
 
         // 5. 확률 판정 성패 여부와 관계없이 충돌이 일어났으므로 탄막 오브젝트 풀 비활성화 반환

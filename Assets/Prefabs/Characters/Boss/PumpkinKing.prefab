@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8966635495577826381}
   - component: {fileID: 7212939776324827797}
   - component: {fileID: 4708299570451810488}
+  - component: {fileID: -6619105291805682774}
   m_Layer: 6
   m_Name: PumpkinKing
   m_TagString: Enemy
@@ -203,3 +204,19 @@ MonoBehaviour:
   summonCount: 1
   summonRadius: 4
   homingBulletIndex: 1
+--- !u!114 &-6619105291805682774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851132876209876476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}

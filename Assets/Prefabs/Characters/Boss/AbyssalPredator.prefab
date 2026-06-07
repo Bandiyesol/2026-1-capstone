@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 2399005693163124274}
   - component: {fileID: 7119902717938215497}
   - component: {fileID: 7232895066398776357}
-  - component: {fileID: 6902430789793541225}
   - component: {fileID: 7498552554570125004}
+  - component: {fileID: 6902430789793541225}
+  - component: {fileID: 4593363933601551521}
   m_Layer: 6
   m_Name: AbyssalPredator
   m_TagString: Enemy
@@ -159,6 +160,28 @@ CapsuleCollider2D:
   m_Offset: {x: -0.061749697, y: 0.67138845}
   m_Size: {x: 1.0147915, y: 1.2834531}
   m_Direction: 0
+--- !u!95 &7498552554570125004
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7476559695606880468}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 12d11c934c689ec428b4170ac80f01f1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6902430789793541225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,25 +217,19 @@ MonoBehaviour:
   spreadEndDelay: 2
   teleportDistance: 8
   spreadAngle: 90
---- !u!95 &7498552554570125004
-Animator:
-  serializedVersion: 7
+--- !u!114 &4593363933601551521
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7476559695606880468}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 12d11c934c689ec428b4170ac80f01f1, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}

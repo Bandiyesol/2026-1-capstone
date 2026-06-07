@@ -6552,6 +6552,7 @@ GameObject:
   - component: {fileID: 1844375741097016991}
   - component: {fileID: 5715410143228396308}
   - component: {fileID: 4161855205103758179}
+  - component: {fileID: -6073768501135098311}
   m_Layer: 6
   m_Name: LavaEarthDragon
   m_TagString: Enemy
@@ -6752,6 +6753,22 @@ MonoBehaviour:
   - {fileID: 8648603432765374503}
   - {fileID: 7107338806155122147}
   - {fileID: 39563984352713620}
+--- !u!114 &-6073768501135098311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6648107930446469067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}
 --- !u!1 &7107338806155122147
 GameObject:
   m_ObjectHideFlags: 0
