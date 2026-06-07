@@ -46,8 +46,6 @@ public class GameStartMenuController : MonoBehaviour
 	{
 		TryResolveStartButton();
 		TryResolveRecordButton();
-		EnsureRecordButtonExists();
-		MainMenuLeaderboardBootstrap.Ensure(transform);
 
 		if (startButton != null)
 		{
@@ -96,17 +94,7 @@ public class GameStartMenuController : MonoBehaviour
 		if (recordButton != null)
 			return;
 
-		if (settingsButton == null)
-			return;
-
-		GameObject clone = Instantiate(settingsButton.gameObject, settingsButton.transform.parent);
-		clone.name = recordButtonObjectName;
-		clone.transform.SetSiblingIndex(settingsButton.transform.GetSiblingIndex());
-
-		recordButton = clone.GetComponent<Button>();
-		TextMeshProUGUI label = clone.GetComponentInChildren<TextMeshProUGUI>(true);
-		if (label != null)
-			label.text = "기록";
+		Debug.LogWarning("[GameStartMenu] recordButton이 연결되지 않았습니다. ButtonRecord를 Inspector에 연결하세요.");
 	}
 
 	void TryResolveStartButton()

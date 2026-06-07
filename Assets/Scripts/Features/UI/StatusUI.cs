@@ -72,6 +72,7 @@ public class StatusUI : MonoBehaviour
 
 		isOpen = true;
 		panel.SetActive(true);
+		OverlayPanelUILayout.Apply(panel.transform);
 		SubscribeStats();
 		Refresh();
 		PauseGameIfLive();
@@ -147,6 +148,7 @@ public class StatusUI : MonoBehaviour
 
 		ResolveKoreanFont();
 		TmpKoreanFontUtility.ApplyFontToAll(koreanFont, titleLabel, statsLabel, statsSideLabel);
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
 	}
 
 	void AutoBindReferences()
@@ -280,7 +282,7 @@ public class StatusUI : MonoBehaviour
 
 		string mainText = string.IsNullOrEmpty(statsHeader)
 			? mainStats
-			: statsHeader + "\n\n" + mainStats;
+			: statsHeader + "\n" + mainStats;
 
 		if (titleLabel != null)
 			titleLabel.text = titleText;

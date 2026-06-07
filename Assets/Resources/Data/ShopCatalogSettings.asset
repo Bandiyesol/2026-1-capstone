@@ -17,10 +17,22 @@ MonoBehaviour:
   potionListingCount: 5
   gradeWeights:
   - grade: 0
-    weight: 1
+    weight: 55
+  - grade: 1
+    weight: 28
+  - grade: 2
+    weight: 12
+  - grade: 3
+    weight: 5
   gradePrices:
   - grade: 0
     price: 30
+  - grade: 1
+    price: 60
+  - grade: 2
+    price: 90
+  - grade: 3
+    price: 150
   weaponIdPool: []
   merchantPortrait: {fileID: 8726286246048561400, guid: bda98e52c7cf1bb429196b6f87824f87, type: 3}
   rerollCost: 10

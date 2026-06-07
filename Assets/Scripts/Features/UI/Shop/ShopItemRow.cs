@@ -23,9 +23,9 @@ public class ShopItemRow : MonoBehaviour
 	[SerializeField] float priceLabelHeight = 26f;
 	[SerializeField] float slotSpacing = 8f;
 	[SerializeField] float iconPadding = 10f;
-	[SerializeField] float fallbackRowWidth = 960f;
+	[SerializeField] float layoutWidth = ShopPanelLayout.ContentWidth;
 	[SerializeField] TMP_FontAsset priceFont;
-	[SerializeField] int priceFontSize = 16;
+	[SerializeField] int priceFontSize = 24;
 	[SerializeField] Color priceColor = new Color(1f, 0.92f, 0.45f);
 	[SerializeField] Color soldOutColor = new Color(0.65f, 0.65f, 0.65f);
 
@@ -58,7 +58,7 @@ public class ShopItemRow : MonoBehaviour
 		for (int i = 0; i < items.Count; i++)
 		{
 			ShopSlotViewData data = items[i];
-			if (data == null || data.icon == null)
+			if (data == null)
 				continue;
 
 			GameObject slotGo = CreateSlotObject(parent, i);
@@ -70,6 +70,7 @@ public class ShopItemRow : MonoBehaviour
 			return;
 
 		Canvas.ForceUpdateCanvases();
+		gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
 		gridLayout.constraintCount = CalculateColumnCount(parent);
 		LayoutRebuilder.ForceRebuildLayoutImmediate(parent);
 	}
@@ -94,7 +95,7 @@ public class ShopItemRow : MonoBehaviour
 		if (iconImage != null)
 		{
 			iconImage.sprite = data.icon;
-			iconImage.enabled = true;
+			iconImage.enabled = data.icon != null;
 			iconImage.preserveAspect = true;
 			iconImage.color = data.soldOut ? soldOutColor : Color.white;
 			iconImage.raycastTarget = false;
@@ -110,7 +111,10 @@ public class ShopItemRow : MonoBehaviour
 			priceLabel.overflowMode = TextOverflowModes.Overflow;
 			priceLabel.raycastTarget = false;
 			if (priceFont != null)
+			{
 				priceLabel.font = priceFont;
+				TmpKoreanFontUtility.EnsureGlyphs(priceLabel, priceFont, priceLabel.text);
+			}
 
 			LayoutPriceBand(priceLabel.rectTransform, priceBand);
 		}
@@ -292,8 +296,10 @@ public class ShopItemRow : MonoBehaviour
 	int CalculateColumnCount(RectTransform parent)
 	{
 		float width = parent.rect.width;
+		if (width < layoutWidth * 0.75f)
+			width = layoutWidth;
 		if (width < 2f)
-			width = fallbackRowWidth;
+			width = ShopPanelLayout.ContentWidth;
 
 		int columns = Mathf.FloorToInt((width + slotSpacing) / (slotSize + slotSpacing));
 		return Mathf.Max(1, columns);

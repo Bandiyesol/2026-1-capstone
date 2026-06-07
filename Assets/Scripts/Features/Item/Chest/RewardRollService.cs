@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 상자를 열었을 때 무기·악세사리·성물 후보 3개를 뽑는 서비스.
@@ -36,7 +39,65 @@ public class RewardRollService : MonoBehaviour
     {
         if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
+        EnsureAccessoryPool();
     }
+
+    /// <summary>Inspector 미등록 시 Resources 카탈로그에서 악세·성물 풀을 채웁니다.</summary>
+    public void EnsureAccessoryPool()
+    {
+        if (allAccessories != null && allAccessories.Count > 0)
+            return;
+
+        RewardCatalogSettings catalog = RewardCatalogSettings.Load();
+        if (catalog != null && catalog.allAccessories != null && catalog.allAccessories.Count > 0)
+        {
+            allAccessories = new List<AccessoryData>(catalog.allAccessories);
+            allRelics = new List<RelicData>(catalog.allRelics);
+            Debug.Log($"[RewardRollService] 카탈로그 로드 — 악세사리 {allAccessories.Count}개, 성물 {allRelics.Count}개");
+            return;
+        }
+
+#if UNITY_EDITOR
+        if (TryLoadEditorPools())
+            return;
+#endif
+
+        Debug.LogWarning(
+            "[RewardRollService] 악세사리 풀이 비어 있습니다. " +
+            "Unity에서 Tools → Rebuild Reward Catalog를 실행하세요.");
+    }
+
+#if UNITY_EDITOR
+    bool TryLoadEditorPools()
+    {
+        allAccessories = LoadEditorAssets<AccessoryData>("Assets/Data/Accessory");
+        if (allAccessories.Count == 0)
+            return false;
+
+        allRelics = LoadEditorAssets<RelicData>("Assets/Data/Relic");
+        Debug.Log($"[RewardRollService] 에디터 폴더 스캔 — 악세사리 {allAccessories.Count}개, 성물 {allRelics.Count}개");
+        return true;
+    }
+
+    static List<T> LoadEditorAssets<T>(string folder) where T : UnityEngine.Object
+    {
+        var result = new List<T>();
+        if (!AssetDatabase.IsValidFolder(folder))
+            return result;
+
+        string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folder });
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            T asset = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (asset != null)
+                result.Add(asset);
+        }
+
+        result.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+        return result;
+    }
+#endif
 
     // ───────────────────────────────────────────────────────
     //  외부 진입점 — DroppedChest에서 호출
@@ -177,22 +238,46 @@ public class RewardRollService : MonoBehaviour
         };
     }
 
-    // ── 가중치 조회 ───────────────────────────────────────
-    ChestRewardWeight GetTypeWeight(ChestGrade grade) => grade switch
+    ChestRewardWeight GetTypeWeight(ChestGrade grade)
     {
-        ChestGrade.Rare      => rareChestWeight,
-        ChestGrade.Unique    => uniqueChestWeight,
-        ChestGrade.Legendary => legendaryChestWeight,
-        _                    => normalChestWeight
-    };
+        ChestDropSettings settings = ResolveSettings();
+        if (settings != null)
+            return settings.GetRewardTypeWeight(grade);
 
-    ItemGradeWeight GetItemGradeWeight(ChestGrade grade) => grade switch
+        return grade switch
+        {
+            ChestGrade.Rare => rareChestWeight,
+            ChestGrade.Unique => uniqueChestWeight,
+            ChestGrade.Legendary => legendaryChestWeight,
+            _ => normalChestWeight
+        };
+    }
+
+    ItemGradeWeight GetItemGradeWeight(ChestGrade grade)
     {
-        ChestGrade.Rare      => rareItemGrade,
-        ChestGrade.Unique    => uniqueItemGrade,
-        ChestGrade.Legendary => legendaryItemGrade,
-        _                    => normalItemGrade
-    };
+        ChestDropSettings settings = ResolveSettings();
+        if (settings != null)
+            return settings.GetItemGradeWeight(grade);
+
+        return grade switch
+        {
+            ChestGrade.Rare => rareItemGrade,
+            ChestGrade.Unique => uniqueItemGrade,
+            ChestGrade.Legendary => legendaryItemGrade,
+            _ => normalItemGrade
+        };
+    }
+
+    static ChestDropSettings ResolveSettings()
+    {
+        if (ChestDropManager.Instance != null && ChestDropManager.Instance.Settings != null)
+            return ChestDropManager.Instance.Settings;
+
+        if (GameManager.instance != null && GameManager.instance.chestDropSettings != null)
+            return GameManager.instance.chestDropSettings;
+
+        return ChestDropSettings.Load();
+    }
 }
 
 // ── 보상 종류 ─────────────────────────────────────────────

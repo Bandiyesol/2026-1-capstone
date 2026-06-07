@@ -16,7 +16,7 @@ MonoBehaviour:
   grade: 0
   accessoryType: "\uACF5\uACA9"
   description: "\uD22C\uC0AC\uCCB4 \uC18D\uB3C4 +10%"
-  icon: {fileID: 4978190231388227538, guid: 03e40802920e5304d9dfbb41c1239fb1, type: 3}
+  icon: {fileID: 21300000, guid: 03e40802920e5304d9dfbb41c1239fb1, type: 3}
   modifiers:
   - statType: 3
     value: 0.1

@@ -172,14 +172,7 @@ public class BossBase : MonoBehaviour, IDamageable
 
         if (PoolManager.Instance != null)
         {
-            // PoolManager에서 기믹 오브젝트 풀을 통해 마법진을 꺼내옴 (자동 SetActive(true) 처리됨)
-            GameObject portal = PoolManager.Instance.GetGimmick(portalGimmickIndex);
-
-            if (portal != null)
-            {
-                // 보스가 사망한 현재 위치로 마법진 순간이동
-                portal.transform.position = transform.position;
-            }
+            StageClearSpawnUtility.SpawnPortalAndShopkeeper(transform.position, portalGimmickIndex);
         }
         else
         {

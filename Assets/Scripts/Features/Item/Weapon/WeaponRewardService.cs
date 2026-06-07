@@ -101,7 +101,14 @@ public static class WeaponRewardService
 	public static string FormatStats(WeaponInstance w)
 	{
 		if (w?.info == null) return "";
-		return $"{w.info.grade}\n데미지 {w.damage:F0}\n쿨 {w.cooltime:F1}s";
+		return $"데미지 {w.damage:F0}\n쿨 {w.cooltime:F1}s";
+	}
+
+	/// <summary>선택 카드 Detail — 등급(색상) + 스탯.</summary>
+	public static string FormatChoiceDetail(WeaponInstance w)
+	{
+		if (w?.info == null) return "";
+		return $"{ChoiceGradeDisplay.FormatColored(w.info.grade)}\n{FormatStats(w)}";
 	}
 
 	/// <summary>Title + Stats 한 줄에 (레거시). 새 UI는 FormatTitle / FormatStats 사용.</summary>

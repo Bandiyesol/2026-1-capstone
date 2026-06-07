@@ -27,5 +27,19 @@ public static class ChestDropSettingsCreator
         Selection.activeObject = settings;
         Debug.Log("[Chest] ChestDropSettings 생성 완료: " + AssetPath);
     }
+
+    [MenuItem("Tools/Game/Open Chest Drop Settings")]
+    public static void OpenSettings()
+    {
+        var settings = AssetDatabase.LoadAssetAtPath<ChestDropSettings>(AssetPath);
+        if (settings == null)
+        {
+            CreateDefault();
+            return;
+        }
+
+        Selection.activeObject = settings;
+        EditorGUIUtility.PingObject(settings);
+    }
 }
 #endif

@@ -16,7 +16,7 @@ public class StageManager : MonoBehaviour
     [Header("클리어 / 엔딩 (테스트)")]
     [Tooltip("몇 번째 스테이지(1부터) 클리어 시 엔딩. 0이면 stages 배열의 마지막 스테이지")]
     [Min(0)]
-    public int endingAfterStageNumber = 3;
+    public int endingAfterStageNumber = 7;
 
     public int CurrentStage => stageIndex + 1;
 

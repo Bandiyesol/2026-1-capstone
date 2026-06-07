@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class WeaponInventory : MonoBehaviour
 {
-	[SerializeField] int maxWeapons = 6;
+	[SerializeField] int maxWeapons = 999;
 
 	readonly List<WeaponInstance> weapons = new List<WeaponInstance>();
 
@@ -17,6 +17,12 @@ public class WeaponInventory : MonoBehaviour
 	public int MaxWeapons => maxWeapons;
 
 	public event Action OnInventoryChanged;
+
+	void Awake()
+	{
+		if (maxWeapons <= 12)
+			maxWeapons = 999;
+	}
 
 	public bool TryAdd(WeaponInstance instance)
 	{

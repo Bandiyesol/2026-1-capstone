@@ -36,14 +36,10 @@ public static class ShopService
 				return TryPurchaseWeapon(listing, out message);
 
 			case ShopItemCategory.Accessory:
-				message = "악세서리 상점은 준비 중입니다.";
-				GameManager.instance.AddCoin(listing.price);
-				return false;
+				return TryPurchaseAccessory(listing, out message);
 
 			case ShopItemCategory.Potion:
-				message = "물약 상점은 준비 중입니다.";
-				GameManager.instance.AddCoin(listing.price);
-				return false;
+				return TryPurchasePotion(listing, out message);
 
 			default:
 				message = "구매할 수 없는 상품입니다.";
@@ -80,6 +76,73 @@ public static class ShopService
 
 		listing.soldOut = true;
 		message = $"{listing.weapon.info.name} 구매 완료!";
+		return true;
+	}
+
+	static bool TryPurchaseAccessory(ShopListing listing, out string message)
+	{
+		message = string.Empty;
+
+		if (listing.accessory == null)
+		{
+			message = "악세서리 정보가 없습니다.";
+			Refund(listing.price);
+			return false;
+		}
+
+		if (AccessoryManager.instance == null)
+		{
+			message = "악세서리 시스템을 찾을 수 없습니다.";
+			Refund(listing.price);
+			return false;
+		}
+
+		AccessoryManager.instance.Add(listing.accessory);
+		listing.soldOut = true;
+		message = $"{listing.accessory.displayName} 구매 완료!";
+		return true;
+	}
+
+	static bool TryPurchasePotion(ShopListing listing, out string message)
+	{
+		message = string.Empty;
+
+		PotionInventory inventory = PotionInventory.Instance
+		                          ?? Object.FindFirstObjectByType<PotionInventory>();
+
+		if (inventory == null)
+		{
+			message = "물약 인벤토리를 찾을 수 없습니다.";
+			Refund(listing.price);
+			return false;
+		}
+
+		string potionId;
+		string displayName;
+		Sprite icon;
+
+		if (listing.potion != null)
+		{
+			potionId = listing.potion.potionType.ToString();
+			displayName = listing.potion.potionName;
+			icon = listing.potion.icon;
+		}
+		else
+		{
+			potionId = listing.fallbackPotionType.ToString();
+			displayName = listing.fallbackPotionName;
+			icon = null;
+		}
+
+		if (!inventory.TryAdd(potionId, icon, 1, displayName))
+		{
+			message = "물약 슬롯이 가득 찼습니다.";
+			Refund(listing.price);
+			return false;
+		}
+
+		listing.soldOut = true;
+		message = $"{displayName} 구매 완료!";
 		return true;
 	}
 

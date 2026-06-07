@@ -22,6 +22,8 @@ public class InventoryItemRow : MonoBehaviour
 	[SerializeField] float slotSpacing = 8f;
 	[SerializeField] float iconPadding = 12f;
 	[SerializeField] float fallbackRowWidth = 960f;
+	[SerializeField] float minRowHeight = 160f;
+	[SerializeField] float layoutWidth = InventoryPanelLayout.RowWidth;
 
 	readonly List<GameObject> spawnedSlots = new List<GameObject>();
 	GridLayoutGroup gridLayout;
@@ -63,6 +65,7 @@ public class InventoryItemRow : MonoBehaviour
 		Canvas.ForceUpdateCanvases();
 		gridLayout.constraintCount = CalculateColumnCount(parent);
 		LayoutRebuilder.ForceRebuildLayoutImmediate(parent);
+		ResizeRowHeight(parent);
 	}
 
 	void ApplySlotVisuals(GameObject slotGo, InventorySlotViewData data)
@@ -256,11 +259,28 @@ public class InventoryItemRow : MonoBehaviour
 	int CalculateColumnCount(RectTransform parent)
 	{
 		float width = parent.rect.width;
+		if (width < layoutWidth * 0.75f)
+			width = layoutWidth;
 		if (width < 2f)
-			width = fallbackRowWidth;
+			width = Mathf.Max(fallbackRowWidth, layoutWidth);
 
 		int columns = Mathf.FloorToInt((width + slotSpacing) / (slotSize + slotSpacing));
 		return Mathf.Max(1, columns);
+	}
+
+	void ResizeRowHeight(RectTransform parent)
+	{
+		if (parent == null || gridLayout == null || spawnedSlots.Count == 0)
+			return;
+
+		int columns = Mathf.Max(1, gridLayout.constraintCount);
+		int rowCount = Mathf.CeilToInt(spawnedSlots.Count / (float)columns);
+		float height = rowCount * slotSize
+		               + Mathf.Max(0, rowCount - 1) * slotSpacing
+		               + gridLayout.padding.top
+		               + gridLayout.padding.bottom;
+		height = Mathf.Max(minRowHeight, height);
+		parent.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 	}
 
 	GameObject CreateSlotObject(RectTransform parent, int index)

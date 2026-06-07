@@ -34,6 +34,7 @@ public class WeaponSelectUI : MonoBehaviour
 			inventory = FindFirstObjectByType<WeaponInventory>();
 
 		BindChoiceUiFromButtons();
+		ChoiceSelectUILayout.Apply(transform);
 	}
 
 	void BindChoiceUiFromButtons()
@@ -112,6 +113,7 @@ public class WeaponSelectUI : MonoBehaviour
 	{
 		openedFromChest = false;
 		gameObject.SetActive(true);
+		ChoiceSelectUILayout.Apply(transform);
 		RollCandidates(weaponIdPool);
 
 		if (titleLabel != null)
@@ -125,6 +127,7 @@ public class WeaponSelectUI : MonoBehaviour
 	{
 		openedFromChest = true;
 		gameObject.SetActive(true);
+		ChoiceSelectUILayout.Apply(transform);
 		RollCandidates(weaponPoolOverride ?? weaponIdPool);
 
 		if (titleLabel != null)
@@ -158,7 +161,10 @@ public class WeaponSelectUI : MonoBehaviour
 			choiceTitleLabels[index].text = WeaponRewardService.FormatTitle(weapon);
 
 		if (choiceDetailLabels != null && index < choiceDetailLabels.Length && choiceDetailLabels[index] != null)
-			choiceDetailLabels[index].text = WeaponRewardService.FormatStats(weapon);
+		{
+			choiceDetailLabels[index].text = WeaponRewardService.FormatChoiceDetail(weapon);
+			choiceDetailLabels[index].richText = true;
+		}
 
 		if (choiceLabels != null && index < choiceLabels.Length && choiceLabels[index] != null
 		    && (choiceTitleLabels == null || choiceTitleLabels.Length == 0)

@@ -9,8 +9,10 @@ public class ShopListing
 	public bool soldOut;
 
 	public WeaponInstance weapon;
-	// public AccessoryData accessory; // 추후
-	// public PotionStack potion;      // 추후
+	public AccessoryData accessory;
+	public PotionData potion;
+	public PotionType fallbackPotionType;
+	public string fallbackPotionName;
 
 	public string DisplayName
 	{
@@ -18,6 +20,12 @@ public class ShopListing
 		{
 			if (weapon?.info != null)
 				return weapon.info.name;
+			if (accessory != null)
+				return accessory.displayName;
+			if (potion != null)
+				return potion.potionName;
+			if (!string.IsNullOrEmpty(fallbackPotionName))
+				return fallbackPotionName;
 
 			return string.Empty;
 		}
@@ -25,10 +33,19 @@ public class ShopListing
 
 	public Sprite GetIcon()
 	{
-		if (category == ShopItemCategory.Weapon && weapon != null)
-			return WeaponRewardService.GetIcon(weapon);
-
-		return null;
+		switch (category)
+		{
+			case ShopItemCategory.Weapon when weapon != null:
+				return WeaponRewardService.GetIcon(weapon);
+			case ShopItemCategory.Accessory when accessory != null:
+				return AccessoryIconResolver.Resolve(accessory);
+			case ShopItemCategory.Potion:
+				if (potion?.icon != null)
+					return potion.icon;
+				return null;
+			default:
+				return null;
+		}
 	}
 
 	public string GetTooltip()
@@ -39,9 +56,45 @@ public class ShopListing
 		switch (category)
 		{
 			case ShopItemCategory.Weapon when weapon != null:
-				return $"{WeaponRewardService.FormatTitle(weapon)}\n{WeaponRewardService.FormatStats(weapon)}\n\n클릭하여 구매 ({price}G)";
+				return $"{WeaponRewardService.FormatTitle(weapon)}\n{WeaponRewardService.FormatChoiceDetail(weapon)}\n\n클릭하여 구매 ({price}G)";
+
+			case ShopItemCategory.Accessory when accessory != null:
+				return BuildAccessoryTooltip(accessory);
+
+			case ShopItemCategory.Potion:
+				return BuildPotionTooltip();
+
 			default:
 				return string.Empty;
 		}
+	}
+
+	static string BuildAccessoryTooltip(AccessoryData data)
+	{
+		var sb = new System.Text.StringBuilder(256);
+		sb.AppendLine(data.displayName);
+		sb.AppendLine(ChoiceGradeDisplay.FormatGradeLine(data.grade.ToString(), data.accessoryType));
+		if (!string.IsNullOrEmpty(data.description))
+			sb.AppendLine(data.description);
+		return sb.ToString().TrimEnd();
+	}
+
+	string BuildPotionTooltip()
+	{
+		var sb = new System.Text.StringBuilder(192);
+		if (potion != null)
+		{
+			sb.AppendLine(potion.potionName);
+			if (!string.IsNullOrEmpty(potion.description))
+				sb.AppendLine(potion.description);
+		}
+		else
+		{
+			sb.AppendLine(fallbackPotionName);
+			sb.AppendLine(ShopPotionDefaults.GetDescription(fallbackPotionType));
+		}
+
+		sb.AppendLine($"\n클릭하여 구매 ({price}G)");
+		return sb.ToString().TrimEnd();
 	}
 }

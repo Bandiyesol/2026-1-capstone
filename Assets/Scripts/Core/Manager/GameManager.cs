@@ -26,6 +26,14 @@ public class GameManager : MonoBehaviour
     public WeaponSelectUI uiWeaponSelect;
     public RuneSelectUI uiRuneSelect;
 
+    [Header("# 드랍 확률 (ScriptableObject)")]
+    [Tooltip("Assets/Resources/Data/ChestDropSettings — 몬스터 처치 시 상자 드랍 확률")]
+    public ChestDropSettings chestDropSettings;
+    [Tooltip("Assets/Resources/Data/CoinDropSettings — 몬스터 처치 시 코인 드랍 확률")]
+    public CoinDropSettings coinDropSettings;
+    [Tooltip("Assets/Resources/Data/StageClearSpawnSettings — 보스 처치 후 상점 주인 등장 확률")]
+    public StageClearSpawnSettings stageClearSpawnSettings;
+
     [Header("# Boss briefing (스토리 → 보스 알리미 → 무기·룬)")]
     [Tooltip("비우면 스크립트 기본 문구(BossBriefingDefaults) 사용")]
     public StageBossBriefDatabase bossBriefDatabase;
@@ -34,6 +42,8 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("스테이지 순서대로 보스 프리팹 — HUD 툴팁 초상용")]
     public GameObject[] bossPortraitPrefabs;
+
+    Sprite[] cachedBossPortraits;
 
     [Header("# Main Menu (비우면 이름으로 탐색)")]
     public GameObject mainMenuRoot;
@@ -51,9 +61,22 @@ public class GameManager : MonoBehaviour
             bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
 
         EnsureBossPortraitPrefabsFromPool();
-        EnsureOverlayEscapeInput();
-        EnsureEndingSequenceController();
+        RebuildBossPortraitCache();
+        ResolveDropSettings();
+        RewardSystemBootstrap.EnsureRewardSystem();
         WireGameResultButton();
+    }
+
+    void ResolveDropSettings()
+    {
+        if (chestDropSettings == null)
+            chestDropSettings = Resources.Load<ChestDropSettings>("Data/ChestDropSettings");
+        if (coinDropSettings == null)
+            coinDropSettings = Resources.Load<CoinDropSettings>("Data/CoinDropSettings");
+        if (stageClearSpawnSettings == null)
+            stageClearSpawnSettings = Resources.Load<StageClearSpawnSettings>("Data/StageClearSpawnSettings");
+
+        StageClearSpawnSettings.ClearCache();
     }
 
     void WireGameResultButton()
@@ -77,25 +100,62 @@ public class GameManager : MonoBehaviour
             label.text = "기록 보기";
     }
 
-    void EnsureEndingSequenceController()
-    {
-        if (GetComponent<EndingSequenceController>() == null)
-            gameObject.AddComponent<EndingSequenceController>();
-    }
-
-    void EnsureOverlayEscapeInput()
-    {
-        if (GetComponent<OverlayPanelEscapeInput>() == null)
-            gameObject.AddComponent<OverlayPanelEscapeInput>();
-    }
-
     void EnsureBossPortraitPrefabsFromPool()
     {
-        if (bossPortraitPrefabs != null && bossPortraitPrefabs.Length > 0)
+        if (pool?.bossPrefabs == null || pool.bossPrefabs.Length == 0)
             return;
 
-        if (pool != null && pool.bossPrefabs != null && pool.bossPrefabs.Length > 0)
-            bossPortraitPrefabs = pool.bossPrefabs;
+        bossPortraitPrefabs = pool.bossPrefabs;
+    }
+
+    void RebuildBossPortraitCache()
+    {
+        if (pool?.bossPrefabs == null || pool.bossPrefabs.Length == 0)
+        {
+            cachedBossPortraits = null;
+            return;
+        }
+
+        cachedBossPortraits = new Sprite[pool.bossPrefabs.Length];
+        for (int i = 0; i < pool.bossPrefabs.Length; i++)
+        {
+            cachedBossPortraits[i] = BossBriefPortraitResolver.FromPrefab(pool.bossPrefabs[i]);
+            if (cachedBossPortraits[i] == null && pool.bossPrefabs[i] != null)
+            {
+                Debug.LogWarning(
+                    $"[GameManager] 보스 초상 없음 — pool.bossPrefabs[{i}] ({pool.bossPrefabs[i].name}). " +
+                    "프리팹에 SpriteRenderer가 있는지 확인하세요.");
+            }
+            else if (pool.bossPrefabs[i] == null)
+            {
+                Debug.LogError(
+                    $"[GameManager] pool.bossPrefabs[{i}]가 null입니다. " +
+                    "Tools → Game → Setup 7-Stage Boss Waves 를 실행하세요.");
+            }
+        }
+    }
+
+    public void SyncBossBriefingPrefabs()
+    {
+        EnsureBossPortraitPrefabsFromPool();
+        if (cachedBossPortraits == null
+            || pool?.bossPrefabs == null
+            || cachedBossPortraits.Length != pool.bossPrefabs.Length)
+        {
+            RebuildBossPortraitCache();
+        }
+    }
+
+    public Sprite GetCachedBossPortrait(int stageIndex)
+    {
+        if (cachedBossPortraits == null
+            || stageIndex < 0
+            || stageIndex >= cachedBossPortraits.Length)
+        {
+            return null;
+        }
+
+        return cachedBossPortraits[stageIndex];
     }
 
     /// <summary>스토리/메뉴 표시 전 무기·룬 선택 UI를 숨깁니다.</summary>
@@ -129,31 +189,55 @@ public class GameManager : MonoBehaviour
         GameStart();
     }
 
-    public void GameStart()
-    {
-        GameSessionReset.ResetAll(this);
-        Health = maxHealth;
+	public void GameStart()
+	{
+		GameSessionReset.ResetAll(this);
+		Health = maxHealth;
 
-        StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
-        int stageIdx = stage != null ? stage.stageIndex : 0;
-        BossBriefingRuntime.ApplyStage(stageIdx, bossBriefDatabase, bossPortraitPrefabs);
+		StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
+		int stageIdx = stage != null ? stage.stageIndex : 0;
+		SyncBossBriefingPrefabs();
+		BossBriefingRuntime.ApplyStage(stageIdx, bossBriefDatabase, bossPortraitPrefabs);
 
-        if (bossAlarmUI == null)
-            bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
+		ShowBossAlarmThen(() =>
+		{
+			RefreshBossBriefingHudTip();
+			OpenWeaponOrRuneSelect();
+		});
+	}
 
-        if (bossAlarmUI != null && BossBriefingRuntime.HasBrief)
-        {
-            bossAlarmUI.Show(() =>
-            {
-                RefreshBossBriefingHudTip();
-                OpenWeaponOrRuneSelect();
-            });
-            return;
-        }
+	/// <summary>스테이지 전환 후 보스 알리미 → 웨이브 시작 등 후속 동작.</summary>
+	public void ShowBossAlarmForStageTransition(System.Action onContinue)
+	{
+		RefreshBossBriefingForCurrentStage();
+		ShowBossAlarmThen(() =>
+		{
+			RefreshBossBriefingHudTip();
+			onContinue?.Invoke();
+		});
+	}
 
-        RefreshBossBriefingHudTip();
-        OpenWeaponOrRuneSelect();
-    }
+	void ShowBossAlarmThen(System.Action onContinue)
+	{
+		if (bossAlarmUI == null)
+			bossAlarmUI = FindFirstObjectByType<BossAlarmUI>(FindObjectsInactive.Include);
+
+		if (bossAlarmUI != null && BossBriefingRuntime.HasBrief)
+		{
+			bool resumeAfter = isLive;
+			isLive = false;
+			FreezePlayerMovement();
+			bossAlarmUI.Show(() =>
+			{
+				if (resumeAfter)
+					isLive = true;
+				onContinue?.Invoke();
+			});
+			return;
+		}
+
+		onContinue?.Invoke();
+	}
 
     void OpenWeaponOrRuneSelect()
     {
@@ -185,6 +269,8 @@ public class GameManager : MonoBehaviour
     /// <summary>스테이지 전환 후 HUD 보스 툴팁이 다음 보스를 가리키도록 갱신합니다.</summary>
     public void RefreshBossBriefingForCurrentStage()
     {
+        SyncBossBriefingPrefabs();
+
         StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
         if (stage == null)
             return;
@@ -474,6 +560,8 @@ public class GameManager : MonoBehaviour
 
         if (!GameRunSessionTracker.IsActive)
             GameRunSessionTracker.BeginRun();
+
+        SyncBossBriefingPrefabs();
 
         WaveManager wave = FindFirstObjectByType<WaveManager>();
         if (wave != null)

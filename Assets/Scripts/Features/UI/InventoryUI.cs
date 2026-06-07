@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -33,10 +34,11 @@ public class InventoryUI : MonoBehaviour
 	[SerializeField] GameObject tooltipPanel;
 	[SerializeField] TextMeshProUGUI tooltipLabel;
 	[SerializeField] Vector2 tooltipOffset = new Vector2(8f, 0f);
-	[SerializeField] Vector2 tooltipPadding = new Vector2(20f, 16f);
+	[SerializeField] Vector2 tooltipPadding = new Vector2(24f, 20f);
 	[SerializeField] float tooltipMinWidth = 140f;
-	[SerializeField] float tooltipMinHeight = 48f;
+	[SerializeField] float tooltipMinHeight = 96f;
 	[SerializeField] float tooltipMaxWidth = 360f;
+	[SerializeField] float tooltipExtraHeight = 24f;
 	[SerializeField] int tooltipSortingOrder = 200;
 
 	[Header("# 데이터 (비우면 Player 에서 자동 탐색)")]
@@ -200,6 +202,7 @@ public class InventoryUI : MonoBehaviour
 
 		EnsureSlotFrameSprite();
 		ApplySlotVisualSettingsToRows();
+		InventoryPanelLayout.Apply(panel != null ? panel.transform : transform);
 
 		ResolveKoreanFont();
 		TmpKoreanFontUtility.ApplyFontToAll(
@@ -209,6 +212,7 @@ public class InventoryUI : MonoBehaviour
 			weaponRowLabel,
 			accessoryRowLabel,
 			potionRowLabel);
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
 	}
 
 	void AutoBindReferences()
@@ -343,10 +347,25 @@ public class InventoryUI : MonoBehaviour
 		RefreshWeaponRow();
 		RefreshAccessoryRow();
 		RefreshPotionRow();
+		InventoryPanelLayout.Apply(panel != null ? panel.transform : transform);
 		ApplySectionLabels();
 
 		if (goldLabel != null)
 			TmpKoreanFontUtility.EnsureGlyphs(goldLabel, koreanFont, goldLabel.text);
+
+		EnsureInventoryGlyphs();
+	}
+
+	void EnsureInventoryGlyphs()
+	{
+		if (koreanFont == null)
+			return;
+
+		IEnumerable<AccessoryData> owned = accessoryInventory?.Accessories;
+		TmpKoreanFontUtility.EnsureAllAccessoryGlyphs(koreanFont, owned);
+
+		if (tooltipLabel != null)
+			TmpKoreanFontUtility.EnsureGlyphs(tooltipLabel, koreanFont, tooltipLabel.text);
 	}
 
 	public static void ShowTooltipStatic(string text, Transform anchor)
@@ -382,6 +401,7 @@ public class InventoryUI : MonoBehaviour
 
 		if (!sameAnchor || tooltipLabel.text != text)
 		{
+			tooltipLabel.richText = true;
 			tooltipLabel.text = text;
 			TmpKoreanFontUtility.EnsureGlyphs(tooltipLabel, koreanFont, text);
 		}
@@ -486,25 +506,64 @@ public class InventoryUI : MonoBehaviour
 		if (tooltipRect == null || tooltipLabel == null)
 			return;
 
+		DisableTooltipAutoLayout();
+
 		tooltipLabel.textWrappingMode = TextWrappingModes.Normal;
 		tooltipLabel.overflowMode = TextOverflowModes.Overflow;
-		tooltipLabel.ForceMeshUpdate();
+		tooltipLabel.verticalAlignment = VerticalAlignmentOptions.Top;
+		tooltipLabel.ForceMeshUpdate(true, true);
 
-		Vector2 preferred = tooltipLabel.GetPreferredValues(tooltipMaxWidth, 0f);
-		if (preferred.x <= 1f || preferred.y <= 1f)
-			preferred = tooltipLabel.GetPreferredValues();
+		Vector2 unconstrained = tooltipLabel.GetPreferredValues(0f, 0f);
+		float width = Mathf.Clamp(unconstrained.x + tooltipPadding.x * 2f, tooltipMinWidth, tooltipMaxWidth);
+		float innerWidth = Mathf.Max(1f, width - tooltipPadding.x * 2f);
 
-		float width = Mathf.Clamp(preferred.x + tooltipPadding.x, tooltipMinWidth, tooltipMaxWidth);
-		float height = Mathf.Max(tooltipMinHeight, preferred.y + tooltipPadding.y);
+		tooltipRect.sizeDelta = new Vector2(width, tooltipMinHeight);
+		ApplyTooltipLabelInsets();
+
+		tooltipLabel.ForceMeshUpdate(true, true);
+		float textHeight = tooltipLabel.GetPreferredValues(innerWidth, 0f).y;
+		textHeight = Mathf.Max(
+			textHeight,
+			tooltipLabel.preferredHeight,
+			tooltipLabel.GetRenderedValues(false).y);
+
+		float height = Mathf.Max(
+			tooltipMinHeight,
+			textHeight + tooltipPadding.y * 2f + tooltipExtraHeight);
+
 		tooltipRect.sizeDelta = new Vector2(width, height);
+		ApplyTooltipLabelInsets();
+		tooltipLabel.ForceMeshUpdate(true, true);
+
+		LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
+	}
+
+	void ApplyTooltipLabelInsets()
+	{
+		if (tooltipLabel == null)
+			return;
 
 		RectTransform labelRect = tooltipLabel.rectTransform;
 		labelRect.anchorMin = Vector2.zero;
 		labelRect.anchorMax = Vector2.one;
-		labelRect.offsetMin = new Vector2(tooltipPadding.x * 0.5f, tooltipPadding.y * 0.5f);
-		labelRect.offsetMax = new Vector2(-tooltipPadding.x * 0.5f, -tooltipPadding.y * 0.5f);
+		labelRect.offsetMin = new Vector2(tooltipPadding.x, tooltipPadding.y);
+		labelRect.offsetMax = new Vector2(-tooltipPadding.x, -tooltipPadding.y);
+	}
 
-		LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
+	void DisableTooltipAutoLayout()
+	{
+		if (tooltipPanel == null)
+			return;
+
+		if (tooltipPanel.TryGetComponent(out ContentSizeFitter fitter))
+			fitter.enabled = false;
+
+		if (tooltipPanel.TryGetComponent(out LayoutElement layoutElement))
+		{
+			layoutElement.minHeight = -1f;
+			layoutElement.preferredHeight = -1f;
+			layoutElement.flexibleHeight = -1f;
+		}
 	}
 
 	void PositionTooltipNear(Transform anchor)

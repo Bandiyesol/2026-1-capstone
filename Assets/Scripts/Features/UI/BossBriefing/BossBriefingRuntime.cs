@@ -54,19 +54,14 @@ public static class BossBriefingRuntime
 
 		if (database != null && database.TryGetBriefing(stageIndex, out BossBriefProfile profile) && profile != null)
 		{
-			ApplyFromProfile(profile);
+			ApplyFromProfile(profile, portraitPrefabFallback);
 			RefreshPortrait();
 			return;
 		}
 
 		if (BossBriefingDefaults.TryGet(stageIndex, out BossBriefingDefaults.Entry e))
 		{
-			DisplayName = e.displayName;
-			TraitsSummary = e.traits;
-			PatternsHint = e.patterns;
-			TraitsHudShort = string.IsNullOrWhiteSpace(e.traitsHud) ? e.traits : e.traitsHud;
-			PatternsHudShort = string.IsNullOrWhiteSpace(e.patternsHud) ? e.patterns : e.patternsHud;
-			HasBrief = true;
+			ApplyFromDefaultsEntry(e, portraitPrefabFallback);
 			RefreshPortrait();
 		}
 	}
@@ -88,9 +83,6 @@ public static class BossBriefingRuntime
 			return;
 		}
 
-		if (Portrait != null)
-			return;
-
 		Portrait = BossBriefPortraitResolver.Resolve(StageIndex, portraitPrefabOverride);
 
 		if (Portrait == null)
@@ -101,18 +93,48 @@ public static class BossBriefingRuntime
 		}
 	}
 
-	static void ApplyFromProfile(BossBriefProfile profile)
+	static void ApplyFromProfile(BossBriefProfile profile, GameObject[] portraitPrefabFallback)
 	{
 		DisplayName = profile.displayName;
-		TraitsSummary = profile.traitsSummary;
 		PatternsHint = profile.patternsHint;
-		TraitsHudShort = string.IsNullOrWhiteSpace(profile.traitsHudShort)
-			? profile.traitsSummary
-			: profile.traitsHudShort;
 		PatternsHudShort = string.IsNullOrWhiteSpace(profile.patternsHudShort)
 			? profile.patternsHint
 			: profile.patternsHudShort;
 		Portrait = profile.portrait;
+		ApplyStatsFromBossData(
+			StageIndex,
+			portraitPrefabFallback,
+			profile.traitsSummary,
+			profile.traitsHudShort);
 		HasBrief = true;
+	}
+
+	static void ApplyFromDefaultsEntry(BossBriefingDefaults.Entry e, GameObject[] portraitPrefabFallback)
+	{
+		DisplayName = e.displayName;
+		PatternsHint = e.patterns;
+		PatternsHudShort = string.IsNullOrWhiteSpace(e.patternsHud) ? e.patterns : e.patternsHud;
+		ApplyStatsFromBossData(StageIndex, portraitPrefabFallback, e.traits, e.traitsHud);
+		HasBrief = true;
+	}
+
+	static void ApplyStatsFromBossData(
+		int stageIndex,
+		GameObject[] portraitPrefabFallback,
+		string traitsDescription,
+		string traitsHudFallback)
+	{
+		BossData data = BossDataDisplayUtility.ResolveForStage(stageIndex, portraitPrefabFallback);
+		string statsFull = BossDataDisplayUtility.FormatStatsLine(data, includeMelee: true);
+		string statsHud = BossDataDisplayUtility.FormatStatsLine(data, includeMelee: false);
+
+		TraitsSummary = BossDataDisplayUtility.CombineStatsAndDescription(statsFull, traitsDescription);
+
+		if (!string.IsNullOrWhiteSpace(statsHud))
+			TraitsHudShort = statsHud;
+		else if (!string.IsNullOrWhiteSpace(traitsHudFallback))
+			TraitsHudShort = traitsHudFallback;
+		else
+			TraitsHudShort = traitsDescription;
 	}
 }

@@ -17,14 +17,10 @@ public static class ShopDisplayService
 			if (listing == null)
 				continue;
 
-			Sprite icon = listing.GetIcon();
-			if (icon == null)
-				continue;
-
 			ShopListing captured = listing;
 			result.Add(new ShopSlotViewData
 			{
-				icon = icon,
+				icon = listing.GetIcon(),
 				tooltip = listing.GetTooltip(),
 				price = listing.price,
 				soldOut = listing.soldOut,

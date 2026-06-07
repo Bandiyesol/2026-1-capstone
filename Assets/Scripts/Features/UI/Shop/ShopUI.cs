@@ -136,11 +136,22 @@ public class ShopUI : MonoBehaviour
 			return;
 		}
 
+		if (isOpen && !IsPanelRootActiveInHierarchy())
+			isOpen = false;
+
+		if (IsPanelOpen)
+		{
+			Refresh();
+			return;
+		}
+
 		isOpen = true;
 		ShowPanelRoot();
 		EnsureStockForRun();
+		TmpKoreanFontUtility.EnsureAllAccessoryGlyphs(koreanFont);
 		RefreshMerchantPresentation();
 		Refresh();
+		OverlayPanelUILayout.Apply(panel.transform);
 		PauseGameIfLive();
 	}
 
@@ -167,6 +178,9 @@ public class ShopUI : MonoBehaviour
 
 		return true;
 	}
+
+	/// <summary>상점 패널이 실제로 열려 있는지.</summary>
+	public bool IsPanelOpen => isOpen && IsPanelRootActiveInHierarchy();
 
 	void PauseGameIfLive()
 	{
@@ -220,12 +234,16 @@ public class ShopUI : MonoBehaviour
 		if (tooltipLabel == null && tooltipPanel != null)
 			tooltipLabel = tooltipPanel.GetComponentInChildren<TextMeshProUGUI>(true);
 
+		if (tooltipLabel != null)
+			tooltipLabel.richText = true;
+
 		EnsureTooltipOnTopLayer();
 		EnsureSlotFrameSprite();
 		ApplySlotVisualSettingsToRows();
 		ApplySectionLabels();
 
 		ResolveKoreanFont();
+		TmpKoreanFontUtility.EnsureAllAccessoryGlyphs(koreanFont);
 		TmpKoreanFontUtility.ApplyFontToAll(
 			koreanFont,
 			goldLabel,
@@ -236,6 +254,8 @@ public class ShopUI : MonoBehaviour
 			weaponRowLabel,
 			accessoryRowLabel,
 			potionRowLabel);
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
+		SetMessage(string.Empty);
 	}
 
 	void AutoBindReferences()
@@ -462,6 +482,7 @@ public class ShopUI : MonoBehaviour
 		RefreshWeaponRow();
 		RefreshAccessoryRow();
 		RefreshPotionRow();
+		ShopPanelLayout.Apply(panel != null ? panel.transform : transform);
 		ApplySectionLabels();
 		UpdateRerollButtonLabel();
 	}
@@ -575,8 +596,13 @@ public class ShopUI : MonoBehaviour
 		if (messageLabel == null)
 			return;
 
-		messageLabel.text = text ?? string.Empty;
-		TmpKoreanFontUtility.EnsureGlyphs(messageLabel, koreanFont, messageLabel.text);
+		string value = text ?? string.Empty;
+		messageLabel.text = value;
+		messageLabel.gameObject.SetActive(!string.IsNullOrEmpty(value));
+		TmpKoreanFontUtility.EnsureGlyphs(messageLabel, koreanFont, value);
+
+		if (!string.IsNullOrEmpty(value) && panel != null)
+			OverlayPanelUILayout.Apply(panel.transform);
 	}
 
 	void RefreshGoldOnly()

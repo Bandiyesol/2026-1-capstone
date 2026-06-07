@@ -89,6 +89,17 @@ public static class InventoryDisplayService
 		return result;
 	}
 
+	static Dictionary<string, string> weaponGradeByName;
+	static Dictionary<string, string> accessoryGradeByName;
+
+	/// <summary>무기 이름 목록을 등급 색상이 적용된 스택 문자열로 반환합니다.</summary>
+	public static string FormatStackedWeaponNames(IReadOnlyList<string> names) =>
+		FormatStackedColoredNames(names, LookupWeaponGrade);
+
+	/// <summary>악세서리 이름 목록을 등급 색상이 적용된 스택 문자열로 반환합니다.</summary>
+	public static string FormatStackedAccessoryNames(IReadOnlyList<string> names) =>
+		FormatStackedColoredNames(names, LookupAccessoryGrade);
+
 	/// <summary>동일 이름을 인벤토리 슬롯처럼 "이름 *n" 형식으로 묶어 표시합니다.</summary>
 	public static string FormatStackedNames(IReadOnlyList<string> names)
 	{
@@ -118,6 +129,143 @@ public static class InventoryDisplayService
 
 		labels.Sort((a, b) => CompareKorean(a, b));
 		return string.Join(", ", labels);
+	}
+
+	static string FormatStackedColoredNames(IReadOnlyList<string> names, Func<string, string> gradeLookup)
+	{
+		if (names == null || names.Count == 0)
+			return "—";
+
+		var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (string name in names)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				continue;
+
+			string key = NormalizeName(name);
+			counts.TryGetValue(key, out int count);
+			counts[key] = count + 1;
+		}
+
+		if (counts.Count == 0)
+			return "—";
+
+		var entries = new List<StackedNameEntry>(counts.Count);
+		foreach (KeyValuePair<string, int> pair in counts)
+		{
+			string grade = gradeLookup?.Invoke(pair.Key);
+			entries.Add(new StackedNameEntry(pair.Key, pair.Value, grade));
+		}
+
+		entries.Sort(CompareStackedNameEntries);
+
+		var labels = new List<string>(entries.Count);
+		foreach (StackedNameEntry entry in entries)
+		{
+			string label = entry.Count > 1 ? $"{entry.DisplayName} *{entry.Count}" : entry.DisplayName;
+			if (!string.IsNullOrEmpty(entry.Grade))
+				label = ChoiceGradeDisplay.FormatColoredItemLabel(label, entry.Grade);
+
+			labels.Add(label);
+		}
+
+		return string.Join(", ", labels);
+	}
+
+	readonly struct StackedNameEntry
+	{
+		public string DisplayName { get; }
+		public int Count { get; }
+		public string Grade { get; }
+
+		public StackedNameEntry(string displayName, int count, string grade)
+		{
+			DisplayName = displayName;
+			Count = count;
+			Grade = grade;
+		}
+	}
+
+	static int CompareStackedNameEntries(StackedNameEntry a, StackedNameEntry b)
+	{
+		int grade = GetGradeRank(b.Grade).CompareTo(GetGradeRank(a.Grade));
+		if (grade != 0)
+			return grade;
+
+		return CompareKorean(a.DisplayName, b.DisplayName);
+	}
+
+	static string LookupWeaponGrade(string displayName)
+	{
+		EnsureWeaponGradeLookup();
+		return weaponGradeByName != null && weaponGradeByName.TryGetValue(displayName, out string grade)
+			? grade
+			: null;
+	}
+
+	static string LookupAccessoryGrade(string displayName)
+	{
+		EnsureAccessoryGradeLookup();
+		return accessoryGradeByName != null && accessoryGradeByName.TryGetValue(displayName, out string grade)
+			? grade
+			: null;
+	}
+
+	static void EnsureWeaponGradeLookup()
+	{
+		if (weaponGradeByName != null)
+			return;
+
+		weaponGradeByName = new Dictionary<string, string>(StringComparer.Ordinal);
+
+		if (WeaponManager.Instance != null)
+		{
+			foreach (WeaponInfo info in WeaponManager.Instance.GetAllWeaponInfos())
+			{
+				if (info == null || string.IsNullOrEmpty(info.name))
+					continue;
+
+				weaponGradeByName[NormalizeName(info.name)] = NormalizeGrade(info.grade);
+			}
+
+			return;
+		}
+
+		TextAsset infoJson = Resources.Load<TextAsset>("Data/WeaponInfo");
+		if (infoJson == null)
+			return;
+
+		WeaponDataLoader loader = JsonUtility.FromJson<WeaponDataLoader>(infoJson.text);
+		if (loader?.info == null)
+			return;
+
+		foreach (WeaponInfo info in loader.info)
+		{
+			if (info == null || string.IsNullOrEmpty(info.name))
+				continue;
+
+			weaponGradeByName[NormalizeName(info.name)] = NormalizeGrade(info.grade);
+		}
+	}
+
+	static void EnsureAccessoryGradeLookup()
+	{
+		if (accessoryGradeByName != null)
+			return;
+
+		accessoryGradeByName = new Dictionary<string, string>(StringComparer.Ordinal);
+
+		RewardCatalogSettings catalog = RewardCatalogSettings.Load();
+		if (catalog?.allAccessories == null)
+			return;
+
+		foreach (AccessoryData accessory in catalog.allAccessories)
+		{
+			if (accessory == null || string.IsNullOrEmpty(accessory.displayName))
+				continue;
+
+			accessoryGradeByName[NormalizeName(accessory.displayName)] = NormalizeGrade(accessory.GradeString);
+		}
 	}
 
 	public static List<InventorySlotViewData> BuildPotionSlots(IReadOnlyList<PotionInventory.PotionStack> stacks)
@@ -258,7 +406,7 @@ public static class InventoryDisplayService
 
 			var sb = new StringBuilder(256);
 			sb.AppendLine(title);
-			sb.AppendLine($"{Grade} · {Type}");
+			sb.AppendLine(ChoiceGradeDisplay.FormatGradeLine(Grade, Type));
 			sb.AppendLine($"데미지 {damage:F0} (합산)");
 			sb.AppendLine($"쿨 {cooltime:F1}s (합산)");
 			sb.AppendLine($"공속 {attackspeed:F2} (합산)");
@@ -289,9 +437,9 @@ public static class InventoryDisplayService
 		public AccessoryStackGroup(AccessoryData first)
 		{
 			DisplayName = NormalizeName(first.displayName);
-			Grade = NormalizeGrade(first.grade);
+			Grade = NormalizeGrade(first.GradeString);
 			Type = first.accessoryType ?? string.Empty;
-			icon = first.icon;
+			icon = AccessoryIconResolver.Resolve(first);
 			Add(first);
 		}
 
@@ -314,7 +462,7 @@ public static class InventoryDisplayService
 				descriptions.Add(data.description);
 
 			if (icon == null)
-				icon = data.icon;
+				icon = AccessoryIconResolver.Resolve(data);
 		}
 
 		public InventorySlotViewData ToSlotData()
@@ -324,7 +472,7 @@ public static class InventoryDisplayService
 			var sb = new StringBuilder(256);
 			sb.AppendLine(title);
 			if (!string.IsNullOrEmpty(Grade) || !string.IsNullOrEmpty(Type))
-				sb.AppendLine($"{Grade} · {Type}");
+				sb.AppendLine(ChoiceGradeDisplay.FormatGradeLine(Grade, Type));
 
 			foreach (var kv in statSums)
 			{

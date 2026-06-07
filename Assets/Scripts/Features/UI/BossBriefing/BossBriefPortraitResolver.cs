@@ -5,35 +5,32 @@ public static class BossBriefPortraitResolver
 {
 	public static Sprite Resolve(int stageIndex, GameObject[] explicitPrefabs = null)
 	{
+		GameManager gm = GameManager.instance;
+		if (gm != null)
+		{
+			Sprite cached = gm.GetCachedBossPortrait(stageIndex);
+			if (cached != null)
+				return cached;
+		}
+
 		GameObject prefab = ResolvePrefab(stageIndex, explicitPrefabs);
 		return FromPrefab(prefab);
 	}
 
 	public static GameObject ResolvePrefab(int stageIndex, GameObject[] explicitPrefabs = null)
 	{
-		if (explicitPrefabs != null && stageIndex >= 0 && stageIndex < explicitPrefabs.Length)
-		{
-			GameObject p = explicitPrefabs[stageIndex];
-			if (p != null)
-				return p;
-		}
+		if (TryGetPrefabAt(explicitPrefabs, stageIndex, out GameObject explicitPrefab))
+			return explicitPrefab;
 
 		GameManager gm = GameManager.instance;
 		if (gm == null)
 			return null;
 
-		if (gm.bossPortraitPrefabs != null && stageIndex >= 0 && stageIndex < gm.bossPortraitPrefabs.Length)
-		{
-			GameObject p = gm.bossPortraitPrefabs[stageIndex];
-			if (p != null)
-				return p;
-		}
+		if (TryGetPrefabAt(gm.bossPortraitPrefabs, stageIndex, out GameObject portraitPrefab))
+			return portraitPrefab;
 
-		if (gm.pool != null && gm.pool.bossPrefabs != null
-		    && stageIndex >= 0 && stageIndex < gm.pool.bossPrefabs.Length)
-		{
-			return gm.pool.bossPrefabs[stageIndex];
-		}
+		if (gm.pool != null && TryGetPrefabAt(gm.pool.bossPrefabs, stageIndex, out GameObject poolPrefab))
+			return poolPrefab;
 
 		return null;
 	}
@@ -43,11 +40,24 @@ public static class BossBriefPortraitResolver
 		if (prefab == null)
 			return null;
 
-		SpriteRenderer renderer = prefab.GetComponent<SpriteRenderer>();
-		if (renderer != null && renderer.sprite != null)
-			return renderer.sprite;
+		SpriteRenderer[] renderers = prefab.GetComponentsInChildren<SpriteRenderer>(true);
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			SpriteRenderer renderer = renderers[i];
+			if (renderer != null && renderer.sprite != null)
+				return renderer.sprite;
+		}
 
-		renderer = prefab.GetComponentInChildren<SpriteRenderer>(true);
-		return renderer != null ? renderer.sprite : null;
+		return null;
+	}
+
+	static bool TryGetPrefabAt(GameObject[] prefabs, int stageIndex, out GameObject prefab)
+	{
+		prefab = null;
+		if (prefabs == null || stageIndex < 0 || stageIndex >= prefabs.Length)
+			return false;
+
+		prefab = prefabs[stageIndex];
+		return prefab != null;
 	}
 }

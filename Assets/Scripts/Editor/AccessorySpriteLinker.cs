@@ -51,10 +51,55 @@ public static class AccessorySpriteLinker
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
+        SyncIconsToResources();
+
         Debug.Log($"[SpriteLinker] 완료 — 연결: {linked}개 / 미발견: {notFound}개");
         EditorUtility.DisplayDialog("완료",
             $"스프라이트 연결 완료!\n연결: {linked}개\n미발견: {notFound}개",
             "확인");
+    }
+
+    const string ResourcesIconPath = "Assets/Resources/Sprites/Accessory";
+
+    [MenuItem("Tools/Sync Accessory Icons To Resources")]
+    public static void SyncIconsToResources()
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/Resources/Sprites"))
+            AssetDatabase.CreateFolder("Assets/Resources", "Sprites");
+
+        if (!AssetDatabase.IsValidFolder(ResourcesIconPath))
+            AssetDatabase.CreateFolder("Assets/Resources/Sprites", "Accessory");
+
+        string[] pngGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { SpritePath });
+        int copied = 0;
+
+        foreach (string guid in pngGuids)
+        {
+            string sourcePath = AssetDatabase.GUIDToAssetPath(guid);
+            if (!sourcePath.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            string fileName = System.IO.Path.GetFileName(sourcePath);
+            string destPath = $"{ResourcesIconPath}/{fileName}";
+
+            if (AssetDatabase.CopyAsset(sourcePath, destPath))
+            {
+                copied++;
+                continue;
+            }
+
+            // 이미 있으면 덮어쓰기
+            if (System.IO.File.Exists(destPath))
+            {
+                AssetDatabase.DeleteAsset(destPath);
+                if (AssetDatabase.CopyAsset(sourcePath, destPath))
+                    copied++;
+            }
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"[SpriteLinker] Resources/Sprites/Accessory 동기화: {copied}개");
     }
 }
 #endif

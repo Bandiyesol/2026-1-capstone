@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(
@@ -16,10 +17,13 @@ public class ShopCatalogSettings : ScriptableObject
 	[Min(0)]
 	public int potionListingCount = 5;
 
-	[Header("등급 출현 가중치 (추후 확장용 — 현재는 WeaponInfo 등급 사용)")]
+	[Header("등급 출현 가중치 (무기·악세서리 진열)")]
 	public ShopGradeWeight[] gradeWeights =
 	{
-		new ShopGradeWeight { grade = ShopItemGrade.Common, weight = 1f },
+		new ShopGradeWeight { grade = ShopItemGrade.Common, weight = 55f },
+		new ShopGradeWeight { grade = ShopItemGrade.Rare, weight = 28f },
+		new ShopGradeWeight { grade = ShopItemGrade.Unique, weight = 12f },
+		new ShopGradeWeight { grade = ShopItemGrade.Legendary, weight = 5f },
 	};
 
 	[Header("등급별 판매 가격 (무기·악세서리)")]
@@ -30,6 +34,13 @@ public class ShopCatalogSettings : ScriptableObject
 
 	[Header("무기 풀 (비우면 WeaponManager 전체)")]
 	public string[] weaponIdPool;
+
+	[Header("악세서리·물약 풀 (비우면 RewardCatalog / Resources 자동)")]
+	public List<AccessoryData> accessoryPool = new List<AccessoryData>();
+	public List<PotionData> potionPool = new List<PotionData>();
+
+	[Min(0)]
+	public int potionDefaultPrice = 35;
 
 	[Header("상인")]
 	public Sprite merchantPortrait;
@@ -43,17 +54,25 @@ public class ShopCatalogSettings : ScriptableObject
 
 	public int GetPrice(ShopItemGrade grade)
 	{
-		if (gradePrices == null)
-			return 0;
-
-		foreach (ShopGradePrice entry in gradePrices)
+		if (gradePrices != null)
 		{
-			if (entry != null && entry.grade == grade)
-				return Mathf.Max(0, entry.price);
+			foreach (ShopGradePrice entry in gradePrices)
+			{
+				if (entry != null && entry.grade == grade && entry.price > 0)
+					return entry.price;
+			}
 		}
 
-		return 0;
+		return DefaultPriceForGrade(grade);
 	}
+
+	public static int DefaultPriceForGrade(ShopItemGrade grade) => grade switch
+	{
+		ShopItemGrade.Rare => 60,
+		ShopItemGrade.Unique => 90,
+		ShopItemGrade.Legendary => 150,
+		_ => 30
+	};
 
 	public float GetTotalGradeWeight()
 	{
@@ -68,6 +87,44 @@ public class ShopCatalogSettings : ScriptableObject
 		}
 
 		return total;
+	}
+
+	public ShopItemGrade RollListingGrade()
+	{
+		if (gradeWeights == null || gradeWeights.Length == 0)
+			return ShopItemGrade.Common;
+
+		float total = GetTotalGradeWeight();
+		if (total <= 0f)
+			return ShopItemGrade.Common;
+
+		float roll = UnityEngine.Random.Range(0f, total);
+		foreach (ShopGradeWeight entry in gradeWeights)
+		{
+			if (entry == null || entry.weight <= 0f)
+				continue;
+
+			if (roll < entry.weight)
+				return entry.grade;
+
+			roll -= entry.weight;
+		}
+
+		return ShopItemGrade.Common;
+	}
+
+	public float GetGradeWeight(ShopItemGrade grade)
+	{
+		if (gradeWeights == null)
+			return 0f;
+
+		foreach (ShopGradeWeight entry in gradeWeights)
+		{
+			if (entry != null && entry.grade == grade)
+				return Mathf.Max(0f, entry.weight);
+		}
+
+		return 0f;
 	}
 
 	static ShopCatalogSettings cached;

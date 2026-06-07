@@ -167,7 +167,7 @@ public class BossAlarmUI : MonoBehaviour
 
 		if (patternsText != null)
 		{
-			patternsText.text = $"<b>패턴·대처</b>\n{BossBriefingRuntime.PatternsHint}";
+			patternsText.text = $"<b>패턴·룬</b>\n{BossBriefingRuntime.PatternsHint}";
 			TmpKoreanFontUtility.ApplyFont(patternsText, koreanFont);
 			TmpKoreanFontUtility.EnsureGlyphs(patternsText, koreanFont, patternsText.text);
 			ScrollRectContentUtility.ApplyTopDownTextDefaults(patternsText);

@@ -75,7 +75,7 @@ public static class GameRunSnapshotBuilder
 				continue;
 
 			names.Add(string.IsNullOrEmpty(accessory.displayName)
-				? accessory.accessoryId
+				? accessory.name
 				: accessory.displayName);
 		}
 

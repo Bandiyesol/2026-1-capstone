@@ -18,6 +18,8 @@ public class GameRecordRowView : MonoBehaviour
 	const float StageCardPadding = 8f;
 	const float StageCardLineSpacing = 2f;
 	const float DetailHeaderHeight = 118f;
+	const float DetailHeaderBottomGap = 12f;
+	const float DetailScrollVerticalPadding = 8f;
 	const float PlayTimeFontSize = 26f;
 	const float DateFontSize = 26f;
 	const float DetailHeaderFontSize = 24f;
@@ -117,6 +119,7 @@ public class GameRecordRowView : MonoBehaviour
 
 		if (summaryText != null)
 		{
+			summaryText.richText = true;
 			summaryText.text = BuildSummary(data);
 			summaryText.fontSize = SummaryFontSize;
 			TmpKoreanFontUtility.ApplyFont(summaryText, font);
@@ -170,6 +173,7 @@ public class GameRecordRowView : MonoBehaviour
 
 			scroll.gameObject.SetActive(true);
 			ApplyDetailPanelFullWidth();
+			TryRefreshDetailVerticalLayout();
 			ApplyDetailTypography(data, font);
 			LayoutStageCardsEdgeToEdge();
 			return;
@@ -345,8 +349,6 @@ public class GameRecordRowView : MonoBehaviour
 		LayoutElement layout = detailPanel.GetComponent<LayoutElement>();
 		if (layout == null)
 			layout = detailPanel.AddComponent<LayoutElement>();
-		layout.minHeight = DetailMinHeight;
-		layout.preferredHeight = DetailMinHeight;
 		layout.flexibleWidth = 1f;
 
 		Canvas.ForceUpdateCanvases();
@@ -365,6 +367,12 @@ public class GameRecordRowView : MonoBehaviour
 			layout.minWidth = 600f;
 			layout.preferredWidth = 600f;
 		}
+
+		if (TryRefreshDetailVerticalLayout())
+			return;
+
+		layout.minHeight = DetailMinHeight;
+		layout.preferredHeight = DetailMinHeight;
 	}
 
 	public void ApplyFullWidthLayout()
@@ -376,6 +384,12 @@ public class GameRecordRowView : MonoBehaviour
 
 		if (detailPanel != null)
 			StretchHorizontally(detailPanel.transform as RectTransform);
+
+		if (isExpanded && detailStripBuilt)
+		{
+			TryRefreshDetailVerticalLayout();
+			LayoutStageCardsEdgeToEdge();
+		}
 	}
 
 	static void StretchHorizontally(RectTransform rect)
@@ -643,7 +657,6 @@ public class GameRecordRowView : MonoBehaviour
 		headerRect.anchorMin = new Vector2(0f, 1f);
 		headerRect.anchorMax = new Vector2(1f, 1f);
 		headerRect.pivot = new Vector2(0.5f, 1f);
-		headerRect.sizeDelta = new Vector2(0f, DetailHeaderHeight);
 		headerRect.anchoredPosition = Vector2.zero;
 
 		RectTransform content = EnsureStageStripContent();
@@ -653,9 +666,11 @@ public class GameRecordRowView : MonoBehaviour
 			scrollRoot.anchorMin = new Vector2(0f, 0f);
 			scrollRoot.anchorMax = new Vector2(1f, 1f);
 			scrollRoot.pivot = new Vector2(0.5f, 0.5f);
-			scrollRoot.offsetMin = new Vector2(8f, 8f);
-			scrollRoot.offsetMax = new Vector2(-8f, -(DetailHeaderHeight + 12f));
 		}
+
+		header.transform.SetAsFirstSibling();
+		if (scrollRoot != null)
+			scrollRoot.SetAsLastSibling();
 
 		ClearChildren(content);
 
@@ -685,7 +700,68 @@ public class GameRecordRowView : MonoBehaviour
 		}
 
 		ApplyDetailPanelFullWidth();
+		TryRefreshDetailVerticalLayout();
 		LayoutStageCardsEdgeToEdge();
+	}
+
+	bool TryRefreshDetailVerticalLayout()
+	{
+		if (detailPanel == null)
+			return false;
+
+		Transform headerTransform = detailPanel.transform.Find("DetailHeader");
+		Transform scrollTransform = detailPanel.transform.Find("StageScrollView");
+		if (headerTransform == null || scrollTransform == null)
+			return false;
+
+		Transform headerTextTransform = headerTransform.Find("HeaderText");
+		if (headerTextTransform == null || !headerTextTransform.TryGetComponent(out TextMeshProUGUI headerTmp))
+			return false;
+
+		RefreshDetailVerticalLayout(headerTransform as RectTransform, headerTmp, scrollTransform as RectTransform);
+		return true;
+	}
+
+	void RefreshDetailVerticalLayout(RectTransform headerRect, TextMeshProUGUI headerText, RectTransform scrollRoot)
+	{
+		if (detailPanel == null || headerRect == null || headerText == null)
+			return;
+
+		Canvas.ForceUpdateCanvases();
+
+		float panelWidth = (detailPanel.transform as RectTransform).rect.width;
+		if (panelWidth < 50f && transform is RectTransform rowRect)
+			panelWidth = rowRect.rect.width;
+		if (panelWidth < 50f)
+			panelWidth = 600f;
+
+		float headerHeight = MeasureDetailHeaderHeight(headerText, panelWidth);
+		headerRect.sizeDelta = new Vector2(0f, headerHeight);
+
+		if (scrollRoot != null)
+		{
+			scrollRoot.offsetMin = new Vector2(8f, DetailScrollVerticalPadding);
+			scrollRoot.offsetMax = new Vector2(-8f, -(headerHeight + DetailHeaderBottomGap));
+		}
+
+		float totalHeight = headerHeight + DetailHeaderBottomGap + StageStripHeight + DetailScrollVerticalPadding * 2f;
+		totalHeight = Mathf.Max(DetailMinHeight, totalHeight);
+
+		LayoutElement layout = detailPanel.GetComponent<LayoutElement>();
+		if (layout == null)
+			layout = detailPanel.AddComponent<LayoutElement>();
+		layout.minHeight = totalHeight;
+		layout.preferredHeight = totalHeight;
+
+		LayoutRebuilder.MarkLayoutForRebuild(transform as RectTransform);
+	}
+
+	static float MeasureDetailHeaderHeight(TextMeshProUGUI tmp, float panelWidth)
+	{
+		tmp.ForceMeshUpdate(true, true);
+		float textWidth = Mathf.Max(1f, panelWidth - 24f);
+		float textHeight = tmp.GetPreferredValues(textWidth, 0f).y;
+		return Mathf.Max(DetailHeaderHeight, textHeight + 12f);
 	}
 
 	void DisableDetailPanelLayoutGroups()
@@ -714,7 +790,9 @@ public class GameRecordRowView : MonoBehaviour
 		string headerText =
 			$"<b>상세 기록</b>  ·  캐릭터: {data.characterLabel}\n" +
 			$"플레이 타임 {FormatPlayTime(data.playTimeSeconds)}  ·  누적 처치 {GetRunTotalKills(data)}  ·  누적 골드 {GetRunTotalGold(data)}\n" +
-			$"무기: {FormatItemList(data.weaponNames)}  ·  악세서리: {FormatItemList(data.accessoryNames)}  ·  룬: {FormatItemList(data.runeNames)}";
+			$"무기: {FormatWeaponList(data.weaponNames)}\n" +
+			$"악세사리: {FormatAccessoryList(data.accessoryNames)}\n" +
+			$"룬: {FormatRuneList(data.runeNames)}";
 
 		TextMeshProUGUI tmp = CreateTmp("HeaderText", header.transform, headerText, DetailHeaderFontSize, TextAlignmentOptions.TopLeft);
 		tmp.textWrappingMode = TextWrappingModes.Normal;
@@ -805,8 +883,6 @@ public class GameRecordRowView : MonoBehaviour
 		RectTransform scrollRootRect = scrollRoot.GetComponent<RectTransform>();
 		scrollRootRect.anchorMin = new Vector2(0f, 0f);
 		scrollRootRect.anchorMax = new Vector2(1f, 1f);
-		scrollRootRect.offsetMin = new Vector2(8f, 8f);
-		scrollRootRect.offsetMax = new Vector2(-8f, -(DetailHeaderHeight + 8f));
 
 		ScrollRect scroll = scrollRoot.AddComponent<ScrollRect>();
 		scroll.horizontal = false;
@@ -941,15 +1017,19 @@ public class GameRecordRowView : MonoBehaviour
 		sb.AppendLine(data.cleared ? "클리어" : "실패");
 		sb.AppendLine($"캐릭터: {data.characterLabel}");
 		sb.AppendLine($"도달 {data.stageReached}스테이지 · 처치 {GetRunTotalKills(data)} · 누적 골드 {GetRunTotalGold(data)}");
-		sb.AppendLine($"무기 {FormatItemList(data.weaponNames)}");
-		sb.Append($"룬 {FormatItemList(data.runeNames)}");
+		sb.AppendLine($"무기 {FormatWeaponList(data.weaponNames)}");
+		sb.Append($"룬 {FormatRuneList(data.runeNames)}");
 		return sb.ToString();
 	}
 
-	static string FormatItemList(string[] values)
-	{
-		return InventoryDisplayService.FormatStackedNames(values);
-	}
+	static string FormatWeaponList(string[] values) =>
+		InventoryDisplayService.FormatStackedWeaponNames(values);
+
+	static string FormatAccessoryList(string[] values) =>
+		InventoryDisplayService.FormatStackedAccessoryNames(values);
+
+	static string FormatRuneList(string[] values) =>
+		InventoryDisplayService.FormatStackedNames(values);
 
 	static int GetRunTotalGold(GameRunRecord data)
 	{

@@ -109,6 +109,8 @@ public class SettingsUI : MonoBehaviour
 		PrepareDropdowns();
 		GameAudioSettings.Instance?.RefreshSources();
 		SyncUiFromSettings();
+		OverlayPanelUILayout.Apply(panel.transform);
+		SettingsPanelLayout.Apply(panel.transform);
 		PauseGameIfLive();
 	}
 
@@ -214,6 +216,8 @@ public class SettingsUI : MonoBehaviour
 		ApplyDropdownTextColors();
 		BindUiListeners();
 		SyncUiFromSettings();
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
+		SettingsPanelLayout.Apply(panel != null ? panel.transform : transform);
 	}
 
 	void BindUiListeners()
