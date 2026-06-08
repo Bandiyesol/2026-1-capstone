@@ -11,7 +11,7 @@ public class AccessoryInventory : MonoBehaviour
 {
     public static AccessoryInventory Instance { get; private set; }
 
-    [SerializeField] int maxAccessories = 12;
+    [SerializeField] int maxAccessories = 999;
 
     readonly List<AccessoryData> accessories = new List<AccessoryData>();
 
@@ -27,6 +27,10 @@ public class AccessoryInventory : MonoBehaviour
             return;
         }
         Instance = this;
+
+        // 예전 씬 직렬화 값(12) 보정
+        if (maxAccessories <= 12)
+            maxAccessories = 999;
     }
 
     public bool TryAdd(AccessoryData data)

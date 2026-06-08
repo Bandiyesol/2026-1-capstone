@@ -16,8 +16,10 @@ public static class GameSessionReset
 		ResetPool(game.pool);
 		ResetWorldDropsAndMotions();
 		ResetInventoriesAndRunes();
+		ResetShop();
 		ResetPlayer(game.player);
 		ResetGameManagerStats(game);
+		GameRunSessionTracker.Reset();
 	}
 
 	static void ResetGameManagerStats(GameManager game)
@@ -96,6 +98,13 @@ public static class GameSessionReset
 
 		if (RuneManager.instance != null)
 			RuneManager.instance.ResetToInitial();
+	}
+
+	static void ResetShop()
+	{
+		ShopUI shop = Object.FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);
+		if (shop != null)
+			shop.ResetSession();
 	}
 
 	static void ResetPlayer(Player player)

@@ -101,7 +101,6 @@ public class DroppedChest : MonoBehaviour
         }
         else
         {
-            // RewardRollService 없으면 기존 WeaponSelectUI로 폴백
             WeaponSelectUI weaponUi = GameManager.instance.uiWeaponSelect;
             if (weaponUi != null)
             {
@@ -111,7 +110,7 @@ public class DroppedChest : MonoBehaviour
             else
             {
                 Debug.LogWarning("[DroppedChest] RewardRollService가 없어 게임을 재개합니다.");
-                GameManager.instance.Resume();
+                GameManager.instance.ResumeGameplayFromOverlay();
             }
         }
 

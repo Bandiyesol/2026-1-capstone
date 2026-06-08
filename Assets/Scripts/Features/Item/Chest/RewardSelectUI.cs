@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -23,6 +24,9 @@ public class RewardSelectUI : MonoBehaviour
     public TextMeshProUGUI[] slotTitles;   // 이름만
     public TextMeshProUGUI[] slotDetails;  // 등급(색상) + \n + 설명/스탯
 
+    [Header("[ 폰트 ]")]
+    [SerializeField] TMP_FontAsset koreanFont;
+
     List<RewardCandidate> currentCandidates;
 
     void Awake()
@@ -30,6 +34,8 @@ public class RewardSelectUI : MonoBehaviour
         if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
         if (panel != null) panel.SetActive(false);
+        EnsureReady();
+        ChoiceSelectUILayout.Apply(transform);
         Debug.Log("[RewardSelectUI] Awake — instance 등록 완료");
     }
 
@@ -45,9 +51,92 @@ public class RewardSelectUI : MonoBehaviour
         if (found != null)
         {
             instance = found;
+            found.EnsureReady();
             Debug.Log("[RewardSelectUI] GetOrFind — 비활성화 오브젝트에서 instance 등록");
         }
         return instance;
+    }
+
+    /// <summary>WeaponSelectUI 복제본 등에서 Btn0~2 슬롯을 자동 연결합니다.</summary>
+    public void EnsureReady()
+    {
+        if (panel == null)
+            panel = gameObject;
+
+        if (slotButtons == null || slotButtons.Length == 0)
+            slotButtons = FindChoiceButtons();
+
+        if (slotButtons == null || slotButtons.Length == 0)
+            return;
+
+        slotTitles = BindTmpArray(slotTitles, "Title");
+        slotDetails = BindTmpArray(slotDetails, "Detail");
+        slotIcons = BindImageArray(slotIcons, "Icon");
+
+        ResolveKoreanFont();
+        ApplyKoreanFontToSlots();
+        TmpKoreanFontUtility.EnsureAllAccessoryGlyphs(koreanFont);
+    }
+
+    Button[] FindChoiceButtons()
+    {
+        var buttons = new List<Button>();
+        foreach (Button button in GetComponentsInChildren<Button>(true))
+        {
+            if (button == null)
+                continue;
+
+            string name = button.gameObject.name;
+            if (name == "Btn0" || name == "Btn1" || name == "Btn2")
+                buttons.Add(button);
+        }
+
+        buttons.Sort((a, b) => string.CompareOrdinal(a.gameObject.name, b.gameObject.name));
+        return buttons.ToArray();
+    }
+
+    TextMeshProUGUI[] BindTmpArray(TextMeshProUGUI[] current, string childName)
+    {
+        if (slotButtons == null || slotButtons.Length == 0)
+            return current;
+
+        var result = new TextMeshProUGUI[slotButtons.Length];
+        for (int i = 0; i < slotButtons.Length; i++)
+        {
+            if (current != null && i < current.Length && current[i] != null)
+            {
+                result[i] = current[i];
+                continue;
+            }
+
+            Transform child = slotButtons[i].transform.Find(childName);
+            if (child != null)
+                result[i] = child.GetComponent<TextMeshProUGUI>();
+        }
+
+        return result;
+    }
+
+    Image[] BindImageArray(Image[] current, string childName)
+    {
+        if (slotButtons == null || slotButtons.Length == 0)
+            return current;
+
+        var result = new Image[slotButtons.Length];
+        for (int i = 0; i < slotButtons.Length; i++)
+        {
+            if (current != null && i < current.Length && current[i] != null)
+            {
+                result[i] = current[i];
+                continue;
+            }
+
+            Transform child = slotButtons[i].transform.Find(childName);
+            if (child != null)
+                result[i] = child.GetComponent<Image>();
+        }
+
+        return result;
     }
 
     // ───────────────────────────────────────────
@@ -62,7 +151,13 @@ public class RewardSelectUI : MonoBehaviour
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
 
+        ChoiceSelectUILayout.Apply(transform);
+
         if (panel != null) panel.SetActive(true);
+
+        ResolveKoreanFont();
+        ApplyKoreanFontToSlots();
+        EnsureCandidateGlyphs(candidates);
 
         for (int i = 0; i < slotButtons.Length; i++)
         {
@@ -91,7 +186,7 @@ public class RewardSelectUI : MonoBehaviour
     {
         string title, gradeText, desc;
         Sprite icon;
-        string gradeHex;
+        string gradeColored;
 
         switch (candidate.type)
         {
@@ -101,16 +196,16 @@ public class RewardSelectUI : MonoBehaviour
                 title     = WeaponRewardService.FormatTitle(w);
                 gradeText = w?.info?.grade ?? "";
                 desc      = WeaponRewardService.FormatStats(w);
-                gradeHex  = GradeHex(w?.info?.grade);
+                gradeColored = ChoiceGradeDisplay.FormatColored(gradeText);
                 break;
 
             case RewardType.Accessory:
                 AccessoryData acc = candidate.accessory;
-                icon      = acc?.icon;
+                icon      = AccessoryIconResolver.Resolve(acc);
                 title     = acc?.displayName ?? "";
                 gradeText = acc?.grade.ToString() ?? "";
                 desc      = acc?.description ?? "";
-                gradeHex  = GradeHex(acc?.grade.ToString());
+                gradeColored = ChoiceGradeDisplay.FormatColored(gradeText);
                 break;
 
             case RewardType.Relic:
@@ -119,7 +214,7 @@ public class RewardSelectUI : MonoBehaviour
                 title     = relic?.relicName ?? "";
                 gradeText = "성물";
                 desc      = relic?.description ?? "";
-                gradeHex  = "FF3333"; // 빨간색
+                gradeColored = ChoiceGradeDisplay.FormatColored(gradeText, "FF3333");
                 break;
 
             default:
@@ -135,14 +230,72 @@ public class RewardSelectUI : MonoBehaviour
 
         // Title — 이름만
         if (slotTitles != null && i < slotTitles.Length && slotTitles[i] != null)
+        {
             slotTitles[i].text = title;
+            TmpKoreanFontUtility.EnsureGlyphs(slotTitles[i], koreanFont, title);
+        }
 
         // Detail — <color>등급</color>\n설명
         if (slotDetails != null && i < slotDetails.Length && slotDetails[i] != null)
         {
-            slotDetails[i].text = $"<color=#{gradeHex}>{gradeText}</color>\n{desc}";
+            string detail = string.IsNullOrEmpty(desc)
+                ? gradeColored
+                : $"{gradeColored}\n{desc}";
+            slotDetails[i].text = detail;
             slotDetails[i].richText = true;
+            TmpKoreanFontUtility.EnsureGlyphs(slotDetails[i], koreanFont, title + desc + gradeText);
         }
+    }
+
+    void ResolveKoreanFont()
+    {
+        koreanFont = TmpKoreanFontUtility.ResolveNeoDgmFont(koreanFont);
+    }
+
+    void ApplyKoreanFontToSlots()
+    {
+        if (koreanFont == null)
+            return;
+
+        if (slotTitles != null)
+        {
+            foreach (TextMeshProUGUI label in slotTitles)
+                TmpKoreanFontUtility.ApplyFont(label, koreanFont);
+        }
+
+        if (slotDetails != null)
+        {
+            foreach (TextMeshProUGUI label in slotDetails)
+                TmpKoreanFontUtility.ApplyFont(label, koreanFont);
+        }
+    }
+
+    void EnsureCandidateGlyphs(List<RewardCandidate> candidates)
+    {
+        if (koreanFont == null || candidates == null)
+            return;
+
+        var sb = new System.Text.StringBuilder(512);
+        foreach (RewardCandidate candidate in candidates)
+        {
+            if (candidate == null)
+                continue;
+
+            switch (candidate.type)
+            {
+                case RewardType.Accessory when candidate.accessory != null:
+                    TmpKoreanFontUtility.AppendAccessoryText(sb, candidate.accessory);
+                    break;
+                case RewardType.Relic when candidate.relic != null:
+                    if (!string.IsNullOrEmpty(candidate.relic.relicName))
+                        sb.Append(candidate.relic.relicName);
+                    if (!string.IsNullOrEmpty(candidate.relic.description))
+                        sb.Append(candidate.relic.description);
+                    break;
+            }
+        }
+
+        TmpKoreanFontUtility.EnsureGlyphsInFont(koreanFont, sb.ToString(), "RewardSelectUI");
     }
 
     // ───────────────────────────────────────────
@@ -185,17 +338,4 @@ public class RewardSelectUI : MonoBehaviour
         // 오브젝트 자체 비활성화 — 다른 UI 클릭 방해 방지
         gameObject.SetActive(false);
     }
-
-    // ───────────────────────────────────────────
-    //  등급별 색상 (Hex)
-    // ───────────────────────────────────────────
-
-    string GradeHex(string grade) => grade switch
-    {
-        "Common"    or "일반"   => "FFFFFF", // 흰색
-        "Rare"      or "희귀"   => "4D99FF", // 파랑
-        "Unique"    or "유니크" => "B24DFF", // 보라
-        "Legendary" or "전설"   => "FF9900", // 주황
-        _                       => "FFFFFF"
-    };
 }

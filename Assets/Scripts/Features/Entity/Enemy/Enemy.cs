@@ -149,6 +149,8 @@ public class Enemy : MonoBehaviour, IDamageable
     // 적 사망 처리 메서드
     void Die()
     {
+        BossBase.RecordEnemyDeath(transform.position);
+
         isLive = false;
         coll.enabled = false;       // 충돌체 비활성화 (시체 통과 가능)
         rigid.simulated = false;    // 물리 연산 중지

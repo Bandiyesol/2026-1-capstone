@@ -28,6 +28,23 @@ public class BossBase : MonoBehaviour, IDamageable
     protected float patternTimer;
     protected bool isDead;
 
+    /// <summary>마지막으로 쓰러진 보스의 월드 좌표 (엔딩 연출용).</summary>
+    public static Vector3? LastDeathWorldPosition { get; private set; }
+
+    /// <summary>현재 스테이지에서 마지막으로 쓰러진 적의 월드 좌표 (엔딩 연출 폴백).</summary>
+    public static Vector3? LastEnemyDeathWorldPosition { get; private set; }
+
+    public static void RecordEnemyDeath(Vector3 worldPosition)
+    {
+        LastEnemyDeathWorldPosition = worldPosition;
+    }
+
+    public static void ClearLastDeathPosition()
+    {
+        LastDeathWorldPosition = null;
+        LastEnemyDeathWorldPosition = null;
+    }
+
     protected Rigidbody2D rigid;
     protected SpriteRenderer spriter;
     protected Animator anim;
@@ -130,6 +147,9 @@ public class BossBase : MonoBehaviour, IDamageable
         if (isDead) return;
         isDead = true;
 
+        LastDeathWorldPosition = transform.position;
+        RecordEnemyDeath(transform.position);
+
         if (GameManager.instance != null)
             GameManager.instance.Kill++;
 
@@ -158,14 +178,7 @@ public class BossBase : MonoBehaviour, IDamageable
 
         if (PoolManager.Instance != null)
         {
-            // PoolManager에서 기믹 오브젝트 풀을 통해 마법진을 꺼내옴 (자동 SetActive(true) 처리됨)
-            GameObject portal = PoolManager.Instance.GetGimmick(portalGimmickIndex);
-
-            if (portal != null)
-            {
-                // 보스가 사망한 현재 위치로 마법진 순간이동
-                portal.transform.position = transform.position;
-            }
+            StageClearSpawnUtility.SpawnPortalAndShopkeeper(transform.position, portalGimmickIndex);
         }
         else
         {

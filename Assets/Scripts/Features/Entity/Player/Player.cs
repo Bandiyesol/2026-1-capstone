@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
 
     Color currentTint;                                          // 현재 스프라이트에 적용 중인 중간 색상 상태값
     Rigidbody2D rigid;                                          // 2D 물리 연산 및 이동을 담당하는 컴포넌트
+    CapsuleCollider2D bodyCollider;                             // 충돌체 (적 접촉 피해용, Trigger 아님) — main 브랜치
     Animator anim;                                              // 애니메이션 상태 제어기 컴포넌트
 
     public bool isStunned;                                      // 기절 상태 플래그 (이동 및 행동 불가)
@@ -50,6 +51,12 @@ public class Player : MonoBehaviour
     {
         // 최적화를 위해 런타임 시작 시 주요 컴포넌트들을 미리 캐싱
         rigid = GetComponent<Rigidbody2D>();
+
+        // main 브랜치: 적 접촉 피해(OnCollisionStay2D)가 동작하려면 Trigger가 꺼져 있어야 함
+        bodyCollider = GetComponent<CapsuleCollider2D>();
+        if (bodyCollider != null)
+            bodyCollider.isTrigger = false;
+
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         scaner = GetComponent<Scaner>();
@@ -104,9 +111,12 @@ public class Player : MonoBehaviour
             return;
         }
 
-        // 2. 게임 세션이 멈춰있거나 라이브 상태가 아니라면 동작하지 않음
+        // 2. 게임 세션이 멈춰있거나 라이브 상태가 아니라면 속도를 0으로 고정하고 동작 차단
         if (GameManager.instance == null || !GameManager.instance.isLive)
+        {
+            rigid.linearVelocity = Vector2.zero;
             return;
+        }
 
         // 3. 최신 인스턴스 스탯 속도에 각종 상태이상 배율(일반 배율 * 빙결 감속)을 누적 곱 연산
         float finalSpeed = PlayerStats.Instance.MovementSpeed * moveSpeedMultiplier * iceSlowMultiplier;
@@ -130,6 +140,13 @@ public class Player : MonoBehaviour
     /// </summary>
     void OnMove(InputValue value)
     {
+        // main 브랜치: 게임이 멈춰있을 때 입력 자체를 차단
+        if (GameManager.instance != null && !GameManager.instance.isLive)
+        {
+            inputVec = Vector2.zero;
+            return;
+        }
+
         // 입력 장치로부터 현재 2차원 입력 방향 패킷 획득
         Vector2 input = value.Get<Vector2>();
 
@@ -148,7 +165,12 @@ public class Player : MonoBehaviour
     {
         // 게임 진행 중이 아니라면 애니메이션 및 그래픽 업데이트 차단
         if (GameManager.instance == null || !GameManager.instance.isLive)
+        {
+            // main 브랜치: 정지 시 Speed 파라미터도 명시적으로 0으로 리셋
+            if (anim != null)
+                anim.SetFloat("Speed", 0f);
             return;
+        }
 
         // 현재 조작 중인 입력 벡터의 순수 크기(0~1)를 애니메이터에 전달해 런/아이들 애니 분기
         anim.SetFloat("Speed", inputVec.magnitude);
@@ -498,10 +520,12 @@ public class Player : MonoBehaviour
         for (int i = 2; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(true);
 
-        // 7. 사망 애니메이션 상태 플래그 및 파라미터 값 초기화
+        // 7. 사망 애니메이션 상태 플래그 및 파라미터 값 초기화 (main 브랜치: Rebind + Update로 즉시 상태 강제 리셋)
         if (anim != null)
         {
             anim.ResetTrigger("Dead");
+            anim.Rebind();
+            anim.Update(0f);
             anim.SetFloat("Speed", 0f);
         }
     }

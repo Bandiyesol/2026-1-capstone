@@ -18,7 +18,7 @@ MonoBehaviour:
   description: "[\uAD11\uC18D \uD56D\uD589] \uC774\uB3D9 \uC18D\uB3C4 +100%, \uC774\uC18D
     50%\uB9CC\uD07C \uACF5\uACA9\uB825 \uC99D\uAC00, \uC774\uB3D9 \uC911 \uD68C\uD53C
     +30%"
-  icon: {fileID: 4367003380860785243, guid: 75f0ecd68726a2246bb1ca5ecac2ae83, type: 3}
+  icon: {fileID: 21300000, guid: 75f0ecd68726a2246bb1ca5ecac2ae83, type: 3}
   modifiers:
   - statType: 17
     value: 1

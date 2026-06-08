@@ -70,7 +70,7 @@ public class AuthManager : MonoBehaviour
 		}
 		catch (FirebaseException exception)
 		{
-			return (false, TranslateFirebaseError(exception));
+			return (false, TranslateLoginFirebaseError(exception));
 		}
 		catch (Exception exception)
 		{
@@ -322,12 +322,41 @@ public class AuthManager : MonoBehaviour
 		}
 		catch (FirebaseException exception)
 		{
-			return (false, TranslateFirebaseError(exception));
+			return (false, TranslateLoginFirebaseError(exception));
 		}
 		catch (Exception exception)
 		{
 			Debug.LogException(exception);
 			return (false, "인증 메일 재전송에 실패했습니다.");
+		}
+	}
+
+	static string TranslateLoginFirebaseError(FirebaseException exception)
+	{
+		const string wrongPasswordMessage = "비밀번호를 다시 입력하세요.";
+
+		string raw = exception.Message ?? string.Empty;
+		if (IsWrongPasswordOrCredentialError(raw))
+			return wrongPasswordMessage;
+
+		AuthError error = (AuthError)exception.ErrorCode;
+		switch (error)
+		{
+			case AuthError.WrongPassword:
+			case AuthError.InvalidCredential:
+			case AuthError.RequiresRecentLogin:
+				return wrongPasswordMessage;
+			case AuthError.UserNotFound:
+				return "아이디를 찾을 수 없습니다.";
+			case AuthError.InvalidEmail:
+				return "이메일 형식이 올바르지 않습니다.";
+			case AuthError.TooManyRequests:
+				return "요청이 너무 많습니다. 잠시 후 다시 시도하세요.";
+			default:
+				if (raw.Contains("internal error", StringComparison.OrdinalIgnoreCase))
+					return wrongPasswordMessage;
+
+				return TranslateFirebaseError(exception);
 		}
 	}
 
@@ -372,19 +401,47 @@ public class AuthManager : MonoBehaviour
 
 	static string TranslateFirebaseError(FirebaseException exception)
 	{
+		string raw = exception.Message ?? string.Empty;
+		if (IsWrongPasswordOrCredentialError(raw))
+			return "비밀번호를 다시 입력하세요.";
+
 		AuthError error = (AuthError)exception.ErrorCode;
 
 		return error switch
 		{
 			AuthError.EmailAlreadyInUse => "이미 가입된 이메일입니다.",
 			AuthError.InvalidEmail => "이메일 형식이 올바르지 않습니다.",
-			AuthError.WrongPassword => "비밀번호가 올바르지 않습니다.",
+			AuthError.WrongPassword => "비밀번호를 다시 입력하세요.",
 			AuthError.UserNotFound => "계정을 찾을 수 없습니다.",
 			AuthError.WeakPassword => "비밀번호가 너무 약합니다. 6자 이상으로 설정하세요.",
 			AuthError.TooManyRequests => "요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
 			AuthError.RequiresRecentLogin => "보안을 위해 비밀번호를 다시 입력해 주세요.",
-			AuthError.InvalidCredential => "비밀번호가 올바르지 않습니다.",
-			_ => exception.Message,
+			AuthError.InvalidCredential => "비밀번호를 다시 입력하세요.",
+			_ => IsWrongPasswordOrCredentialError(raw)
+				? "비밀번호를 다시 입력하세요."
+				: ToUserFacingMessage(raw),
 		};
+	}
+
+	static bool IsWrongPasswordOrCredentialError(string message)
+	{
+		if (string.IsNullOrEmpty(message))
+			return false;
+
+		return message.Contains("INVALID_LOGIN_CREDENTIALS", StringComparison.OrdinalIgnoreCase)
+		       || message.Contains("invalid-credential", StringComparison.OrdinalIgnoreCase)
+		       || message.Contains("invalid-login-credentials", StringComparison.OrdinalIgnoreCase)
+		       || message.Contains("wrong-password", StringComparison.OrdinalIgnoreCase)
+		       || message.Contains("incorrect password", StringComparison.OrdinalIgnoreCase)
+		       || (message.Contains("internal error", StringComparison.OrdinalIgnoreCase)
+		           && message.Contains("INVALID_LOGIN", StringComparison.OrdinalIgnoreCase));
+	}
+
+	static string ToUserFacingMessage(string raw)
+	{
+		if (string.IsNullOrWhiteSpace(raw))
+			return "요청을 처리하지 못했습니다.";
+
+		return raw;
 	}
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
   accessoryType: "\uD2B9\uC218"
   description: "10% \uD655\uB960\uB85C \uD544\uB4DC \uB0B4 \uBAA8\uB4E0 \uC801 \uC18D\uBC15,
     \uD22C\uC0AC\uCCB4 \uD06C\uAE30 +30%"
-  icon: {fileID: -8784100258132911913, guid: 270cea633e6a2df4c916c2ceda22e1b0, type: 3}
+  icon: {fileID: 21300000, guid: 270cea633e6a2df4c916c2ceda22e1b0, type: 3}
   modifiers:
   - statType: 4
     value: 0.3
