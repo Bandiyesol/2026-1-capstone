@@ -12,17 +12,42 @@ public class Spawner : MonoBehaviour
 
     void Awake()
     {
-        spawnPoint = GetComponentsInChildren<Transform>();
+        if (spawnPoint == null || spawnPoint.Length == 0)
+            spawnPoint = GetComponentsInChildren<Transform>();
     }
 
     void Start()
     {
-        pool = GameManager.instance.pool;
+        ResolvePool();
+    }
+
+    void ResolvePool()
+    {
+        if (pool != null)
+            return;
+
+        if (GameManager.instance != null)
+            pool = GameManager.instance.pool;
+
+        if (pool == null)
+            pool = PoolManager.Instance;
     }
 
     public Transform GetRandomPoint()
     {
-        return spawnPoint[Random.Range(1, spawnPoint.Length)];
+        if (spawnPoint == null || spawnPoint.Length == 0)
+        {
+            Debug.LogError("[Spawner] spawnPoint가 비어 있습니다.");
+            return transform;
+        }
+
+        int index = spawnPoint.Length == 1 ? 0 : Random.Range(0, spawnPoint.Length);
+        Transform point = spawnPoint[index];
+        if (point != null)
+            return point;
+
+        Debug.LogWarning($"[Spawner] spawnPoint[{index}]가 null입니다. Spawner 위치를 사용합니다.");
+        return transform;
     }
 
     public SpawnData GetSpawnData(int index)
@@ -33,12 +58,34 @@ public class Spawner : MonoBehaviour
 
     public GameObject Spawn(int index)
     {
+        if (spawnData == null || spawnData.Length == 0)
+        {
+            Debug.LogError("[Spawner] spawnData가 비어 있습니다.");
+            return null;
+        }
+
+        ResolvePool();
+        if (pool == null)
+        {
+            Debug.LogError("[Spawner] PoolManager를 찾지 못했습니다.");
+            return null;
+        }
+
         SpawnData data = GetSpawnData(index);
         Transform point = GetRandomPoint();
 
         GameObject obj = data.isBoss
             ? pool.GetBoss(data.prefabIndex)
             : pool.GetEnemy(data.prefabIndex);
+
+        if (obj == null)
+        {
+            Debug.LogError(
+                $"[Spawner] 소환 실패 — spawnData[{index}] " +
+                $"(isBoss={data.isBoss}, prefabIndex={data.prefabIndex}). " +
+                "PoolManager 프리팹 배열을 확인하세요.");
+            return null;
+        }
 
         obj.transform.position = point.position;
         obj.transform.rotation = Quaternion.identity;
@@ -54,6 +101,6 @@ public class SpawnData
     public bool isBoss;
 
     [Header("스폰")]
-    public float spawnTime;
+    public float spawnTime = 0.2f;
     public int prefabIndex;
 }

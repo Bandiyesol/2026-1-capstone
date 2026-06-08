@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// GameStart(타이틀) 화면 — 게임 시작(스토리), 설정, 로그아웃.
@@ -10,13 +11,41 @@ public class GameStartMenuController : MonoBehaviour
 	[SerializeField] Button startButton;
 	[SerializeField] Button settingsButton;
 	[SerializeField] Button logoutButton;
+	[SerializeField] Button recordButton;
 
 	[Tooltip("비우면 자식에서 ButtonStart 를 찾습니다.")]
 	[SerializeField] string startButtonObjectName = "ButtonStart";
+	[Tooltip("비우면 자식에서 ButtonRecord 를 찾습니다.")]
+	[SerializeField] string recordButtonObjectName = "ButtonRecord";
+
+	void OnEnable()
+	{
+		_ = RefreshLeaderboardWhenMenuOpensAsync();
+	}
+
+	async System.Threading.Tasks.Task RefreshLeaderboardWhenMenuOpensAsync()
+	{
+		await UserAccountDisplay.RefreshAsync();
+
+		MainMenuLeaderboardView leaderboard = MainMenuLeaderboardBootstrap.Ensure(transform);
+		if (leaderboard == null)
+			return;
+
+		leaderboard.gameObject.SetActive(true);
+		leaderboard.Refresh();
+	}
+
+	void OnDisable()
+	{
+		MainMenuLeaderboardView leaderboard = Object.FindFirstObjectByType<MainMenuLeaderboardView>(FindObjectsInactive.Include);
+		if (leaderboard != null)
+			leaderboard.gameObject.SetActive(false);
+	}
 
 	void Awake()
 	{
 		TryResolveStartButton();
+		TryResolveRecordButton();
 
 		if (startButton != null)
 		{
@@ -30,6 +59,9 @@ public class GameStartMenuController : MonoBehaviour
 
 		if (logoutButton != null)
 			logoutButton.onClick.AddListener(OnLogoutClicked);
+
+		if (recordButton != null)
+			recordButton.onClick.AddListener(OnRecordClicked);
 	}
 
 	void OnDestroy()
@@ -42,6 +74,27 @@ public class GameStartMenuController : MonoBehaviour
 
 		if (logoutButton != null)
 			logoutButton.onClick.RemoveListener(OnLogoutClicked);
+
+		if (recordButton != null)
+			recordButton.onClick.RemoveListener(OnRecordClicked);
+	}
+
+	void TryResolveRecordButton()
+	{
+		if (recordButton != null)
+			return;
+
+		Transform found = transform.Find(recordButtonObjectName);
+		if (found != null)
+			recordButton = found.GetComponent<Button>();
+	}
+
+	void EnsureRecordButtonExists()
+	{
+		if (recordButton != null)
+			return;
+
+		Debug.LogWarning("[GameStartMenu] recordButton이 연결되지 않았습니다. ButtonRecord를 Inspector에 연결하세요.");
 	}
 
 	void TryResolveStartButton()
@@ -85,5 +138,11 @@ public class GameStartMenuController : MonoBehaviour
 		}
 
 		auth.RequestLogout();
+	}
+
+	void OnRecordClicked()
+	{
+		if (GameManager.instance != null)
+			GameManager.instance.ShowGameRecordFromMenu();
 	}
 }

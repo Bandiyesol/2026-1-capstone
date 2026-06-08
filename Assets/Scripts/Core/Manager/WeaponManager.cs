@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 public class WeaponManager : MonoBehaviour
@@ -82,8 +82,13 @@ public class WeaponManager : MonoBehaviour
 	}
 
 	public WeaponInfo GetWeaponInfo(string id) => infoDatabase.GetValueOrDefault(id);
+
+	public IEnumerable<WeaponInfo> GetAllWeaponInfos() => infoDatabase.Values;
 	
 	public WeaponBalance GetWeaponBalance(string key) => balanceDatabase.GetValueOrDefault(key);
+
+	/// <summary>등록된 전체 무기 ID 목록 반환. RewardRollService에서 사용.</summary>
+	public List<string> GetAllWeaponIds() => new List<string>(infoDatabase.Keys);
 
 	public Sprite GetWeaponSprite(string spriteId)
 	{

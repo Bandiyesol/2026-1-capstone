@@ -1,0 +1,936 @@
+fileFormatVersion: 2
+guid: e3566cd8713317a4ead3b0b1e1be1108
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5592079602170154299
+    second: VolcanoPumpkin_0
+  - first:
+      213: 5557186743054081556
+    second: VolcanoPumpkin_1
+  - first:
+      213: 5140043141122966103
+    second: VolcanoPumpkin_2
+  - first:
+      213: -6760486098215852793
+    second: VolcanoPumpkin_3
+  - first:
+      213: -29365801179176434
+    second: VolcanoPumpkin_4
+  - first:
+      213: 5199066298764052806
+    second: VolcanoPumpkin_5
+  - first:
+      213: 6990201038917785961
+    second: VolcanoPumpkin_6
+  - first:
+      213: 9099008389091758767
+    second: VolcanoPumpkin_7
+  - first:
+      213: -1725335270985073518
+    second: VolcanoPumpkin_8
+  - first:
+      213: 6868047400224593484
+    second: VolcanoPumpkin_9
+  - first:
+      213: -7082916900232980007
+    second: VolcanoPumpkin_10
+  - first:
+      213: 4052307593685708453
+    second: VolcanoPumpkin_11
+  - first:
+      213: -4804515777889193427
+    second: VolcanoPumpkin_12
+  - first:
+      213: 4139004115417839472
+    second: VolcanoPumpkin_13
+  - first:
+      213: -3580627175807087577
+    second: VolcanoPumpkin_14
+  - first:
+      213: 1940474477940123971
+    second: VolcanoPumpkin_15
+  - first:
+      213: 3804474081007782235
+    second: VolcanoPumpkin_16
+  - first:
+      213: -4768764019710798059
+    second: VolcanoPumpkin_17
+  - first:
+      213: 2703716282446182165
+    second: VolcanoPumpkin_18
+  - first:
+      213: -3207050843208267257
+    second: VolcanoPumpkin_19
+  - first:
+      213: 2630272460238775607
+    second: VolcanoPumpkin_20
+  - first:
+      213: -4724454855836368591
+    second: VolcanoPumpkin_21
+  - first:
+      213: -3640844794708326349
+    second: VolcanoPumpkin_22
+  - first:
+      213: -7932186691148435743
+    second: VolcanoPumpkin_23
+  - first:
+      213: 6369266770404357510
+    second: VolcanoPumpkin_24
+  - first:
+      213: 5256699498545408490
+    second: VolcanoPumpkin_25
+  - first:
+      213: -4183941498436812424
+    second: VolcanoPumpkin_26
+  - first:
+      213: -3484559302367948762
+    second: VolcanoPumpkin_27
+  - first:
+      213: 3128831009656778442
+    second: VolcanoPumpkin_28
+  - first:
+      213: 3877755807074000061
+    second: VolcanoPumpkin_29
+  - first:
+      213: -6610245339360695523
+    second: VolcanoPumpkin_30
+  - first:
+      213: -8110880188897555643
+    second: VolcanoPumpkin_31
+  - first:
+      213: 9090468165581901646
+    second: VolcanoPumpkin_32
+  - first:
+      213: -9198841913650345182
+    second: VolcanoPumpkin_33
+  - first:
+      213: 1088281394053766991
+    second: VolcanoPumpkin_34
+  - first:
+      213: 1924695203329261091
+    second: VolcanoPumpkin_35
+  - first:
+      213: 2845439978127925884
+    second: VolcanoPumpkin_36
+  - first:
+      213: 1470107908961198901
+    second: VolcanoPumpkin_37
+  - first:
+      213: 5796630299307190324
+    second: VolcanoPumpkin_38
+  - first:
+      213: 6837863872582643617
+    second: VolcanoPumpkin_39
+  - first:
+      213: 8331604578169927576
+    second: VolcanoPumpkin_40
+  - first:
+      213: 5776931403947489981
+    second: VolcanoPumpkin_41
+  - first:
+      213: 399012718241267222
+    second: VolcanoPumpkin_42
+  - first:
+      213: -5662437200052228410
+    second: VolcanoPumpkin_43
+  - first:
+      213: -3359895749292804252
+    second: VolcanoPumpkin_44
+  - first:
+      213: -3306620954963218227
+    second: VolcanoPumpkin_45
+  - first:
+      213: 4847084956917309416
+    second: VolcanoPumpkin_46
+  - first:
+      213: 5599210617484440463
+    second: VolcanoPumpkin_47
+  - first:
+      213: -6412623959912246098
+    second: VolcanoPumpkin_48
+  - first:
+      213: -8147560241506554820
+    second: VolcanoPumpkin_49
+  - first:
+      213: 1735623694112155979
+    second: VolcanoPumpkin_50
+  - first:
+      213: -7203990142172732164
+    second: VolcanoPumpkin_51
+  - first:
+      213: -6517525914170732674
+    second: VolcanoPumpkin_52
+  - first:
+      213: 7856426320562365604
+    second: VolcanoPumpkin_53
+  - first:
+      213: -5197197514234505426
+    second: VolcanoPumpkin_54
+  - first:
+      213: -2616687478913997259
+    second: VolcanoPumpkin_55
+  - first:
+      213: -2179526015833929290
+    second: VolcanoPumpkin_56
+  - first:
+      213: -7602433521866463112
+    second: VolcanoPumpkin_57
+  - first:
+      213: -2973187622150636039
+    second: VolcanoPumpkin_58
+  - first:
+      213: 5076283464205896516
+    second: VolcanoPumpkin_59
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: VolcanoPumpkin_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c2b0fcda31f462b0800000000000000
+      internalID: -5592079602170154299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41e9f3a46e71f1d40800000000000000
+      internalID: 5557186743054081556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75241d4f00a155740800000000000000
+      internalID: 5140043141122966103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 705a0e656bded22a0800000000000000
+      internalID: -6760486098215852793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e02ab2c95fba79ff0800000000000000
+      internalID: -29365801179176434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 649498db04bc62840800000000000000
+      internalID: 5199066298764052806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_6
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 969d2492fce220160800000000000000
+      internalID: 6990201038917785961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_7
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa21d18dbeb264e70800000000000000
+      internalID: 9099008389091758767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29c7b7656b06e08e0800000000000000
+      internalID: -1725335270985073518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_9
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c469ee6d8b4305f50800000000000000
+      internalID: 6868047400224593484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d9900c2b9c64bd90800000000000000
+      internalID: -7082916900232980007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_11
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ae21425940bc3830800000000000000
+      internalID: 4052307593685708453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_12
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d22b72dfa5ee25db0800000000000000
+      internalID: -4804515777889193427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_13
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0773c574052b07930800000000000000
+      internalID: 4139004115417839472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72c88e8fd8e0f4ec0800000000000000
+      internalID: -3580627175807087577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_15
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3492551b143fdea10800000000000000
+      internalID: 1940474477940123971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_16
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5946ab05053cc430800000000000000
+      internalID: 3804474081007782235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_17
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 517597bd362f1ddb0800000000000000
+      internalID: -4768764019710798059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_18
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 517f4ac42a7858520800000000000000
+      internalID: 2703716282446182165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_19
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70a44f1ff344e73d0800000000000000
+      internalID: -3207050843208267257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7356607edda908420800000000000000
+      internalID: 2630272460238775607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1310180075d5f6eb0800000000000000
+      internalID: -4724454855836368591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_22
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 338841103fe197dc0800000000000000
+      internalID: -3640844794708326349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_23
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ee240e1b363be190800000000000000
+      internalID: -7932186691148435743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_24
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 685b6a1c16e246850800000000000000
+      internalID: 6369266770404357510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VolcanoPumpkin_25
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae9e5cdb75c83f840800000000000000
+      internalID: 5256699498545408490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ef6ef1ef1b2347b41b16a8bc50510b0c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":128.0,"y":128.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      VolcanoPumpkin_0: -5592079602170154299
+      VolcanoPumpkin_1: 5557186743054081556
+      VolcanoPumpkin_10: -7082916900232980007
+      VolcanoPumpkin_11: 4052307593685708453
+      VolcanoPumpkin_12: -4804515777889193427
+      VolcanoPumpkin_13: 4139004115417839472
+      VolcanoPumpkin_14: -3580627175807087577
+      VolcanoPumpkin_15: 1940474477940123971
+      VolcanoPumpkin_16: 3804474081007782235
+      VolcanoPumpkin_17: -4768764019710798059
+      VolcanoPumpkin_18: 2703716282446182165
+      VolcanoPumpkin_19: -3207050843208267257
+      VolcanoPumpkin_2: 5140043141122966103
+      VolcanoPumpkin_20: 2630272460238775607
+      VolcanoPumpkin_21: -4724454855836368591
+      VolcanoPumpkin_22: -3640844794708326349
+      VolcanoPumpkin_23: -7932186691148435743
+      VolcanoPumpkin_24: 6369266770404357510
+      VolcanoPumpkin_25: 5256699498545408490
+      VolcanoPumpkin_3: -6760486098215852793
+      VolcanoPumpkin_4: -29365801179176434
+      VolcanoPumpkin_5: 5199066298764052806
+      VolcanoPumpkin_6: 6990201038917785961
+      VolcanoPumpkin_7: 9099008389091758767
+      VolcanoPumpkin_8: -1725335270985073518
+      VolcanoPumpkin_9: 6868047400224593484
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

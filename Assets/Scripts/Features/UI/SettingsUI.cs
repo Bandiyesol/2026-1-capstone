@@ -60,6 +60,11 @@ public class SettingsUI : MonoBehaviour
 		EnsurePanelSetup();
 	}
 
+	void Start()
+	{
+		WireDeleteAccountKeyboardNavigation();
+	}
+
 	void OnEnable()
 	{
 		if (panel != null && panel.activeInHierarchy)
@@ -104,6 +109,8 @@ public class SettingsUI : MonoBehaviour
 		PrepareDropdowns();
 		GameAudioSettings.Instance?.RefreshSources();
 		SyncUiFromSettings();
+		OverlayPanelUILayout.Apply(panel.transform);
+		SettingsPanelLayout.Apply(panel.transform);
 		PauseGameIfLive();
 	}
 
@@ -116,6 +123,30 @@ public class SettingsUI : MonoBehaviour
 		HideDeleteAccountPanel();
 		panel.SetActive(false);
 		ResumeGameIfPausedBySettings();
+	}
+
+	/// <summary>Esc — 회원탈퇴 확인이 열려 있으면 취소, 아니면 CloseBtn 과 동일.</summary>
+	public bool TryHandleEscape()
+	{
+		if (deleteAccountPanel != null && deleteAccountPanel.activeInHierarchy)
+		{
+			if (deleteAccountCancelButton != null)
+				deleteAccountCancelButton.onClick.Invoke();
+			else
+				HideDeleteAccountPanel();
+
+			return true;
+		}
+
+		if (!isOpen || panel == null || !panel.activeInHierarchy)
+			return false;
+
+		if (closeButton != null)
+			closeButton.onClick.Invoke();
+		else
+			Close();
+
+		return true;
 	}
 
 	void EnsurePanelInteractable()
@@ -137,7 +168,7 @@ public class SettingsUI : MonoBehaviour
 			return;
 
 		GameManager.instance.PauseOverlay();
-		FreezePlayerMovement();
+		GameManager.FreezePlayerMovement();
 		pausedBySettings = true;
 	}
 
@@ -148,18 +179,6 @@ public class SettingsUI : MonoBehaviour
 
 		pausedBySettings = false;
 		GameManager.instance.ResumeOverlay();
-	}
-
-	static void FreezePlayerMovement()
-	{
-		if (GameManager.instance?.player == null)
-			return;
-
-		Player player = GameManager.instance.player;
-		player.inputVec = Vector2.zero;
-
-		if (player.TryGetComponent(out Rigidbody2D rigid))
-			rigid.linearVelocity = Vector2.zero;
 	}
 
 	void EnsurePanelSetup()
@@ -197,6 +216,8 @@ public class SettingsUI : MonoBehaviour
 		ApplyDropdownTextColors();
 		BindUiListeners();
 		SyncUiFromSettings();
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
+		SettingsPanelLayout.Apply(panel != null ? panel.transform : transform);
 	}
 
 	void BindUiListeners()
@@ -637,6 +658,7 @@ public class SettingsUI : MonoBehaviour
 
 		deleteAccountPanel.SetActive(true);
 		deleteAccountPanel.transform.SetAsLastSibling();
+		AuthInputUtility.Clear(deleteAccountPasswordInput);
 		SetDeleteAccountMessage("탈퇴 시 계정·닉네임·아이디가 삭제되며 복구할 수 없습니다.");
 	}
 
@@ -644,6 +666,33 @@ public class SettingsUI : MonoBehaviour
 	{
 		if (deleteAccountPanel != null)
 			deleteAccountPanel.SetActive(false);
+
+		AuthInputUtility.Clear(deleteAccountPasswordInput);
+	}
+
+	void WireDeleteAccountKeyboardNavigation()
+	{
+		if (deleteAccountPanel == null || deleteAccountPasswordInput == null || deleteAccountConfirmButton == null)
+			return;
+
+		AuthFormKeyboardNavigation nav = FindFirstObjectByType<AuthFormKeyboardNavigation>(FindObjectsInactive.Include);
+		if (nav == null)
+		{
+			AuthFlowController authFlow = FindFirstObjectByType<AuthFlowController>(FindObjectsInactive.Include);
+			if (authFlow == null)
+				return;
+
+			nav = authFlow.GetComponent<AuthFormKeyboardNavigation>();
+			if (nav == null)
+				nav = authFlow.gameObject.AddComponent<AuthFormKeyboardNavigation>();
+		}
+
+		nav.RegisterForm(new AuthFormKeyboardNavigation.FormConfig
+		{
+			panel = deleteAccountPanel,
+			inputs = new[] { deleteAccountPasswordInput },
+			submitButton = deleteAccountConfirmButton
+		});
 	}
 
 	void OnDeleteAccountConfirmClicked()

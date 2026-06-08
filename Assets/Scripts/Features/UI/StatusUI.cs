@@ -72,6 +72,7 @@ public class StatusUI : MonoBehaviour
 
 		isOpen = true;
 		panel.SetActive(true);
+		OverlayPanelUILayout.Apply(panel.transform);
 		SubscribeStats();
 		Refresh();
 		PauseGameIfLive();
@@ -88,12 +89,26 @@ public class StatusUI : MonoBehaviour
 		ResumeGameIfPausedByStatus();
 	}
 
+	/// <summary>Esc — CloseBtn 과 동일.</summary>
+	public bool TryHandleEscape()
+	{
+		if (!isOpen || panel == null || !panel.activeInHierarchy)
+			return false;
+
+		if (closeButton != null)
+			closeButton.onClick.Invoke();
+		else
+			Close();
+
+		return true;
+	}
+
 	void PauseGameIfLive()
 	{
 		if (GameManager.instance == null || !GameManager.instance.isLive)
 			return;
 
-		GameManager.instance.Stop();
+		GameManager.instance.PauseForOverlayPanel();
 		pausedByStatus = true;
 	}
 
@@ -103,7 +118,7 @@ public class StatusUI : MonoBehaviour
 			return;
 
 		pausedByStatus = false;
-		GameManager.instance.Resume();
+		GameManager.instance.ResumeGameplayFromOverlay();
 	}
 
 	void EnsureInitialized()
@@ -133,6 +148,7 @@ public class StatusUI : MonoBehaviour
 
 		ResolveKoreanFont();
 		TmpKoreanFontUtility.ApplyFontToAll(koreanFont, titleLabel, statsLabel, statsSideLabel);
+		OverlayPanelUILayout.Apply(panel != null ? panel.transform : transform);
 	}
 
 	void AutoBindReferences()
@@ -266,7 +282,7 @@ public class StatusUI : MonoBehaviour
 
 		string mainText = string.IsNullOrEmpty(statsHeader)
 			? mainStats
-			: statsHeader + "\n\n" + mainStats;
+			: statsHeader + "\n" + mainStats;
 
 		if (titleLabel != null)
 			titleLabel.text = titleText;

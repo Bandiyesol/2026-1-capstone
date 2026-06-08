@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 플레이어가 보유한 무기 인스턴스(선택 시 수치 확정). UI 인벤토리 연동 전까지 WeaponController가 참조.
+/// 플레이어가 획득해서 보유하고 있는 무기 리스트(WeaponInstance)를 관리합니다.
+/// 게임 중 선택하여 고정된 스탯을 지닌 무기들이 여기에 담겨 WeaponController에서 쿨타임 관리를 받습니다.
 /// </summary>
 public class WeaponInventory : MonoBehaviour
 {
-	[SerializeField] int maxWeapons = 6;
+	[SerializeField] int maxWeapons = 999;
 
 	readonly List<WeaponInstance> weapons = new List<WeaponInstance>();
 
 	public IReadOnlyList<WeaponInstance> Weapons => weapons;
+
 	public int MaxWeapons => maxWeapons;
+
 	public event Action OnInventoryChanged;
+
+	void Awake()
+	{
+		if (maxWeapons <= 12)
+			maxWeapons = 999;
+	}
 
 	public bool TryAdd(WeaponInstance instance)
 	{

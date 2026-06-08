@@ -8,6 +8,12 @@ public class RuneManager : MonoBehaviour
     public bool IsCurrentCombinationValid { get; private set; } = true;
     public string CurrentWarningMessage { get; private set; } = string.Empty;
 
+    /// <summary>
+    /// 룬 쿨타임 배율. 기본값 1f.
+    /// 특수 물약 사용 시 PotionEffect가 0.5f로 설정 → 쿨타임 절반.
+    /// </summary>
+    public float CooldownMultiplier { get; set; } = 1f;
+
     const int SlotCount = 3;
     readonly RuneData[] slots = new RuneData[SlotCount];
     readonly List<RuneData> activeRunesCache = new List<RuneData>();

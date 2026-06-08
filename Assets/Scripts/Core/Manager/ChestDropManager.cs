@@ -23,9 +23,24 @@ public class ChestDropManager : MonoBehaviour
 
         Instance = this;
 
+        ResolveSettings();
+        ResolvePool();
+    }
+
+    void ResolveSettings()
+    {
+        if (settings != null)
+            return;
+
+        if (GameManager.instance != null && GameManager.instance.chestDropSettings != null)
+            settings = GameManager.instance.chestDropSettings;
+
         if (settings == null)
             settings = Resources.Load<ChestDropSettings>("Data/ChestDropSettings");
+    }
 
+    void ResolvePool()
+    {
         if (pool == null && GameManager.instance != null)
             pool = GameManager.instance.pool;
     }
