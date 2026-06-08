@@ -43,10 +43,7 @@ public static class BossStageConfigurationEditor
 
 		EditorSceneManager.MarkSceneDirty(scene);
 		EditorSceneManager.SaveScene(scene);
-		EditorUtility.DisplayDialog(
-			"보스 스테이지 설정",
-			"7스테이지 보스 웨이브·풀·스폰·클리어(7스테이지) 설정을 적용했습니다.",
-			"확인");
+		EditorUtility.DisplayDialog("보스 스테이지 설정", "7스테이지 보스 웨이브·풀·스폰·클리어(7스테이지) 설정을 적용했습니다.", "확인");
 	}
 
 	public static bool ApplyConfiguration()

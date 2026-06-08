@@ -17,6 +17,10 @@ public class StageManager : MonoBehaviour
     [Tooltip("모든 스테이지 데이터를 넣는 데이터")]
     public StageData[] stageDatas;
 
+    [Header("엔딩")]
+    [Tooltip("이 스테이지 번호 클리어 시 게임 종료 (BossStageConfigurationEditor 자동 설정)")]
+    public int endingAfterStageNumber;
+
     public int CurrentStage => stageIndex + 1;
 
     public int TotalStages
