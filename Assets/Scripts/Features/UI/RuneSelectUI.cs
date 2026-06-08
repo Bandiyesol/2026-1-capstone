@@ -159,7 +159,7 @@ public class RuneSelectUI : MonoBehaviour
 #if UNITY_EDITOR
         if (runeCatalog == null)
         {
-            const string catalogPath = "Assets/Arts/Data/RuneCatalog.asset";
+            const string catalogPath = RunePaths.CatalogAssetPath;
             runeCatalog = UnityEditor.AssetDatabase.LoadAssetAtPath<RuneCatalog>(catalogPath);
         }
 #endif

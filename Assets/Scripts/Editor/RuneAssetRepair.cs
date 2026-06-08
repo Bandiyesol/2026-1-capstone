@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Arts/Data 의 구 RuneData SO를 카테고리별 서브클래스 SO로 재생성합니다.
+/// Data/Rune Datas 의 구 RuneData SO를 카테고리별 서브클래스 SO로 재생성합니다.
 /// Unity 메뉴: Tools → Rune → Repair All Rune Assets
 /// </summary>
 public static class RuneAssetRepair
@@ -11,7 +11,7 @@ public static class RuneAssetRepair
 	[MenuItem("Tools/Rune/Fix Asset Object Names (노란 경고)")]
 	public static void FixAssetObjectNames()
 	{
-		string[] guids = AssetDatabase.FindAssets("Rune_", new[] { "Assets/Arts/Data" });
+		string[] guids = AssetDatabase.FindAssets("Rune_", new[] { RunePaths.DataFolder });
 		int count = 0;
 
 		foreach (string guid in guids)
@@ -37,7 +37,7 @@ public static class RuneAssetRepair
 	[MenuItem("Tools/Rune/Fix Missing Script References")]
 	public static void FixMissingScriptReferences()
 	{
-		string[] guids = AssetDatabase.FindAssets("Rune_", new[] { "Assets/Arts/Data" });
+		string[] guids = AssetDatabase.FindAssets("Rune_", new[] { RunePaths.DataFolder });
 		int count = 0;
 
 		foreach (string guid in guids)
@@ -57,7 +57,7 @@ public static class RuneAssetRepair
 	[MenuItem("Tools/Rune/Build Rune Catalog")]
 	public static void BuildCatalog()
 	{
-		const string catalogPath = "Assets/Arts/Data/RuneCatalog.asset";
+		const string catalogPath = RunePaths.CatalogAssetPath;
 		var catalog = AssetDatabase.LoadAssetAtPath<RuneCatalog>(catalogPath);
 		if (catalog == null)
 		{
@@ -65,7 +65,7 @@ public static class RuneAssetRepair
 			AssetDatabase.CreateAsset(catalog, catalogPath);
 		}
 
-		string[] guids = AssetDatabase.FindAssets("t:RuneData", new[] { "Assets/Arts/Data" });
+		string[] guids = AssetDatabase.FindAssets("t:RuneData", new[] { RunePaths.DataFolder });
 		var list = new System.Collections.Generic.List<RuneData>();
 		foreach (string guid in guids)
 		{
@@ -85,7 +85,7 @@ public static class RuneAssetRepair
 	[MenuItem("Tools/Rune/Repair All Rune Assets")]
 	public static void RepairAll()
 	{
-		string[] guids = AssetDatabase.FindAssets("t:RuneData", new[] { "Assets/Arts/Data" });
+		string[] guids = AssetDatabase.FindAssets("t:RuneData", new[] { RunePaths.DataFolder });
 		int count = 0;
 
 		foreach (string guid in guids)

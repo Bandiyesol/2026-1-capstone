@@ -3,7 +3,7 @@
 ## 원인
 
 `RuneData` 구조를 **서브클래스**(ActiveRuneData, SplitRuneData …)로 바꾼 뒤,
-`Assets/Arts/Data/Rune_*.asset` 은 **전부 예전 Script: RuneData** 에 묶여 있었습니다.
+`Assets/Data/Rune Datas/Rune_*.asset` 은 **전부 예전 Script: RuneData** 에 묶여 있었습니다.
 
 → 인스펙터에 `duration` / `spawnsPerTrigger` 필드가 없고, Effect가 읽을 값이 0에 가깝게 동작.
 
@@ -16,7 +16,7 @@
 | `Scripts/Features/Rune/RuneData.cs` | 공통 부모 + enum |
 | `Scripts/Data/Rune/*.cs` | SO **타입 정의** (CreateAssetMenu) |
 | `Scripts/Features/Rune/Effect*.cs` | 런타임 **동작** |
-| `Arts/Data/Rune_*.asset` | 실제 **데이터** |
+| `Data/Rune Datas/Rune_*.asset` | 실제 **데이터** |
 
 `Data` vs `Features` 분리는 **이상하지 않음**. 문제는 에셋이 구 스크립트에 남아 있던 것.
 

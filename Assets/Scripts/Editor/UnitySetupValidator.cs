@@ -10,7 +10,7 @@ public static class UnitySetupValidator
     const string WeaponInfoPath = "Assets/Resources/Data/WeaponInfo.json";
     const string WeaponBalancePath = "Assets/Resources/Data/WeaponBalance.json";
     const string MotionFolderPath = "Assets/Resources/Prefabs/Motions";
-    const string RuneCatalogPath = "Assets/Arts/Data/RuneCatalog.asset";
+    const string RuneCatalogPath = RunePaths.CatalogAssetPath;
 
     [MenuItem("Tools/Setup/Apply ProtoType_LTG Build Scene")]
     public static void ApplyMainBuildScene()
