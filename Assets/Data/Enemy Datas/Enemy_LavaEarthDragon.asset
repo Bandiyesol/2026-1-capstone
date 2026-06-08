@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b73513227a2e95439619d59611c7198, type: 3}
   m_Name: Enemy_LavaEarthDragon
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  maxHealth: 150
+  maxHealth: 200
   moveSpeed: 6
   attackDamage: 10
   defense: 0.3
+  isUnique: 0

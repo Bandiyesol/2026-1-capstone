@@ -49,6 +49,11 @@ public class FrostWolfCore : MonoBehaviour
 
     void OnEnable()
     {
+        // WaveManager.SpawnEnemy()는 FrostWolfCore 타입을 별도로 처리하지 않으므로
+        // VolcanoPumpkinCore와 동일하게 StageManager를 통해 직접 참조를 확보한다.
+        if (waveManager == null)
+            waveManager = StageManager.instance.waveManager;
+
         wolves.Clear();
 
         // 족보 등록 및 상호 참조 역주입 처리
