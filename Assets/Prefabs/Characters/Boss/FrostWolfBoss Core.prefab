@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 947657997514219401}
   - component: {fileID: 5049713987683561997}
   - component: {fileID: 4477056246768990837}
-  m_Layer: 0
+  - component: {fileID: 9192470155032294600}
+  m_Layer: 6
   m_Name: FrostWolfBoss B
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -121,7 +122,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!70 &947657997514219401
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -202,18 +203,34 @@ MonoBehaviour:
   wolfType: 1
   freezeBulletIndex: 13
   normalBulletCount: 5
-  rageBulletCount: 9
-  fanAngle: 90
+  rageBulletCount: 5
+  fanAngle: 75
   chargeWindupTime: 0.6
   chargeSpeed: 20
   chargeArrivalThreshold: 0.3
   chargeMaxDuration: 2
   summonEnemyIndex: 41
-  normalSummonCount: 5
+  normalSummonCount: 4
   rageSummonMultiplier: 2
   summonRadius: 4.5
   cooldownReductionPerStack: 0.05
   maxCooldownReduction: 0.5
+--- !u!114 &9192470155032294600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2327784360286377200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}
 --- !u!1 &6826696366345343251
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,9 +245,10 @@ GameObject:
   - component: {fileID: 4920616676988397422}
   - component: {fileID: 5366281626943735389}
   - component: {fileID: 3618699675665436624}
-  m_Layer: 0
+  - component: {fileID: 5348581992079168329}
+  m_Layer: 6
   m_Name: FrostWolfBoss A
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -335,7 +353,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!70 &4920616676988397422
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -416,18 +434,34 @@ MonoBehaviour:
   wolfType: 0
   freezeBulletIndex: 13
   normalBulletCount: 5
-  rageBulletCount: 9
-  fanAngle: 90
+  rageBulletCount: 5
+  fanAngle: 75
   chargeWindupTime: 0.6
   chargeSpeed: 20
   chargeArrivalThreshold: 0.3
   chargeMaxDuration: 2
   summonEnemyIndex: 41
-  normalSummonCount: 5
+  normalSummonCount: 4
   rageSummonMultiplier: 2
   summonRadius: 4.5
   cooldownReductionPerStack: 0.05
   maxCooldownReduction: 0.5
+--- !u!114 &5348581992079168329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6826696366345343251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}
 --- !u!1 &8702706316910615828
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,9 +532,10 @@ GameObject:
   - component: {fileID: 8102554382609140145}
   - component: {fileID: 8880061459263614507}
   - component: {fileID: 6875633017083106257}
-  m_Layer: 0
+  - component: {fileID: 8250496608658163630}
+  m_Layer: 6
   m_Name: FrostWolfBoss C
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -605,7 +640,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!70 &8102554382609140145
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -686,15 +721,31 @@ MonoBehaviour:
   wolfType: 2
   freezeBulletIndex: 13
   normalBulletCount: 5
-  rageBulletCount: 9
-  fanAngle: 90
+  rageBulletCount: 5
+  fanAngle: 75
   chargeWindupTime: 0.6
   chargeSpeed: 20
   chargeArrivalThreshold: 0.3
   chargeMaxDuration: 2
   summonEnemyIndex: 41
-  normalSummonCount: 5
+  normalSummonCount: 4
   rageSummonMultiplier: 2
   summonRadius: 4.5
   cooldownReductionPerStack: 0.05
   maxCooldownReduction: 0.5
+--- !u!114 &8250496608658163630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8928594242500516610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}

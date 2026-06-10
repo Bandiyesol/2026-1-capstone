@@ -242,6 +242,14 @@ public class FrostWolfCore : MonoBehaviour
         if (cleared) return;
         cleared = true; // 프레임워크 오버랩 및 중복 연산 전면 차단
 
+        // 마지막 늑대 사망 시 혹시 남아있을 탄막/소환 몬스터 일괄 정리
+        // (Dead()에서 이미 정리되지만, 광폭화 중 최후 늑대의 잔여물 보장용)
+        foreach (var wolf in wolves)
+        {
+            if (wolf != null)
+                wolf.ClearSpawnedObjects();
+        }
+
         // 1. 보스 전용 골드 재화 드롭 시스템 연동
         if (CoinDropManager.Instance != null)
             CoinDropManager.Instance.TryDropFromBoss(lastDeathPosition);

@@ -178,8 +178,8 @@ MonoBehaviour:
   spawnDelay: 2
   health: 0
   maxHealth: 0
-  sandstormGimmickIndex: 4
-  fanBulletIndex: 5
+  sandstormGimmickIndex: 16
+  fanBulletIndex: 17
   sandstormInterval: 3
   warpDistance: 7
   verticalOffset: 8

@@ -80,6 +80,10 @@ public class FrostWolfBoss : BossBase
 
     bool isCharging;              // 돌진 중복 실행 방지용 플래그
 
+    // 보스 사망 / 전멸 시 일괄 정리를 위한 추적 리스트
+    readonly List<GameObject> spawnedBullets = new();   // 이 늑대가 발사한 탄막
+    readonly List<GameObject> summonedEnemies = new();  // 이 늑대가 소환한 몬스터
+
     // ============================================================
     // 초기화 및 활성화 시점 처리
     // ============================================================
@@ -102,6 +106,10 @@ public class FrostWolfBoss : BossBase
         currentFocusStack = 0;
         isFinalPhase = false;
         isCharging = false;
+
+        // 추적 리스트 초기화 (풀 재사용 대비)
+        spawnedBullets.Clear();
+        summonedEnemies.Clear();
     }
 
     // ============================================================
@@ -153,6 +161,9 @@ public class FrostWolfBoss : BossBase
         // 코어에 본인의 사망 보고 -> 생존 카운트 차감 및 마지막 개체일 시 광폭화 트리거 구동
         if (core != null)
             core.NotifyWolfDead(this);
+
+        // 탄막/소환 몬스터는 3마리 전멸 시 Core의 SpawnRewards()에서 일괄 정리
+        // 한 마리가 죽었다고 필드에서 사라지지 않음
 
         // 오브젝트 비활성화를 통한 풀 반환
         gameObject.SetActive(false);
@@ -287,6 +298,9 @@ public class FrostWolfBoss : BossBase
             bullet.Init(dir);
 
         bulletObj.SetActive(true);
+
+        // 탄막 추적 등록
+        spawnedBullets.Add(bulletObj);
     }
 
     // ============================================================
@@ -367,6 +381,9 @@ public class FrostWolfBoss : BossBase
 
             enemyObj.transform.position = spawnPos;
             enemyObj.SetActive(true); // 활성화와 동시에 잡몹 자체 AI 작동 가동
+
+            // 소환 몬스터 추적 등록
+            summonedEnemies.Add(enemyObj);
         }
     }
 
@@ -378,6 +395,24 @@ public class FrostWolfBoss : BossBase
     {
         // 광폭화 배율 곱셈 연산 후 정밀 수량 도출을 위한 반올림 정수 변환
         return Mathf.RoundToInt(normalSummonCount * rageSummonMultiplier);
+    }
+
+    // Core에서 전멸 시 잔여 탄막/소환 몬스터 일괄 정리를 위한 외부 호출용 메서드
+    public void ClearSpawnedObjects()
+    {
+        foreach (GameObject bullet in spawnedBullets)
+        {
+            if (bullet != null && bullet.activeSelf)
+                bullet.SetActive(false);
+        }
+        spawnedBullets.Clear();
+
+        foreach (GameObject enemy in summonedEnemies)
+        {
+            if (enemy != null && enemy.activeSelf)
+                enemy.SetActive(false);
+        }
+        summonedEnemies.Clear();
     }
 
     // ============================================================

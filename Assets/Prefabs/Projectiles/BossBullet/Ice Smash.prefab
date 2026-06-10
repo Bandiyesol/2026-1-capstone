@@ -192,9 +192,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a739cd22eb3ad0341bc9255552efa9a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IceSmashAOE
-  damage: 30
+  damage: 50
   speed: 0
   lifeTime: 1
   slowDuration: 3
   slowMultiplier: 0.35
-  knockbackForce: 15
+  knockbackForce: 75
