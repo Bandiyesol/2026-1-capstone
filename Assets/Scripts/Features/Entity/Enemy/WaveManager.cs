@@ -170,9 +170,28 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(StartWaveDelayed());
     }
 
-    IEnumerator StartWaveDelayed()
-    {
-        yield return new WaitForSeconds(nextWaveDelay);
-        StartWave();
-    }
+	IEnumerator StartWaveDelayed()
+	{
+		yield return new WaitForSeconds(nextWaveDelay);
+
+		if (currentWave > 0)
+		{
+			RuneSelectUI runeSelect = GameManager.instance != null
+				? GameManager.instance.uiRuneSelect
+				: null;
+			if (runeSelect == null)
+				runeSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+
+			if (runeSelect != null && RuneManager.instance != null)
+			{
+				bool confirmed = false;
+				runeSelect.gameObject.SetActive(true);
+				runeSelect.transform.SetAsLastSibling();
+				runeSelect.ShowBetweenWaves(() => confirmed = true);
+				yield return new WaitUntil(() => confirmed);
+			}
+		}
+
+		StartWave();
+	}
 }

@@ -9,16 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b899106686885cf4b843f60a5470562c, type: 3}
+  m_Script: {fileID: 11500000, guid: a8f3c2e1d04b5a6479382716054b3d2e, type: 3}
   m_Name: Rune_Chain
-  m_EditorClassIdentifier: Assembly-CSharp::RuneData
-  runeType: 8
-  category: 1
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRuneData
   runeName: Chain
-  runeDesc: 
+  category: 1
+  runeType: 9
   runeIcon: {fileID: 0}
-  cooldownPenalty: 0.1
+  runeDescription: 
+  runeDesc: 
+  isDestroyed: 0
+  power: 0
+  cooldownPenalty: 0
   manaCost: 0
   incompatibleWith: 
-  valueA: 1.5
-  valueB: 1.5
+  valueA: 1
+  valueB: 1
+  chainCount: 3
+  interval: 0.5

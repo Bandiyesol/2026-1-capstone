@@ -128,7 +128,7 @@ public static class ChoiceSelectUILayout
 
 		tmp.fontSize = 24f;
 		tmp.textWrappingMode = TextWrappingModes.NoWrap;
-		tmp.overflowMode = TextOverflowModes.Ellipsis;
+		tmp.overflowMode = TextOverflowModes.Truncate;
 		tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
 		tmp.verticalAlignment = VerticalAlignmentOptions.Middle;
 	}

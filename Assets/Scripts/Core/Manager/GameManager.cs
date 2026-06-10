@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -51,8 +51,20 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         instance = this;
 
+        if (player == null)
+            player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
+        if (pool == null)
+            pool = FindFirstObjectByType<PoolManager>(FindObjectsInactive.Include);
+        if (uiResult == null)
+            uiResult = FindFirstObjectByType<Result>(FindObjectsInactive.Include);
         if (uiWeaponSelect == null)
             uiWeaponSelect = FindFirstObjectByType<WeaponSelectUI>(FindObjectsInactive.Include);
         if (uiRuneSelect == null)
@@ -241,6 +253,9 @@ public class GameManager : MonoBehaviour
 
     void OpenWeaponOrRuneSelect()
     {
+        if (RuneManager.instance != null)
+            RuneManager.instance.ClearAll();
+
         if (uiWeaponSelect == null)
             uiWeaponSelect = FindFirstObjectByType<WeaponSelectUI>(FindObjectsInactive.Include);
         if (uiRuneSelect == null)

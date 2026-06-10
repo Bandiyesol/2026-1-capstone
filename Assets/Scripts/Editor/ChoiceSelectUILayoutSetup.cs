@@ -40,6 +40,13 @@ public static class ChoiceSelectUILayoutSetup
 			count++;
 		}
 
+		foreach (RuneSelectUI ui in Object.FindObjectsByType<RuneSelectUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		{
+			ChoiceSelectUILayout.Apply(ui.transform);
+			EditorUtility.SetDirty(ui);
+			count++;
+		}
+
 		if (saveScene && !Application.isPlaying)
 		{
 			EditorSceneManager.MarkSceneDirty(scene);

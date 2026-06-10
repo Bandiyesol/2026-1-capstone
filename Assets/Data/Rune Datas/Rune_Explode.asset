@@ -9,16 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b899106686885cf4b843f60a5470562c, type: 3}
+  m_Script: {fileID: 11500000, guid: 534b4c52d5d709b46a4d6b149016fa26, type: 3}
   m_Name: Rune_Explode
-  m_EditorClassIdentifier: Assembly-CSharp::RuneData
-  runeType: 11
-  category: 2
+  m_EditorClassIdentifier: Assembly-CSharp::ExplodeRuneData
   runeName: Explode
-  runeDesc: 
+  category: 1
+  runeType: 10
   runeIcon: {fileID: 0}
-  cooldownPenalty: 0.1
+  runeDescription: 
+  runeDesc: 
+  isDestroyed: 1
+  power: 1.5
+  cooldownPenalty: 0
   manaCost: 0
   incompatibleWith: 
-  valueA: 5
-  valueB: 1.5
+  valueA: 1
+  valueB: 1
+  explodeRadius: 2.5
+  interval: 0.5

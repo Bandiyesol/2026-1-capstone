@@ -15,11 +15,6 @@ public class RuneData : ScriptableObject
     [Header("[ 전투 / 균형 ]")]
     public bool isDestroyed;        // 효과(로직)가 끝난 후 총알/투사체를 즉시 파괴할지 여부
     public float power;             // 데미지 배율 (기본 데미지에 곱해지는 수치)
-    public float cooldownPenalty;   // 무기 발사 간격을 늘리는 페널티 (초 단위)
-    public int manaCost;            // 무기에 장착할 때 소모되는 마나 또는 코스트
-
-    [Header("[ 호환성 ]")]
-    public RuneType[] incompatibleWith; // 같이 장착하면 안 되는(시스템 충돌을 일으키는) 룬 목록
 
     [Header("[ 룬 수치 ]")]
     public float valueA = 1f;       // 범용 수치 변수 A (룬마다 다르게 해석됨)

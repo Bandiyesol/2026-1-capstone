@@ -9,6 +9,7 @@ public class WeaponManager : MonoBehaviour
 	private Dictionary<string, WeaponBalance> balanceDatabase = new Dictionary<string, WeaponBalance>();
 	private Dictionary<string, GameObject> motionPrefabs = new Dictionary<string, GameObject>();
 	private Dictionary<string, Sprite> weaponSprites = new Dictionary<string, Sprite>();
+	private Sprite fallbackWeaponSprite;
 
 
 	void Awake()
@@ -23,6 +24,7 @@ public class WeaponManager : MonoBehaviour
 
 			LoadWeaponData();
 			LoadResourceData();
+			ValidateLoadedData();
 		}
 		else
 		{
@@ -61,12 +63,7 @@ public class WeaponManager : MonoBehaviour
 
 	void LoadResourceData()
 	{
-		Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Weapons");
-		foreach (var s in sprites)
-		{
-			if (s == null) continue;
-			weaponSprites[s.name] = s;
-		}
+		RegisterSpritesFromResources("Sprites/Weapons");
 
 		foreach (var info in infoDatabase.Values)
 		{
@@ -78,6 +75,37 @@ public class WeaponManager : MonoBehaviour
 		foreach (var p in motions) motionPrefabs[p.name] = p;
 
 		Debug.Log($"리소스 로드 완료: 이미지 {weaponSprites.Count}개, 프리팹 {motionPrefabs.Count}개");
+	}
+
+	void RegisterSpritesFromResources(string resourcesFolder)
+	{
+		Sprite[] sprites = Resources.LoadAll<Sprite>(resourcesFolder);
+		foreach (Sprite sprite in sprites)
+			RegisterWeaponSprite(sprite);
+	}
+
+	void RegisterWeaponSprite(Sprite sprite)
+	{
+		if (sprite == null)
+			return;
+
+		RegisterSpriteAlias(sprite.name, sprite);
+		fallbackWeaponSprite ??= sprite;
+
+		if (sprite.name.EndsWith("_0"))
+			RegisterSpriteAlias(sprite.name.Substring(0, sprite.name.Length - 2), sprite);
+
+		int spaceIndex = sprite.name.IndexOf(' ');
+		if (spaceIndex > 0)
+			RegisterSpriteAlias(sprite.name.Substring(0, spaceIndex), sprite);
+	}
+
+	void RegisterSpriteAlias(string key, Sprite sprite)
+	{
+		if (string.IsNullOrEmpty(key) || sprite == null)
+			return;
+
+		weaponSprites[key] = sprite;
 	}
 
 	public WeaponInfo GetWeaponInfo(string id) => infoDatabase.GetValueOrDefault(id);
@@ -106,12 +134,50 @@ public class WeaponManager : MonoBehaviour
 				sprite = subs[0];
 		}
 
+		if (sprite == null)
+		{
+			string altId = $"{spriteId}_0";
+			if (weaponSprites.TryGetValue(altId, out sprite))
+				RegisterSpriteAlias(spriteId, sprite);
+		}
+
 		if (sprite != null)
-			weaponSprites[spriteId] = sprite;
+			RegisterSpriteAlias(spriteId, sprite);
 		else
 			Debug.LogWarning($"[WeaponManager] 스프라이트를 찾지 못했습니다: {spriteId} (경로: Resources/{folder}/{spriteId})");
 
 		return sprite;
+	}
+
+	public Sprite GetWeaponSprite(WeaponInfo info)
+	{
+		if (info == null)
+			return fallbackWeaponSprite;
+
+		Sprite sprite = GetWeaponSprite(info.spriteId);
+		if (sprite != null)
+			return sprite;
+
+		string fallbackId = GetFallbackSpriteId(info.type);
+		if (!string.IsNullOrEmpty(fallbackId))
+		{
+			sprite = GetWeaponSprite(fallbackId);
+			if (sprite != null)
+				return sprite;
+		}
+
+		return fallbackWeaponSprite;
+	}
+
+	static string GetFallbackSpriteId(string weaponType)
+	{
+		return weaponType switch
+		{
+			"Sword" => "sword-practice-wooden",
+			"Bow" => "bow_short",
+			"Orb" => "orb_poison",
+			_ => "sword-practice-wooden"
+		};
 	}
 
 	public GameObject GetMotionPrefab(string motionId)
@@ -120,5 +186,27 @@ public class WeaponManager : MonoBehaviour
 		
 		Debug.LogWarning($"프리팹 [{motionId}]을 찾을 수 없습니다!");
 		return null;
+	}
+
+	[ContextMenu("Validate Weapon Resources")]
+	void ValidateLoadedData()
+	{
+		foreach (WeaponInfo info in infoDatabase.Values)
+		{
+			if (string.IsNullOrWhiteSpace(info.id))
+			{
+				Debug.LogWarning("[WeaponManager] id가 비어 있는 무기 항목이 있습니다.");
+				continue;
+			}
+
+			if (string.IsNullOrWhiteSpace(info.balanceKey) || !balanceDatabase.ContainsKey(info.balanceKey))
+				Debug.LogWarning($"[WeaponManager] balanceKey 누락/불일치: {info.id} -> {info.balanceKey}");
+
+			if (string.IsNullOrWhiteSpace(info.motionId) || !motionPrefabs.ContainsKey(info.motionId))
+				Debug.LogWarning($"[WeaponManager] motionId 누락/불일치: {info.id} -> {info.motionId}");
+
+			if (!string.IsNullOrWhiteSpace(info.spriteId) && GetWeaponSprite(info.spriteId) == null)
+				Debug.LogWarning($"[WeaponManager] spriteId 누락/불일치: {info.id} -> {info.spriteId}");
+		}
 	}
 }

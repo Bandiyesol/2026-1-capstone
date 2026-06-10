@@ -54,10 +54,6 @@ public class PlayerStats : MonoBehaviour
 
         // 이동 속도 동기화 → Player.cs의 speed 필드를 덮어씀
         player.speed = MovementSpeed;
-
-        // 체력 동기화 → GameManager.instance.Health에 현재 체력 반영
-        if (GameManager.instance != null)
-            GameManager.instance.Health = currentHP;
     }
 
     // ─────────────────────────────────────────
@@ -88,14 +84,14 @@ public class PlayerStats : MonoBehaviour
     [Tooltip("무기 기본 데미지에 곱해지는 배율. 최종 데미지 = 무기 데미지 × 공격력")]
     [SerializeField] private StatValue attackPower     = new StatValue { baseValue = 1.0f };
 
-    [Tooltip("무기 쿨타임에 곱해지는 배율. 최종 쿨타임 = 무기 쿨타임 × 공격 속도 (값이 낮을수록 빠름)")]
+    [Tooltip("공격 속도 배율. 1.0 = 기본, 1.2 = 20% 더 빠른 발사. 최종 쿨타임 = 무기 쿨타임 ÷ 공격 속도")]
     [SerializeField] private StatValue attackSpeed     = new StatValue { baseValue = 1.0f };
 
     [Tooltip("한 번의 발사에서 나오는 투사체 수 (활, 총, 스태프, 마도서, 오브 계열)")]
     [SerializeField] private StatValue projectileCount = new StatValue { baseValue = 1f };
 
-    [Tooltip("투사체가 날아가는 속도 (활, 총, 스태프, 마도서 계열)")]
-    [SerializeField] private StatValue projectileSpeed = new StatValue { baseValue = 10f };
+    [Tooltip("투사체 속도 배율 (기본 1.0 = 100%)")]
+    [SerializeField] private StatValue projectileSpeed = new StatValue { baseValue = 1f };
 
     [Tooltip("투사체 최대 사거리 배율. 최종 사거리 = 무기 리치 × 투사체 사거리")]
     [SerializeField] private StatValue projectileRange = new StatValue { baseValue = 1.0f };
@@ -197,6 +193,8 @@ public class PlayerStats : MonoBehaviour
     [Header("── 런타임 상태 ───────────────────────")]
     [SerializeField, Tooltip("현재 체력 (읽기 전용 확인용)")]
     private float currentHP;
+    bool isInvincible;
+    float invincibleTimer;
 
     // ═════════════════════════════════════════
     //  초기화
@@ -205,6 +203,8 @@ public class PlayerStats : MonoBehaviour
     private void InitializeStats()
     {
         currentHP = maxHP.Final;
+        isInvincible = false;
+        invincibleTimer = 0f;
     }
 
     /// <summary>메인 메뉴 복귀 시 체력 등 런타임 스탯을 기본값으로 되돌립니다.</summary>
@@ -221,8 +221,8 @@ public class PlayerStats : MonoBehaviour
     /// <summary>무기 기본 데미지에 곱할 최종 공격력 배율</summary>
     public float AttackPower      => attackPower.Final;
 
-    /// <summary>무기 쿨타임에 곱할 공격 속도 배율</summary>
-    public float AttackSpeed      => attackSpeed.Final;
+    /// <summary>공격 속도 배율 (높을수록 빠름). WeaponInstance: cooltime ÷ AttackSpeed</summary>
+    public float AttackSpeed      => Mathf.Max(0.01f, attackSpeed.Final);
 
     /// <summary>한 번에 발사되는 투사체 수 (정수로 변환해서 사용)</summary>
     public int   ProjectileCount  => Mathf.Max(1, Mathf.RoundToInt(projectileCount.Final));
@@ -334,21 +334,33 @@ public class PlayerStats : MonoBehaviour
     // ═════════════════════════════════════════
 
     /// <summary>
-    /// 최종 수신 데미지 계산.
-    /// 회피 → 방어력 차감 → 피해 감소율 순으로 적용.
+    /// 최종 수신 데미지 계산. 회피 → 방어력 → 피해 감소율.
+    /// PerHit: 방어력을 피해량에서 고정 차감 (탄환·틱 1회).
+    /// PerSecondFrame: rawDamage = 초당피해×dt 이므로 방어력을 초당(DPS)으로 차감.
     /// </summary>
-    public float CalculateReceivedDamage(float rawDamage)
+    public float CalculateReceivedDamage(float rawDamage, PlayerDamageKind kind = PlayerDamageKind.PerHit)
     {
-        // 회피 판정
-        if (UnityEngine.Random.value < Evasion) return 0f;
+        if (UnityEngine.Random.value < Evasion)
+            return 0f;
 
-        // 방어력(고정 차감) 적용
-        float afterDefense = Mathf.Max(0f, rawDamage - Defense);
+        float afterDefense = kind switch
+        {
+            PlayerDamageKind.PerSecondFrame => ApplyDefenseToDamageOverTime(rawDamage),
+            _ => Mathf.Max(0f, rawDamage - Defense),
+        };
 
-        // 피해 감소율(%) 적용
-        float finalDamage = afterDefense * (1f - DamageReduction);
+        return Mathf.Max(0f, afterDefense * (1f - DamageReduction));
+    }
 
-        return Mathf.Max(0f, finalDamage);
+    float ApplyDefenseToDamageOverTime(float rawDamageThisFrame)
+    {
+        float dt = Time.deltaTime;
+        if (dt <= 1e-6f)
+            return 0f;
+
+        float dps = rawDamageThisFrame / dt;
+        float dpsAfterDefense = Mathf.Max(0f, dps - Defense);
+        return dpsAfterDefense * dt;
     }
 
     /// <summary>
@@ -370,24 +382,24 @@ public class PlayerStats : MonoBehaviour
     public void Heal(float amount)
     {
         currentHP = Mathf.Min(currentHP + amount * HealingBonus, MaxHP);
-        // GameManager.Health에도 반영
-        if (GameManager.instance != null)
-            GameManager.instance.Health = currentHP;
         NotifyChange();
     }
 
     /// <summary>
-    /// 피해를 받는다. CalculateReceivedDamage를 통해 최종 수치 결정.
-    /// Player.cs의 OnCollisionStay2D에서 넘어온 rawDamage를 그대로 전달하면 된다.
+    /// 피해를 받는다. 접촉/용암 등은 PerSecondFrame, 탄환·환경 틱은 PerHit.
     /// </summary>
-    public void TakeDamage(float rawDamage)
+    public void TakeDamage(float rawDamage, bool applyIFrames = true, PlayerDamageKind kind = PlayerDamageKind.PerHit)
     {
-        float finalDamage = CalculateReceivedDamage(rawDamage);
-        currentHP = Mathf.Max(0f, currentHP - finalDamage);
+        if (applyIFrames && isInvincible)
+            return;
 
-        // GameManager.Health에도 반영 → Player.cs의 사망 조건 체크가 그대로 동작함
-        if (GameManager.instance != null)
-            GameManager.instance.Health = currentHP;
+        float finalDamage = CalculateReceivedDamage(rawDamage, kind);
+        if (finalDamage <= 0f)
+            return;
+
+        currentHP = Mathf.Max(0f, currentHP - finalDamage);
+        if (applyIFrames)
+            ActivateInvincibility();
 
         NotifyChange();
 
@@ -395,6 +407,38 @@ public class PlayerStats : MonoBehaviour
         {
             OnDeath();
         }
+    }
+
+    public void SetCurrentHPDirect(float value)
+    {
+        currentHP = Mathf.Clamp(value, 0f, MaxHP);
+        NotifyChange();
+
+        if (currentHP <= 0f)
+            OnDeath();
+    }
+
+    void Update()
+    {
+        if (!isInvincible)
+            return;
+
+        invincibleTimer -= Time.deltaTime;
+        if (invincibleTimer <= 0f)
+        {
+            invincibleTimer = 0f;
+            isInvincible = false;
+        }
+    }
+
+    void ActivateInvincibility()
+    {
+        float duration = Mathf.Max(0f, InvincibilityFrames);
+        if (duration <= 0f)
+            return;
+
+        isInvincible = true;
+        invincibleTimer = duration;
     }
 
     private void OnDeath()
@@ -492,6 +536,13 @@ public class PlayerStats : MonoBehaviour
 // ─────────────────────────────────────────────────────────────────────────────
 //  StatType 열거형 — 아이템/버프 시스템에서 어떤 스탯을 건드릴지 지정할 때 사용
 // ─────────────────────────────────────────────────────────────────────────────
+/// <summary>플레이어 피해 적용 방식. PerHit=1회 피해, PerSecondFrame=초당×dt 지속 피해.</summary>
+public enum PlayerDamageKind
+{
+    PerHit,
+    PerSecondFrame,
+}
+
 public enum StatType
 {
     // 공격
