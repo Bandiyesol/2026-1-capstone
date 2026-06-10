@@ -13,6 +13,7 @@ public static class UnitySetupValidator
     const string RuneCatalogPath = RunePaths.CatalogAssetPath;
 
     [MenuItem("Tools/Setup/Apply ProtoType_LTG Build Scene")]
+    [MenuItem("Window/The Last Rune/Setup/Apply ProtoType_LTG Build Scene")]
     public static void ApplyMainBuildScene()
     {
         var scene = new EditorBuildSettingsScene(MainScenePath, true);
@@ -21,6 +22,7 @@ public static class UnitySetupValidator
     }
 
     [MenuItem("Tools/Setup/Validate Unity Wiring")]
+    [MenuItem("Window/The Last Rune/Setup/Validate Unity Wiring")]
     public static void ValidateUnityWiring()
     {
         List<string> warnings = new();
@@ -179,14 +181,26 @@ public static class UnitySetupValidator
             }
         }
 
-        RuneSelectUI runeSelect = Object.FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
-        if (runeSelect == null)
+        var allRuneSelect = Object.FindObjectsByType<RuneSelectUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        if (allRuneSelect == null || allRuneSelect.Length == 0)
         {
             warnings.Add("씬에 RuneSelectUI가 없습니다.");
             return;
         }
 
+        if (allRuneSelect.Length > 1)
+            warnings.Add($"RuneSelectUI가 {allRuneSelect.Length}개 있습니다. Tools/Rune/Setup Rune Select UI 실행.");
+
+        RuneSelectUI runeSelect = allRuneSelect[0];
         if (runeSelect.runeCatalog == null && (runeSelect.allRunes == null || runeSelect.allRunes.Length == 0))
             warnings.Add("RuneSelectUI에 runeCatalog/allRunes가 연결되지 않았습니다.");
+
+        var gm = Object.FindFirstObjectByType<GameManager>(FindObjectsInactive.Include);
+        if (gm != null)
+        {
+            SerializedObject gmSo = new SerializedObject(gm);
+            if (gmSo.FindProperty("uiRuneSelect").objectReferenceValue == null)
+                warnings.Add("GameManager.uiRuneSelect가 비어 있습니다. Tools/Rune/Setup Rune Select UI 실행.");
+        }
     }
 }

@@ -9,7 +9,8 @@ using TMPro;
 public class WeaponSelectUI : MonoBehaviour
 {
 	[Header("# 후보 풀 (WeaponInfo id)")]
-	[SerializeField] string[] weaponIdPool = { "SWORD_001", "BOW_001", "ORB_001" };
+	[Tooltip("비우면 WeaponManager 전체 무기 ID + 등급 가중치(ShopCatalogSettings) 사용")]
+	[SerializeField] string[] weaponIdPool;
 
 	[Header("# UI")]
 	[SerializeField] Button[] choiceButtons;
@@ -122,6 +123,14 @@ public class WeaponSelectUI : MonoBehaviour
 		GameManager.instance.Stop();
 	}
 
+	static IReadOnlyList<string> ResolveWeaponPool(IReadOnlyList<string> pool)
+	{
+		if (pool != null && pool.Count > 0)
+			return pool;
+
+		return WeaponRewardService.GetAllWeaponIds();
+	}
+
 	/// <summary>상자 보상용 — 등급에 맞는 무기 풀에서 후보를 뽑습니다.</summary>
 	public void ShowFromChest(ChestGrade grade, string[] weaponPoolOverride = null)
 	{
@@ -139,7 +148,9 @@ public class WeaponSelectUI : MonoBehaviour
 	void RollCandidates(IReadOnlyList<string> pool)
 	{
 		currentCandidates.Clear();
-		currentCandidates.AddRange(WeaponRewardService.RollCandidates(pool, 3));
+
+		var resolvedPool = ResolveWeaponPool(pool);
+		currentCandidates.AddRange(WeaponRewardService.RollCandidates(resolvedPool, 3));
 
 		for (int i = 0; i < choiceButtons.Length; i++)
 		{
@@ -180,8 +191,8 @@ public class WeaponSelectUI : MonoBehaviour
 		image.enabled = icon != null;
 		image.gameObject.SetActive(icon != null);
 
-		if (icon == null)
-			Debug.LogWarning($"[WeaponSelectUI] 아이콘 없음: {weapon?.info?.spriteId} (버튼 {index})");
+		if (icon == null && !string.IsNullOrEmpty(weapon?.info?.spriteId))
+			Debug.LogWarning($"[WeaponSelectUI] 아이콘 없음: {weapon.info.spriteId} (버튼 {index})");
 	}
 
 	public void OnPickWeapon(int index)

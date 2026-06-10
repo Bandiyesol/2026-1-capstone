@@ -288,8 +288,31 @@ public abstract class Motion : MonoBehaviour
 				final.OnFinalExecute();
 		}
 
-		// 무기 게임오브젝트 완전 파괴
-		Destroy(gameObject);
+		// 무기 게임오브젝트를 풀로 반환 (없으면 파괴)
+		if (PoolManager.Instance != null)
+			PoolManager.Instance.ReleaseMotion(this);
+		else
+			Destroy(gameObject);
+	}
+
+	/// <summary>풀 재사용 전 런타임 상태·룬 컴포넌트를 초기화합니다.</summary>
+	public virtual void ResetForPool()
+	{
+		isDestroyRequested = false;
+		isInitialLifeSet = false;
+		instance = null;
+		allRunes = null;
+		persistentEffects.Clear();
+		currentActiveRune = null;
+		activeIndex = -1;
+		life = 0f;
+
+		RuneEffect[] effects = GetComponents<RuneEffect>();
+		for (int i = effects.Length - 1; i >= 0; i--)
+		{
+			if (effects[i] != null)
+				Destroy(effects[i]);
+		}
 	}
 
 	/// <summary>

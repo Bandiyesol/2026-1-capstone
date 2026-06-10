@@ -54,10 +54,13 @@ public static class GameSessionReset
 
 	static void ResetWorldDropsAndMotions()
 	{
-		foreach (Motion motion in Object.FindObjectsByType<Motion>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		if (PoolManager.Instance == null)
 		{
-			if (motion != null)
-				Object.Destroy(motion.gameObject);
+			foreach (Motion motion in Object.FindObjectsByType<Motion>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+			{
+				if (motion != null)
+					Object.Destroy(motion.gameObject);
+			}
 		}
 
 		foreach (DroppedCoin coin in Object.FindObjectsByType<DroppedCoin>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -99,7 +102,7 @@ public static class GameSessionReset
 			potion.Clear();
 
 		if (RuneManager.instance != null)
-			RuneManager.instance.ResetToInitial();
+			RuneManager.instance.ClearAll();
 	}
 
 	static void ResetShop()

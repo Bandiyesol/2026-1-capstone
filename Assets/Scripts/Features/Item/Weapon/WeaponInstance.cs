@@ -9,6 +9,9 @@ using UnityEngine;
 [Serializable]
 public class WeaponInstance
 {
+	const float MeleeSpawnOffset = 0.7f;
+	const float ProjectileSpreadDegrees = 12f;
+
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
 
@@ -76,14 +79,11 @@ public class WeaponInstance
 	/// </summary>
 	public void Tick(float dlt, Transform playerPos)
 	{
-		// 델타 타임 누적
 		timer += dlt;
 
-		// 타이머가 이 무기의 쿨타임을 넘어섰다면 타격(Attack) 실행
 		if (timer >= cooltime)
 		{
 			Attack(playerPos);
-			// 쿨타임 초기화
 			timer = 0;
 		}
 	}
@@ -93,77 +93,105 @@ public class WeaponInstance
 	/// </summary>
 	public void Attack(Transform playerPos)
 	{
-		// 룬 매니저가 존재하는데 현재 유저가 맞춘 룬 조합이 무효/오류 상태라면 무기 생성 취소
-		if (RuneManager.instance != null && !RuneManager.instance.IsCurrentCombinationValid)
-		{
-			Debug.LogWarning($"[WeaponInstance] 룬 조합 오류: {RuneManager.instance.CurrentWarningMessage} → 공격 취소");
-			return;
-		}
-
-		// 무기에 적용해줄 현재 활성화된 룬 목록 가져오기
 		List<RuneData> activeRunes = RuneManager.instance != null
 			? RuneManager.instance.GetActiveRunes()
 			: new List<RuneData>();
 
-		// WeaponManager에서 이 무기에 맞는 외형/동작 프리팹(Motion)을 가져옴
 		GameObject prefab = WeaponManager.Instance.GetMotionPrefab(info.motionId);
-		if (prefab == null) return; // 프리팹 누락 시 방어 처리
+		if (prefab == null) return;
 
-		// 플레이어 스크립트에 접근해서 플레이어가 마지막으로 보고 있던/이동하던 방향 정보를 가져옴
+		Vector2 aimDirection = ResolveAimDirection(playerPos);
+		int projectileCount = ResolveProjectileCount();
+
+		for (int i = 0; i < projectileCount; i++)
+		{
+			ResolveSpawnTransform(playerPos.position, aimDirection, i, projectileCount, out Vector3 spawnPos, out Quaternion spawnRotation);
+			SpawnMotion(prefab, spawnPos, spawnRotation, activeRunes);
+		}
+	}
+
+	static int ResolveProjectileCount()
+	{
+		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
+		return stats != null ? stats.ProjectileCount : 1;
+	}
+
+	static Vector2 ResolveAimDirection(Transform playerPos)
+	{
 		Player player = playerPos.GetComponent<Player>();
-		Vector2 direction = player.lastTravelDirection;
+		Vector2 direction = player != null ? player.lastTravelDirection : Vector2.right;
+		if (direction.sqrMagnitude < 0.0001f)
+			direction = Vector2.right;
+		return direction.normalized;
+	}
 
-		// 방향 벡터(x, y)를 이용해 2D 회전 각도(Z축 기준) 수학적 변환
-		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+	void ResolveSpawnTransform(Vector3 playerPosition, Vector2 aimDirection, int index, int total, out Vector3 spawnPos, out Quaternion spawnRotation)
+	{
+		Vector2 shotDirection = SpreadDirection(aimDirection, index, total);
+		float angle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
+		spawnRotation = Quaternion.Euler(0f, 0f, angle);
 
-		// 무기가 생성될 위치와 방향 초기화
-		Vector3 spawnPos = playerPos.position;
-		Quaternion spawnRotation = Quaternion.identity;
-
-		// 무기 타입에 따른 소환 방식 분기 처리
 		switch (info.type)
 		{
 			case "Sword":
-
-				// 플레이어 중심에서 이동 방향으로 약간 앞(0.7f)에 생성하여 베기 쉽게 함
-				spawnPos = playerPos.position + (Vector3)(direction * 0.7f);
-
-				// 무기가 이동 방향을 바라보도록 각도 회전
-				spawnRotation = Quaternion.Euler(0, 0, angle);
+			case "Hammer":
+			case "Sickle":
+			case "Grimore":
+				spawnPos = playerPosition + (Vector3)(shotDirection * MeleeSpawnOffset);
 				break;
 
 			case "Bow":
-
-				// 활(화살)도 플레이어 앞쪽에서 발사되도록 위치 지정
-				spawnPos = playerPos.position + (Vector3)(direction * 0.7f);
-
-				// 화살 촉이 날아갈 방향을 바라보도록 회전
-				spawnRotation = Quaternion.Euler(0, 0, angle);
+			case "Gun":
+			case "Whip":
+			case "Boomerang":
+			case "Staff":
+				spawnPos = playerPosition + (Vector3)(shotDirection * MeleeSpawnOffset);
 				break;
 
 			case "Orb":
-
-				// 오브는 플레이어 근처가 아니라, 무기 사거리(reach) 반경 내 임의의 위치에 랜덤으로 스폰됨
 				Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * reach;
-
-				// z축은 유지한 채 랜덤 x, y 편차 더함
-				spawnPos = playerPos.position + new Vector3(randomOffset.x, randomOffset.y, 0);
-				// 오브는 보통 둥그니 회전값이 불필요 (기본값)
+				spawnPos = playerPosition + new Vector3(randomOffset.x, randomOffset.y, 0f);
 				spawnRotation = Quaternion.identity;
 				break;
 
 			default:
-				Debug.LogWarning($"{info.type}은(는) 정의되지 않은 소환 방식입니다.");
+				Debug.LogWarning($"[WeaponInstance] 정의되지 않은 무기 타입: {info.type}. 기본 투사체 소환을 사용합니다.");
+				spawnPos = playerPosition + (Vector3)(shotDirection * MeleeSpawnOffset);
 				break;
 		}
+	}
 
-		// 위에서 계산한 위치와 회전값으로 실제 프리팹을 게임 씬에 생성
-		GameObject motionobj = UnityEngine.Object.Instantiate(prefab, spawnPos, spawnRotation);
+	static Vector2 SpreadDirection(Vector2 baseDirection, int index, int total)
+	{
+		if (total <= 1)
+			return baseDirection.normalized;
 
-		// 생성된 무기 오브젝트가 참조할 자신의 스탯 독립성을 위해 현재 스탯 데이터를 복제
+		float spreadTotal = (total - 1) * ProjectileSpreadDegrees;
+		float angleOffset = -spreadTotal * 0.5f + index * ProjectileSpreadDegrees;
+		float baseAngle = Mathf.Atan2(baseDirection.y, baseDirection.x) * Mathf.Rad2Deg;
+		float finalAngle = (baseAngle + angleOffset) * Mathf.Deg2Rad;
+		return new Vector2(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle)).normalized;
+	}
+
+	void SpawnMotion(GameObject prefab, Vector3 spawnPos, Quaternion spawnRotation, List<RuneData> activeRunes)
+	{
+		Motion motion = null;
+		if (PoolManager.Instance != null)
+			motion = PoolManager.Instance.SpawnMotion(info.motionId, spawnPos, spawnRotation);
+
+		if (motion == null)
+		{
+			GameObject motionObject = UnityEngine.Object.Instantiate(prefab, spawnPos, spawnRotation);
+			motion = motionObject.GetComponent<Motion>();
+		}
+
+		if (motion == null)
+		{
+			Debug.LogError($"[WeaponInstance] Motion 컴포넌트가 없습니다: {prefab.name}");
+			return;
+		}
+
 		WeaponInstance cloneInstance = new WeaponInstance(this);
-
-		// 생성된 오브젝트의 Motion 스크립트를 가져와 스탯 데이터와 룬 목록을 넘겨주며 초기화
-		motionobj.GetComponent<Motion>().Initialize(cloneInstance, activeRunes);
+		motion.Initialize(cloneInstance, activeRunes);
 	}
 }

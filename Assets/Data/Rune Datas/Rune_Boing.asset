@@ -14,10 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LogicRuneData
   runeName: Boing
   category: 4
-  runeType: 14
+  runeType: 15
   runeIcon: {fileID: 0}
   runeDescription: 
+  runeDesc: 
   isDestroyed: 0
   power: 0
+  cooldownPenalty: 0
+  manaCost: 0
+  incompatibleWith: 
+  valueA: 1
+  valueB: 1
   interval: 1
   distance: 2

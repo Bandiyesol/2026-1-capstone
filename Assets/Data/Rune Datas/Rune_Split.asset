@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -9,19 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7e4d3c2a1908b7586973827165c4e3f, type: 3}
+  m_Script: {fileID: 11500000, guid: 19b104c8616284e459d3bd5411690f47, type: 3}
   m_Name: Rune_Split
-  m_EditorClassIdentifier: Assembly-CSharp::VampireRuneData
+  m_EditorClassIdentifier: Assembly-CSharp::SplitRuneData
   runeName: Split
   category: 1
-  runeType: 7
+  runeType: 5
   runeIcon: {fileID: 0}
   runeDescription: 
   runeDesc: 
   isDestroyed: 0
   power: 0.3
   cooldownPenalty: 0
+  manaCost: 0
   incompatibleWith: 
   valueA: 1
   valueB: 1
-  interval: 0.5
+  spawnsPerTrigger: 3
+  spreadDegrees: 30

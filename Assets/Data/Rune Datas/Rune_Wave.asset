@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveRuneData
   runeName: Wave
   category: 0
-  runeType: 4
+  runeType: 2
   runeIcon: {fileID: 0}
   runeDescription: 
   runeDesc: 
   isDestroyed: 0
   power: 0
   cooldownPenalty: 0
+  manaCost: 0
   incompatibleWith: 
   valueA: 1
   valueB: 1

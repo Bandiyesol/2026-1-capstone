@@ -14,11 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveRuneData
   runeName: Spiral
   category: 0
-  runeType: 2
+  runeType: 3
   runeIcon: {fileID: 0}
   runeDescription: 
+  runeDesc: 
   isDestroyed: 0
   power: 0
+  cooldownPenalty: 0
+  manaCost: 0
+  incompatibleWith: 
+  valueA: 1
+  valueB: 1
   duration: 3
   speedMultiplier: 2
   affectedRange: 6

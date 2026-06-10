@@ -145,6 +145,7 @@ public class AuthFlowController : MonoBehaviour
 	async void Start()
 	{
 		SetLoadingVisible(false);
+		HideGameplayOverlayPanels();
 
 		if (gameStartRoot != null)
 			gameStartRoot.SetActive(false);
@@ -729,6 +730,27 @@ public class AuthFlowController : MonoBehaviour
 		loadingDepth--;
 		if (loadingDepth == 0)
 			SetLoadingVisible(false);
+	}
+
+	void HideGameplayOverlayPanels()
+	{
+		if (GameManager.instance != null)
+		{
+			GameManager.instance.HidePreGameSelectPanels();
+			return;
+		}
+
+		foreach (RuneSelectUI runeUi in FindObjectsByType<RuneSelectUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		{
+			if (runeUi != null)
+				runeUi.gameObject.SetActive(false);
+		}
+
+		foreach (WeaponSelectUI weaponUi in FindObjectsByType<WeaponSelectUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		{
+			if (weaponUi != null)
+				weaponUi.gameObject.SetActive(false);
+		}
 	}
 
 	void SetLoadingVisible(bool visible)

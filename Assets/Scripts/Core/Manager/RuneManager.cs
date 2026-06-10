@@ -101,18 +101,6 @@ public class RuneManager : MonoBehaviour
         return activeRunesCache;
     }
 
-    public float GetTotalCooldownPenalty()
-    {
-        float total = 0f;
-        foreach (var slot in slots)
-        {
-            if (slot != null)
-                total += slot.cooldownPenalty;
-        }
-
-        return total;
-    }
-
     void Validate()
     {
         if (!RuneValidator.ValidateSlots(slots, out string slotError))
@@ -136,4 +124,36 @@ public class RuneManager : MonoBehaviour
 
     public RuneData GetSlot(int i) => (i >= 0 && i < SlotCount) ? slots[i] : null;
     public int SlotCount_ => SlotCount;
+
+    public int GetFilledSlotCount()
+    {
+        int count = 0;
+        for (int i = 0; i < SlotCount; i++)
+        {
+            if (slots[i] != null)
+                count++;
+        }
+
+        return count;
+    }
+
+    public bool IsFull => GetFilledSlotCount() >= SlotCount;
+
+    /// <summary>첫 빈 슬롯에 룬을 추가합니다.</summary>
+    public bool TryAddRune(RuneData data)
+    {
+        if (data == null)
+            return false;
+
+        for (int i = 0; i < SlotCount; i++)
+        {
+            if (slots[i] != null)
+                continue;
+
+            SetRune(i, data);
+            return true;
+        }
+
+        return false;
+    }
 }
