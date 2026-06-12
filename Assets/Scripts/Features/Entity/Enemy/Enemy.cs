@@ -18,7 +18,9 @@ public class Enemy : MonoBehaviour, IDamageable
     public float speed;        // 이동 속도
 
     // 상태 제어 변수들
-    bool isLive;               // 현재 살아있는지 여부
+    protected bool isLive;     // 현재 살아있는지 여부
+    public bool IsLive => isLive;
+
     bool isFrozen;             // 빙결(치명적 멈춤) 상태 여부
     bool hiddenInFog;          // 안개 속에 숨겨졌는지 여부
     float freezeTimer;         // 빙결 남은 시간 타이머
@@ -147,7 +149,7 @@ public class Enemy : MonoBehaviour, IDamageable
     }
 
     // 적 사망 처리 메서드
-    void Die()
+    protected virtual void Die()
     {
         BossBase.RecordEnemyDeath(transform.position);
 

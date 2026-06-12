@@ -292,15 +292,18 @@ MonoBehaviour:
   spawnDelay: 2
   health: 0
   maxHealth: 0
-  slamBulletIndex: 6
-  shardBulletIndex: 7
+  slamBulletIndex: 14
+  shardBulletIndex: 15
   warningCircle: {fileID: 2999024029688113403}
   slamCooldown: 5
   slamRange: 2.5
   warningTime: 1
-  shardChance: 0.0005
-  shardCount: 30
+  shardChance: 0.005
+  shardCount: 32
   enragedSpeedMultiplier: 3.5
+  summonEnemyIndexes: 2a0000002b0000002c0000002d0000002e000000
+  summonInterval: 0.75
+  summonRadius: 4
 --- !u!114 &-1917441331024495194
 MonoBehaviour:
   m_ObjectHideFlags: 0

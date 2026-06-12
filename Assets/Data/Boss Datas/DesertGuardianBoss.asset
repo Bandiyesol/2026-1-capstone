@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324b913c2f1cb564781b9a00dd2fc114, type: 3}
   m_Name: DesertGuardianBoss
   m_EditorClassIdentifier: Assembly-CSharp::BossData
-  maxHealth: 500
-  moveSpeed: 6
-  attackDamage: 15
-  damageReduction: 0.8
-  patternCooldown: 1.5
+  maxHealth: 2500
+  moveSpeed: 7
+  attackDamage: 85
+  damageReduction: 0.7
+  patternCooldown: 2

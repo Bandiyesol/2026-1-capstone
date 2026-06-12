@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanoPumpkinCore
   leader: {fileID: 5972308914392916715}
   portalGimmickIndex: 13
+  waveManager: {fileID: 0}
 --- !u!1 &8547742435879922588
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,7 +132,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5592079602170154299, guid: e3566cd8713317a4ead3b0b1e1be1108, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

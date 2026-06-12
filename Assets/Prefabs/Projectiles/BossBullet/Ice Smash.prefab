@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 8093693567676456199}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.72, y: 0.44000006, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 7.5, y: 7.5, z: 7.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -192,9 +192,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a739cd22eb3ad0341bc9255552efa9a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IceSmashAOE
-  damage: 30
+  damage: 50
   speed: 0
   lifeTime: 1
   slowDuration: 3
   slowMultiplier: 0.35
-  knockbackForce: 15
+  knockbackForce: 75
