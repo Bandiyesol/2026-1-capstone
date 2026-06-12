@@ -21,7 +21,7 @@ public class ImmortalUndeadBoss : BossBase
 
     [Header("공격대 몬스터 소환")]
     [Tooltip("공격대 몬스터 일반 소환 풀 인덱스 배열")]
-    [SerializeField] private int[] summonEnemyIndexes;
+    [SerializeField] private int summonEnemyIndex;
     [Tooltip("체력 50% 이하 광폭화 시 추가/변경될 소환 풀 인덱스 배열")]
     [SerializeField] private int[] rageSummonEnemyIndexes;
     [Tooltip("공격대 몬스터가 소환될 보스 주변 최소/최대 반경")]
@@ -112,21 +112,19 @@ public class ImmortalUndeadBoss : BossBase
     /// </summary>
     private void SpawnSingleGuard(int slotIndex)
     {
-        // 360도를 8등분(45도 간격)한 뒤 호도법(라디안) 각도로 변환
         float angle = slotIndex * 45f * Mathf.Deg2Rad;
-        // 삼각함수를 이용하여 보스 본체 중심 기준의 원형 오프셋 계산
         Vector3 spawnOffset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * guardRadius;
         Vector3 spawnPosition = transform.position + spawnOffset;
 
-        // PoolManager를 통해 수호대 객체 인출
+        if (anim != null) anim.SetTrigger("Attack");
+
         GameObject guardObj = PoolManager.Instance.GetEnemy(guardEnemyIndex);
 
-        // 컴포넌트 유효성 검증 후 수호대 본체에 필요한 데이터(보스 주소, 슬롯 ID, 궤도 변수) 주입 및 링크
         if (guardObj != null && guardObj.TryGetComponent<UndeadGuard>(out var guard))
         {
             guard.transform.position = spawnPosition;
             guard.InitializeGuard(this, slotIndex, angle, guardRadius);
-            dynamicGuards[slotIndex] = guard; // 관리용 슬롯 배열에 등록
+            dynamicGuards[slotIndex] = guard;
         }
     }
 
@@ -135,50 +133,45 @@ public class ImmortalUndeadBoss : BossBase
     /// </summary>
     public void OnGuardDead(int slotIndex)
     {
-        // 이미 비어있는 슬롯이거나 중복 접수된 이벤트인 경우 예외 차단
         if (dynamicGuards[slotIndex] == null) return;
 
-        dynamicGuards[slotIndex] = null; // 슬롯 비우기
-        deadGuardCount++;                // 사망하여 부재 중인 수호대 카운트 증가
+        dynamicGuards[slotIndex] = null;
+        deadGuardCount++;
 
         // [수호대 처치 보상] 보스 최대 체력의 1%를 시스템적으로 즉시 감산
         health -= maxHealth * 0.01f;
-        if (health <= 0f) health = 0f;
+
+        // ★ [수정] 수호대 처치 대미지로 인해 보스 체력이 0 이하가 되었을 때의 사망 처리 예외 구현
+        if (health <= 0f)
+        {
+            health = 0f;
+            Dead(); // 즉시 본 스크립트의 사망 시퀀스 가동
+            return; // 보스가 사망했으므로 하단의 수호대 부활/그로기 패턴 계산은 스킵
+        }
 
         // [전멸 조건 체크] 부활이 완료되기 전에 8마리가 한꺼번에 모두 전멸했는가?
         if (deadGuardCount >= 8)
         {
-            // 전멸 시: 대기 중이던 개별 부활 타이머 시퀀스를 전부 파괴하고 즉시 그로기(약점 노출) 페이즈로 전환
             EnterVulnerablePhase();
         }
         else
         {
-            // 생존자가 남아있다면: 방금 처치된 해당 슬롯에 대해서만 30초 독자 부활 타이머 코루틴 기동
             if (guardRespawnCoroutines[slotIndex] != null) StopCoroutine(guardRespawnCoroutines[slotIndex]);
             guardRespawnCoroutines[slotIndex] = StartCoroutine(RespawnGuardRoutine(slotIndex));
         }
     }
 
-    /// <summary>
-    /// 특정 슬롯 수호대의 사망 후 30초 대기 및 단독 재생성을 처리하는 타이머 코루틴
-    /// </summary>
     private IEnumerator RespawnGuardRoutine(int slotIndex)
     {
-        // 설정된 시간(30초) 동안 대기하며 전멸 여부 관망
         yield return new WaitForSeconds(guardRespawnDelay);
 
-        // 시간 만료 시점까지 보스가 전멸 페이즈로 빠지지 않았다면 해당 슬롯 복구 스폰
         SpawnSingleGuard(slotIndex);
-        deadGuardCount--; // 부재 중 카운트 복구 차감
+        deadGuardCount--;
         guardRespawnCoroutines[slotIndex] = null;
     }
 
-    /// <summary>
-    /// 전멸 조건 충족 시 모든 개별 부활 스케줄러를 강제 취소하고 메인 그로기 루틴을 트리거하는 메서드
-    /// </summary>
     private void EnterVulnerablePhase()
     {
-        // 가동 중이던 모든 개별 부활 코루틴을 강제 종료하여 타이머 및 데이터 꼬임 현상 원천 차단
         for (int i = 0; i < 8; i++)
         {
             if (guardRespawnCoroutines[i] != null)
@@ -188,62 +181,58 @@ public class ImmortalUndeadBoss : BossBase
             }
         }
 
-        // 약점 노출(그로기 딜타임) 메인 코루틴 가동
         if (vulnerabilityCoroutine != null) StopCoroutine(vulnerabilityCoroutine);
         vulnerabilityCoroutine = StartCoroutine(VulnerableRoutine());
     }
 
-    /// <summary>
-    /// 무적 해제(그로기 딜타임) 상태의 제어 및 종료 후 수호대 일제 복구를 총괄하는 코루틴
-    /// </summary>
     private IEnumerator VulnerableRoutine()
     {
-        // [그로기 즉시 돌입 상태 제어]
-        isInvincible = false;       // 무적 상태 전면 해제 (플레이어 타격 유효화)
-        canMove = false;            // 보스 이동 강제 중지
-        isSummoningActive = false;  // 공격대 잡몹 지속 소환 루프 조건 차단
+        isInvincible = false;
+        canMove = false;
+        isSummoningActive = false;
 
-        // 가동 중이던 공격대 소환 루프 코루틴 정지 및 리셋
         if (raidSummonCoroutine != null)
         {
             StopCoroutine(raidSummonCoroutine);
             raidSummonCoroutine = null;
         }
 
-        // 설정된 약점 노출 지속 시간(예: 5초) 동안 딜 타임 유지하며 대기
         yield return new WaitForSeconds(vulnerableDuration);
 
-        // [딜 타임 종료 -> 강력한 패턴 상태로 복구]
-        isInvincible = true;        // 보스 다시 무적 상태 돌입
-        canMove = true;             // 보스 추적 이동 재개
-        isSummoningActive = true;   // 공격대 잡몹 소환 조건 재활성화
+        isInvincible = true;
+        canMove = true;
+        isSummoningActive = true;
 
-        // 일반 공격대 지속 소환 루프 재가동
         raidSummonCoroutine = StartCoroutine(RaidSummonRoutine());
-
-        // ★ [핵심 메커니즘] 무적 복구와 동시에, 비어있던 수호대 8마리를 한꺼번에 클린 재소환 및 타이머 전면 초기화!
         SpawnAllGuards();
     }
 
     public override void TakeDamage(float damage)
     {
-        // 수호대가 생존해 있는 무적 상태라면 외부 모든 타격 데미지 전면 무시
         if (isInvincible) return;
-
-        // 무적이 풀린 그로기 상태일 때만 부모 클래스(BossBase)의 실제 연산 피격 로직 처리
         base.TakeDamage(damage);
     }
 
     /// <summary>
-    /// 보스 사망 시 부모 Dead()를 호출하기 전에,
-    /// 살아있는 수호대 및 소환된 공격대 몬스터를 모두 비활성화합니다.
+    /// 보스 사망 시 부모 Dead()를 호출하기 전에 자신 및 부하 오브젝트들을 정돈합니다.
     /// </summary>
     protected override void Dead()
     {
-        // 보스 객체 내에서 가동 중이던 모든 코루틴 즉시 강제 정지 (부활 타이머, 소환 루프 등 완전 중단)
-        StopAllCoroutines();
+        // ★ [수정] 부모 클래스(BossBase)의 고유 코루틴(마법진 생성 등)을 해치지 않기 위해, 
+        // 전체 정지(StopAllCoroutines)를 폐기하고 이 클래스가 켜놓은 코루틴만 저격해서 안전하게 정지합니다.
+        if (raidSummonCoroutine != null) StopCoroutine(raidSummonCoroutine);
+        if (vulnerabilityCoroutine != null) StopCoroutine(vulnerabilityCoroutine);
 
-        // 필드에 생존해 있는 수호대 전원 즉시 추적하여 오브젝트 풀 반환 및 비활성화
+        for (int i = 0; i < 8; i++)
+        {
+            if (guardRespawnCoroutines[i] != null)
+            {
+                StopCoroutine(guardRespawnCoroutines[i]);
+                guardRespawnCoroutines[i] = null;
+            }
+        }
+
+        // 필드에 생존해 있는 수호대 전원 즉시 오브젝트 풀 반환 및 비활성화
         for (int i = 0; i < 8; i++)
         {
             if (dynamicGuards[i] != null)
@@ -253,54 +242,43 @@ public class ImmortalUndeadBoss : BossBase
             }
         }
 
-        // 그동안 실시간으로 누적 소환했던 필드의 모든 공격대 잡몹들을 전원 추적하여 풀 복귀 처리
-        // 이미 파괴되었거나(null) 수동으로 비활성화된 항목은 예외 차단
+        // 필드의 모든 공격대 잡몹들을 청소
         foreach (GameObject enemy in summonedEnemies)
         {
             if (enemy != null && enemy.activeSelf)
                 enemy.SetActive(false);
         }
-        // 청소가 끝난 리스트의 모든 요소 클리어
         summonedEnemies.Clear();
 
-        // 부모 클래스의 Dead() 실행 (WaveManager 스택 차감, 재화/보물상자 드롭, 클리어 포탈 스폰 등 후속 시퀀스 가동)
+        // 이제 안전해진 상태에서 부모 클래스의 Dead() 실행 (클리어 포탈/마법진 정상 작동)
         base.Dead();
     }
 
-    /// <summary>
-    /// 보스 주변 무작위 반경에 주기적으로 공격대 잡몹 무리를 낙하 소환하는 패턴 루틴
-    /// </summary>
     private IEnumerator RaidSummonRoutine()
     {
         while (isSummoningActive)
         {
-            // 설정된 주기(기본 0.75초)만큼 텀을 두고 대기
             yield return new WaitForSeconds(summonInterval);
 
-            // 보스의 현재 체력이 최대치의 50% 이하 조건에 도달했는지 실시간 체크하여 광폭화(Rage) 여부 판정
             bool isRage = health <= (maxHealth * 0.5f);
-            int spawnCount = isRage ? 2 : 1; // 광폭화(Rage) 상태 돌입 시 주기당 소환수 2배 증가 기믹
+            int spawnCount = isRage ? 2 : 1;
 
             for (int i = 0; i < spawnCount; i++)
             {
-                // 보스 월드 좌표 기준, 지정 반경 내 임의의 2D 원형 분포 좌표 연산
                 Vector2 randomCircle = Random.insideUnitCircle * summonRadius;
                 Vector3 summonPos = transform.position + new Vector3(randomCircle.x, randomCircle.y, 0f);
 
                 int targetIndex = 0;
 
-                // 광폭화 판정 여부 및 전용 소환 풀 배열 유효성에 따라 스폰할 적 프리팹 인덱스(ID) 차등 선정
                 if (isRage && rageSummonEnemyIndexes != null && rageSummonEnemyIndexes.Length > 0)
                     targetIndex = rageSummonEnemyIndexes[Random.Range(0, rageSummonEnemyIndexes.Length)];
-                else if (summonEnemyIndexes != null && summonEnemyIndexes.Length > 0)
-                    targetIndex = summonEnemyIndexes[Random.Range(0, summonEnemyIndexes.Length)];
+                else
+                    targetIndex = summonEnemyIndex;
 
-                // PoolManager에서 적 인스턴스를 확보하여 계산된 위치에 실시간 배치
                 GameObject spawnedEnemy = PoolManager.Instance.GetEnemy(targetIndex);
                 if (spawnedEnemy != null)
                 {
                     spawnedEnemy.transform.position = summonPos;
-                    // 보스 사망 시 일괄 정리할 수 있도록 소환 성공 즉시 관리용 추적 리스트에 등록
                     summonedEnemies.Add(spawnedEnemy);
                 }
             }

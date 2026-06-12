@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324b913c2f1cb564781b9a00dd2fc114, type: 3}
   m_Name: AbyssalPredator
   m_EditorClassIdentifier: Assembly-CSharp::BossData
-  maxHealth: 1000
+  maxHealth: 5000
   moveSpeed: 3
-  attackDamage: 30
+  attackDamage: 300
   damageReduction: 0.85
-  patternCooldown: 7.5
+  patternCooldown: 6

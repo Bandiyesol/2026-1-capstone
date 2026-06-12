@@ -204,8 +204,8 @@ MonoBehaviour:
   healMultiplier: 1.5
   healColor: {r: 0.5943396, g: 1, b: 0.5943396, a: 1}
   enragedColor: {r: 1, g: 0.5, b: 0.5, a: 1}
-  homingBulletIndex: 8
-  spreadBulletIndex: 9
+  homingBulletIndex: 18
+  spreadBulletIndex: 19
   homingShotCount: 5
   homingShotInterval: 1
   homingEndDelay: 0.8
