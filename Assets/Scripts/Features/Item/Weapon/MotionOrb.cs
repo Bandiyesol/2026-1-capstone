@@ -12,8 +12,10 @@ public class MotionOrb : Motion
     // 현재 오브의 공격 범위(콜라이더) 안에 들어와 있는 적들의 리스트
     private List<IDamageable> targetsInRange = new List<IDamageable>();
 
-    // 오브는 생성 시에 별도 특별한 초기화 처리는 없습니다.
-    protected override void OnStartMotion() { }
+    protected override void OnStartMotion()
+    {
+        ResetOrbState();
+    }
 
     // 오브의 유지 시간은 스탯의 스폰타임으로 설정
     protected override float GetDefaultTime() => instance.spawntime;
@@ -28,11 +30,15 @@ public class MotionOrb : Motion
     {
         base.Update();
 
+        if (instance == null)
+            return;
+
         // 프레임 경과 시간을 틱 타이머에 누적
         ticktimer += Time.deltaTime;
 
         // 누적 시간이 무기 공격 속도(틱 간격)를 넘어서면
-        if (ticktimer >= instance.attackspeed)
+        float tickInterval = Mathf.Max(0.05f, instance.attackspeed);
+        if (ticktimer >= tickInterval)
         {
             // 범위 내 적들에게 데미지 적용
             ApplyTickDamage();
@@ -89,5 +95,17 @@ public class MotionOrb : Motion
             // 대상 리스트에서 안전하게 제거하여 더 이상 틱 데미지를 받지 않도록 함
             if (target != null) targetsInRange.Remove(target);
         }
+    }
+
+    public override void ResetForPool()
+    {
+        base.ResetForPool();
+        ResetOrbState();
+    }
+
+    void ResetOrbState()
+    {
+        ticktimer = 0f;
+        targetsInRange.Clear();
     }
 }

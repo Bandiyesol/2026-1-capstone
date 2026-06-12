@@ -53,6 +53,12 @@ public static class ProtoTypeSceneSetup
 		EnsureComponent<AccessoryManager>(manager);
 		EnsureComponent<AccessoryEffect>(manager);
 		EnsureComponent<RewardRollService>(manager);
+
+		PoolManager pool = manager.GetComponentInChildren<PoolManager>(true);
+		if (pool == null)
+			pool = Object.FindFirstObjectByType<PoolManager>(FindObjectsInactive.Include);
+		if (pool != null)
+			PoolManagerMotionSetupEditor.TryLoadMotionPrefabs(pool);
 	}
 
 	static void EnsurePlayerComponents()

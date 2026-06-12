@@ -9,16 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b899106686885cf4b843f60a5470562c, type: 3}
+  m_Script: {fileID: 11500000, guid: 15a8b2911b3f5744889af1baf82b2c43, type: 3}
   m_Name: Rune_Wave
-  m_EditorClassIdentifier: Assembly-CSharp::RuneData
-  runeType: 4
-  category: 0
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveRuneData
   runeName: Wave
-  runeDesc: 
+  category: 0
+  runeType: 2
   runeIcon: {fileID: 0}
-  cooldownPenalty: 0.1
+  runeDescription: 
+  runeDesc: 
+  isDestroyed: 0
+  power: 0
+  cooldownPenalty: 0
   manaCost: 0
   incompatibleWith: 
-  valueA: 1.5
-  valueB: 2
+  valueA: 1
+  valueB: 1
+  duration: 3
+  speedMultiplier: 2
+  affectedRange: 6

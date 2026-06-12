@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68aa2a21588a7446b7cf6dc3c7b0793, type: 3}
+  m_Name: RuneCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::RuneCatalog
+  runes:
+  - {fileID: 11400000, guid: 60f69df1510638f44a55bee0766edd31, type: 2}
+  - {fileID: 11400000, guid: a674820843b202445b7a0d1477d26939, type: 2}
+  - {fileID: 11400000, guid: 3916b59a6be5b014facc6f19b59fc8b9, type: 2}
+  - {fileID: 11400000, guid: ed8f895918d2b03458022a57ef136aa5, type: 2}
+  - {fileID: 11400000, guid: 0df963f03e7355745ad4a6583d95d649, type: 2}
+  - {fileID: 11400000, guid: e04fde2f0891f434a8d0a9fb1c9388df, type: 2}
+  - {fileID: 11400000, guid: 1092bcf20bb2eec4aa4a3ab3346db459, type: 2}
+  - {fileID: 11400000, guid: 9020dba6d32996141926da8883debbcf, type: 2}
+  - {fileID: 11400000, guid: 2f776333b13fcf14591d2edb4ed9d0f0, type: 2}
+  - {fileID: 11400000, guid: ec7b41e5d992f034e966387c68e9aa37, type: 2}
+  - {fileID: 11400000, guid: c24e1b3b718066145a4a8a55a82407f4, type: 2}
+  - {fileID: 11400000, guid: 472c3db8c7288294d950a8f04b8c214f, type: 2}
+  - {fileID: 11400000, guid: 689ad4e70fd585c4196b1b46745fe3ea, type: 2}
+  - {fileID: 11400000, guid: 5490688f31984f342aa4a75217feac32, type: 2}
+  - {fileID: 11400000, guid: 0288d08bdb5932e4496c671204027b7b, type: 2}

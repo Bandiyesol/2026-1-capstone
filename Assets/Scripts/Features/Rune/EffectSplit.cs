@@ -78,9 +78,19 @@ public class EffectSplit : RuneEffect, ITriggerEffect
 		childInstance.damage *= data.power > 0 ? data.power : 0.5f;
 
 		GameObject prefab = WeaponManager.Instance.GetMotionPrefab(weapon.info.motionId);
-		GameObject clone = Instantiate(prefab, transform.position, Quaternion.Euler(0f, 0f, angleZ));
+		Motion childMotion = PoolManager.Instance != null
+			? PoolManager.Instance.SpawnMotion(weapon.info.motionId, transform.position, Quaternion.Euler(0f, 0f, angleZ))
+			: null;
 
-		// 남은 수명을 부모로부터 물려받아 초기화
-		clone.GetComponent<Motion>().Initialize(childInstance, childRunes, parentMotion.GetRemainingLife());
+		if (childMotion == null)
+		{
+			GameObject clone = Instantiate(prefab, transform.position, Quaternion.Euler(0f, 0f, angleZ));
+			childMotion = clone.GetComponent<Motion>();
+		}
+
+		if (childMotion == null)
+			return;
+
+		childMotion.Initialize(childInstance, childRunes, parentMotion.GetRemainingLife());
 	}
 }

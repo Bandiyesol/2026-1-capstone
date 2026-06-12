@@ -221,6 +221,26 @@ public class WaveManager : MonoBehaviour
     IEnumerator StartWaveDelayed()
     {
         yield return new WaitForSeconds(nextWaveDelay); // 웨이브 사이 대기 시간 적용
-        StartWave();                                   // 다음 웨이브 루프 시동
+
+        // 첫 웨이브(0번)가 아닌 경우에만 룬 선택 UI 표시
+        if (currentWave > 0)
+        {
+            RuneSelectUI runeSelect = GameManager.instance != null
+                ? GameManager.instance.uiRuneSelect
+                : null;
+            if (runeSelect == null)
+                runeSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+
+            if (runeSelect != null && RuneManager.instance != null)
+            {
+                bool confirmed = false;
+                runeSelect.gameObject.SetActive(true);
+                runeSelect.transform.SetAsLastSibling();
+                runeSelect.ShowBetweenWaves(() => confirmed = true);
+                yield return new WaitUntil(() => confirmed); // 플레이어가 룬 선택을 완료할 때까지 대기
+            }
+        }
+
+        StartWave(); // 다음 웨이브 루프 시동
     }
 }

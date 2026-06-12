@@ -56,5 +56,5 @@ Effect에서는 `RuneDataAccess` 정적 메서드로 읽습니다.
 2. `Scripts/Data/Rune/` 에 SO 클래스 추가
 3. `Scripts/Features/Rune/Effect*.cs` 구현
 4. `RuneEffectRegistry.EffectTypes`에 매핑 등록
-5. `Assets/Arts/Data/` 에셋 생성 (올바른 SO 스크립트 연결)
+5. `Assets/Data/Rune Datas/` 에셋 생성 (올바른 SO 스크립트 연결)
 6. `RuneValidator` 규칙 필요 시 추가

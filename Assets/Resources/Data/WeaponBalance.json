@@ -1,150 +1,53 @@
 {
 	"balance": [
-		{
-			"key": "Sword_Common",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Sword_Rare",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Sword_Unique",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Sword_Legendary",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
+		{ "key": "Sword_Common", "isSplited": false, "isRevived": false, "damageRange": [7, 11], "weightRange": [7, 11], "sizeRange": [0.9, 1.15], "reachRange": [1.2, 1.6], "spawntimeRange": [0.35, 0.55], "cooltimeRange": [1.1, 1.5], "attackspeedRange": [1, 1.05], "movespeedRange": [0, 0] },
+		{ "key": "Sword_Rare", "isSplited": false, "isRevived": false, "damageRange": [11, 16], "weightRange": [8, 12], "sizeRange": [1.0, 1.25], "reachRange": [1.4, 1.9], "spawntimeRange": [0.35, 0.6], "cooltimeRange": [0.9, 1.25], "attackspeedRange": [1.05, 1.15], "movespeedRange": [0, 0] },
+		{ "key": "Sword_Unique", "isSplited": false, "isRevived": false, "damageRange": [16, 23], "weightRange": [9, 13], "sizeRange": [1.15, 1.5], "reachRange": [1.7, 2.3], "spawntimeRange": [0.4, 0.65], "cooltimeRange": [0.75, 1.05], "attackspeedRange": [1.1, 1.25], "movespeedRange": [0, 0] },
+		{ "key": "Sword_Legendary", "isSplited": false, "isRevived": false, "damageRange": [24, 34], "weightRange": [10, 14], "sizeRange": [1.35, 1.8], "reachRange": [2.1, 2.8], "spawntimeRange": [0.45, 0.75], "cooltimeRange": [0.55, 0.85], "attackspeedRange": [1.2, 1.4], "movespeedRange": [0, 0] },
 
-		{
-			"key": "Bow_Common",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Bow_Rare",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Bow_Unique",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Bow_Legendary",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
+		{ "key": "Bow_Common", "isSplited": false, "isRevived": false, "damageRange": [5, 8], "weightRange": [3, 5], "sizeRange": [0.8, 1.0], "reachRange": [6, 8], "spawntimeRange": [3, 4], "cooltimeRange": [1.1, 1.5], "attackspeedRange": [1, 1.05], "movespeedRange": [7, 10] },
+		{ "key": "Bow_Rare", "isSplited": false, "isRevived": false, "damageRange": [8, 12], "weightRange": [3, 5], "sizeRange": [0.9, 1.1], "reachRange": [7.5, 10], "spawntimeRange": [3.5, 4.5], "cooltimeRange": [0.9, 1.25], "attackspeedRange": [1.05, 1.15], "movespeedRange": [9, 12] },
+		{ "key": "Bow_Unique", "isSplited": true, "isRevived": false, "damageRange": [12, 18], "weightRange": [3, 6], "sizeRange": [1.0, 1.25], "reachRange": [9, 12], "spawntimeRange": [4, 5], "cooltimeRange": [0.7, 1.0], "attackspeedRange": [1.1, 1.25], "movespeedRange": [11, 15] },
+		{ "key": "Bow_Legendary", "isSplited": true, "isRevived": false, "damageRange": [18, 26], "weightRange": [4, 7], "sizeRange": [1.15, 1.45], "reachRange": [12, 16], "spawntimeRange": [5, 6], "cooltimeRange": [0.5, 0.8], "attackspeedRange": [1.2, 1.4], "movespeedRange": [14, 18] },
 
-		{
-			"key": "Orb_Common",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Orb_Rare",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Orb_Unique",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		},
-		{
-			"key": "Orb_Legendary",
-			"isRevived": false,
-			"damageRange": [5, 10],
-			"weightRange": [8, 12],
-			"sizeRange": [1, 5],
-			"reachRange": [2, 5],
-			"spawntimeRange": [1, 3],
-			"cooltimeRange": [5, 10],
-			"attackspeedRange": [1, 10],
-			"movespeedRange": [1, 10]
-		}
+		{ "key": "Gun_Common", "isSplited": false, "isRevived": false, "damageRange": [4, 7], "weightRange": [2, 4], "sizeRange": [0.65, 0.9], "reachRange": [7, 9], "spawntimeRange": [2, 3], "cooltimeRange": [0.65, 0.95], "attackspeedRange": [1, 1.1], "movespeedRange": [10, 14] },
+		{ "key": "Gun_Rare", "isSplited": false, "isRevived": false, "damageRange": [7, 10], "weightRange": [2, 5], "sizeRange": [0.75, 1.0], "reachRange": [9, 12], "spawntimeRange": [2.5, 3.5], "cooltimeRange": [0.5, 0.8], "attackspeedRange": [1.1, 1.25], "movespeedRange": [12, 16] },
+		{ "key": "Gun_Unique", "isSplited": true, "isRevived": false, "damageRange": [10, 15], "weightRange": [3, 6], "sizeRange": [0.9, 1.2], "reachRange": [11, 15], "spawntimeRange": [3, 4], "cooltimeRange": [0.4, 0.65], "attackspeedRange": [1.2, 1.4], "movespeedRange": [14, 18] },
+		{ "key": "Gun_Legendary", "isSplited": true, "isRevived": false, "damageRange": [16, 24], "weightRange": [4, 7], "sizeRange": [1.2, 1.6], "reachRange": [14, 20], "spawntimeRange": [4, 5.5], "cooltimeRange": [0.25, 0.45], "attackspeedRange": [1.35, 1.6], "movespeedRange": [18, 24] },
+
+		{ "key": "Hammer_Common", "isSplited": false, "isRevived": false, "damageRange": [14, 22], "weightRange": [12, 18], "sizeRange": [1.2, 1.6], "reachRange": [1.2, 1.8], "spawntimeRange": [0.45, 0.7], "cooltimeRange": [2.2, 3.0], "attackspeedRange": [0.9, 1.0], "movespeedRange": [0, 0] },
+		{ "key": "Hammer_Rare", "isSplited": false, "isRevived": false, "damageRange": [22, 34], "weightRange": [14, 20], "sizeRange": [1.45, 1.9], "reachRange": [1.5, 2.2], "spawntimeRange": [0.5, 0.8], "cooltimeRange": [1.8, 2.5], "attackspeedRange": [0.95, 1.05], "movespeedRange": [0, 0] },
+		{ "key": "Hammer_Unique", "isSplited": false, "isRevived": false, "damageRange": [34, 50], "weightRange": [16, 22], "sizeRange": [1.8, 2.4], "reachRange": [2.0, 2.8], "spawntimeRange": [0.55, 0.9], "cooltimeRange": [1.4, 2.0], "attackspeedRange": [1.0, 1.15], "movespeedRange": [0, 0] },
+		{ "key": "Hammer_Legendary", "isSplited": false, "isRevived": false, "damageRange": [55, 80], "weightRange": [18, 26], "sizeRange": [2.3, 3.2], "reachRange": [2.6, 3.8], "spawntimeRange": [0.65, 1.0], "cooltimeRange": [1.0, 1.5], "attackspeedRange": [1.1, 1.3], "movespeedRange": [0, 0] },
+
+		{ "key": "Sickle_Common", "isSplited": false, "isRevived": false, "damageRange": [8, 12], "weightRange": [5, 8], "sizeRange": [1.0, 1.3], "reachRange": [1.6, 2.2], "spawntimeRange": [0.8, 1.2], "cooltimeRange": [1.3, 1.8], "attackspeedRange": [1, 1.1], "movespeedRange": [0, 0] },
+		{ "key": "Sickle_Rare", "isSplited": false, "isRevived": false, "damageRange": [12, 18], "weightRange": [6, 9], "sizeRange": [1.2, 1.55], "reachRange": [2.0, 2.7], "spawntimeRange": [0.9, 1.3], "cooltimeRange": [1.1, 1.5], "attackspeedRange": [1.05, 1.2], "movespeedRange": [0, 0] },
+		{ "key": "Sickle_Unique", "isSplited": false, "isRevived": false, "damageRange": [18, 28], "weightRange": [7, 10], "sizeRange": [1.45, 1.9], "reachRange": [2.5, 3.5], "spawntimeRange": [1.0, 1.5], "cooltimeRange": [0.9, 1.25], "attackspeedRange": [1.15, 1.3], "movespeedRange": [0, 0] },
+		{ "key": "Sickle_Legendary", "isSplited": false, "isRevived": false, "damageRange": [35, 52], "weightRange": [9, 13], "sizeRange": [1.8, 2.4], "reachRange": [4.0, 5.5], "spawntimeRange": [1.2, 1.8], "cooltimeRange": [0.7, 1.0], "attackspeedRange": [1.25, 1.5], "movespeedRange": [0, 0] },
+
+		{ "key": "Whip_Common", "isSplited": false, "isRevived": false, "damageRange": [6, 10], "weightRange": [3, 6], "sizeRange": [0.8, 1.0], "reachRange": [4.0, 5.5], "spawntimeRange": [0.6, 1.0], "cooltimeRange": [1.2, 1.7], "attackspeedRange": [1, 1.1], "movespeedRange": [8, 11] },
+		{ "key": "Whip_Rare", "isSplited": false, "isRevived": false, "damageRange": [10, 15], "weightRange": [4, 7], "sizeRange": [0.9, 1.15], "reachRange": [5.0, 7.0], "spawntimeRange": [0.7, 1.1], "cooltimeRange": [1.0, 1.4], "attackspeedRange": [1.1, 1.25], "movespeedRange": [10, 13] },
+		{ "key": "Whip_Unique", "isSplited": false, "isRevived": false, "damageRange": [15, 23], "weightRange": [5, 8], "sizeRange": [1.05, 1.35], "reachRange": [6.5, 9.0], "spawntimeRange": [0.8, 1.3], "cooltimeRange": [0.8, 1.1], "attackspeedRange": [1.2, 1.4], "movespeedRange": [12, 16] },
+		{ "key": "Whip_Legendary", "isSplited": true, "isRevived": false, "damageRange": [24, 36], "weightRange": [6, 10], "sizeRange": [1.25, 1.65], "reachRange": [8.0, 12.0], "spawntimeRange": [1.0, 1.5], "cooltimeRange": [0.6, 0.9], "attackspeedRange": [1.35, 1.6], "movespeedRange": [14, 18] },
+
+		{ "key": "Boomerang_Common", "isSplited": false, "isRevived": false, "damageRange": [7, 11], "weightRange": [4, 7], "sizeRange": [0.9, 1.15], "reachRange": [5, 7], "spawntimeRange": [2.5, 3.5], "cooltimeRange": [1.6, 2.2], "attackspeedRange": [1, 1.1], "movespeedRange": [6, 8] },
+		{ "key": "Boomerang_Rare", "isSplited": false, "isRevived": false, "damageRange": [11, 16], "weightRange": [5, 8], "sizeRange": [1.0, 1.25], "reachRange": [6.5, 9], "spawntimeRange": [3, 4], "cooltimeRange": [1.3, 1.8], "attackspeedRange": [1.05, 1.2], "movespeedRange": [7, 10] },
+		{ "key": "Boomerang_Unique", "isSplited": true, "isRevived": false, "damageRange": [16, 24], "weightRange": [6, 9], "sizeRange": [1.15, 1.45], "reachRange": [8, 11], "spawntimeRange": [3.5, 5], "cooltimeRange": [1.0, 1.5], "attackspeedRange": [1.15, 1.35], "movespeedRange": [9, 12] },
+		{ "key": "Boomerang_Legendary", "isSplited": true, "isRevived": false, "damageRange": [25, 38], "weightRange": [7, 11], "sizeRange": [1.4, 1.8], "reachRange": [10, 14], "spawntimeRange": [4, 6], "cooltimeRange": [0.8, 1.2], "attackspeedRange": [1.3, 1.55], "movespeedRange": [11, 15] },
+
+		{ "key": "Staff_Common", "isSplited": false, "isRevived": false, "damageRange": [6, 10], "weightRange": [3, 5], "sizeRange": [0.9, 1.1], "reachRange": [6, 8], "spawntimeRange": [2.5, 3.5], "cooltimeRange": [1.3, 1.8], "attackspeedRange": [1, 1.1], "movespeedRange": [5, 8] },
+		{ "key": "Staff_Rare", "isSplited": false, "isRevived": false, "damageRange": [10, 15], "weightRange": [4, 6], "sizeRange": [1.0, 1.25], "reachRange": [7.5, 10], "spawntimeRange": [3, 4], "cooltimeRange": [1.1, 1.5], "attackspeedRange": [1.05, 1.2], "movespeedRange": [7, 10] },
+		{ "key": "Staff_Unique", "isSplited": false, "isRevived": false, "damageRange": [15, 23], "weightRange": [5, 8], "sizeRange": [1.2, 1.6], "reachRange": [9, 12], "spawntimeRange": [3.5, 5], "cooltimeRange": [0.85, 1.25], "attackspeedRange": [1.15, 1.35], "movespeedRange": [9, 12] },
+		{ "key": "Staff_Legendary", "isSplited": false, "isRevived": false, "damageRange": [24, 36], "weightRange": [6, 10], "sizeRange": [1.5, 2.0], "reachRange": [12, 16], "spawntimeRange": [4, 6], "cooltimeRange": [0.65, 0.95], "attackspeedRange": [1.3, 1.55], "movespeedRange": [10, 14] },
+
+		{ "key": "Grimore_Common", "isSplited": false, "isRevived": false, "damageRange": [5, 8], "weightRange": [2, 4], "sizeRange": [0.8, 1.1], "reachRange": [2, 3], "spawntimeRange": [4, 6], "cooltimeRange": [2.5, 3.5], "attackspeedRange": [1, 1.05], "movespeedRange": [1.0, 1.5] },
+		{ "key": "Grimore_Rare", "isSplited": false, "isRevived": false, "damageRange": [8, 12], "weightRange": [3, 5], "sizeRange": [0.95, 1.25], "reachRange": [2.5, 3.5], "spawntimeRange": [5, 7], "cooltimeRange": [2.0, 2.8], "attackspeedRange": [1.05, 1.15], "movespeedRange": [1.2, 1.8] },
+		{ "key": "Grimore_Unique", "isSplited": true, "isRevived": false, "damageRange": [12, 18], "weightRange": [4, 6], "sizeRange": [1.1, 1.5], "reachRange": [3, 4.5], "spawntimeRange": [6, 8], "cooltimeRange": [1.6, 2.3], "attackspeedRange": [1.15, 1.3], "movespeedRange": [1.5, 2.2] },
+		{ "key": "Grimore_Legendary", "isSplited": true, "isRevived": false, "damageRange": [20, 30], "weightRange": [5, 8], "sizeRange": [1.4, 2.0], "reachRange": [4, 6], "spawntimeRange": [8, 10], "cooltimeRange": [1.2, 1.8], "attackspeedRange": [1.25, 1.5], "movespeedRange": [2, 3] },
+
+		{ "key": "Orb_Common", "isSplited": false, "isRevived": false, "damageRange": [4, 7], "weightRange": [2, 4], "sizeRange": [1.5, 2.0], "reachRange": [3, 5], "spawntimeRange": [3, 5], "cooltimeRange": [2.5, 3.5], "attackspeedRange": [1, 1.05], "movespeedRange": [0, 0] },
+		{ "key": "Orb_Rare", "isSplited": false, "isRevived": false, "damageRange": [7, 11], "weightRange": [3, 5], "sizeRange": [2.0, 2.7], "reachRange": [4, 6], "spawntimeRange": [4, 6], "cooltimeRange": [2.0, 2.8], "attackspeedRange": [1.05, 1.2], "movespeedRange": [0, 0] },
+		{ "key": "Orb_Unique", "isSplited": false, "isRevived": false, "damageRange": [11, 17], "weightRange": [4, 6], "sizeRange": [2.5, 3.5], "reachRange": [5, 7.5], "spawntimeRange": [4.5, 7], "cooltimeRange": [1.5, 2.2], "attackspeedRange": [1.15, 1.35], "movespeedRange": [0, 0] },
+		{ "key": "Orb_Legendary", "isSplited": false, "isRevived": false, "damageRange": [18, 28], "weightRange": [5, 8], "sizeRange": [3.5, 5.0], "reachRange": [6, 9], "spawntimeRange": [5, 8], "cooltimeRange": [1.0, 1.6], "attackspeedRange": [1.25, 1.5], "movespeedRange": [0, 0] }
 	]
 }

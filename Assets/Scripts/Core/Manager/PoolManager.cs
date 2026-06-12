@@ -13,6 +13,7 @@ public class PoolManager : MonoBehaviour
     public GameObject[] gimmickPrefabs; // 마법진(포탈) 등 오브젝트 포함
     public GameObject[] coinPrefabs;
     public GameObject[] chestPrefabs;
+    public GameObject[] motionPrefabs;
 
     // 오브젝트 풀을 관리할 리스트 배열
     List<GameObject>[] enemyPools;
@@ -21,6 +22,9 @@ public class PoolManager : MonoBehaviour
     List<GameObject>[] gimmickPools;
     List<GameObject>[] coinPools;
     List<GameObject>[] chestPools;
+
+    readonly Dictionary<string, List<Motion>> motionPools = new Dictionary<string, List<Motion>>();
+    readonly Dictionary<string, GameObject> motionPrefabById = new Dictionary<string, GameObject>();
 
     void Awake()
     {
@@ -35,6 +39,34 @@ public class PoolManager : MonoBehaviour
         gimmickPools = CreatePools(gimmickPrefabs != null ? gimmickPrefabs.Length : 0);
         coinPools = CreatePools(coinPrefabs != null ? coinPrefabs.Length : 0);
         chestPools = CreatePools(chestPrefabs != null ? chestPrefabs.Length : 0);
+
+        InitializeMotionPools();
+    }
+
+    void InitializeMotionPools()
+    {
+        motionPools.Clear();
+        motionPrefabById.Clear();
+
+        if (motionPrefabs == null || motionPrefabs.Length == 0)
+            motionPrefabs = Resources.LoadAll<GameObject>("Prefabs/Motions");
+
+        if (motionPrefabs == null || motionPrefabs.Length == 0)
+        {
+            Debug.LogWarning("[PoolManager] motionPrefabs가 비어 있습니다. Assets/Resources/Prefabs/Motions 를 확인하세요.");
+            return;
+        }
+
+        foreach (GameObject prefab in motionPrefabs)
+        {
+            if (prefab == null || motionPrefabById.ContainsKey(prefab.name))
+                continue;
+
+            motionPrefabById[prefab.name] = prefab;
+            motionPools[prefab.name] = new List<Motion>();
+        }
+
+        Debug.Log($"[PoolManager] Motion 풀 등록: {motionPrefabById.Count}개");
     }
 
     // 지정된 개수만큼 빈 리스트(풀) 배열을 생성하는 메서드
@@ -137,6 +169,73 @@ public class PoolManager : MonoBehaviour
         if (chestPrefabs == null || index < 0 || index >= chestPrefabs.Length) return null;
         return GetFromPool(chestPrefabs, chestPools, index, "Chest");
     }
+
+    /// <summary>무기 Motion 프리팹을 풀에서 꺼냅니다. motionId = 프리팹 이름 (예: effect_sword).</summary>
+    public Motion SpawnMotion(string motionId, Vector3 position, Quaternion rotation)
+    {
+        if (string.IsNullOrEmpty(motionId) || !motionPrefabById.TryGetValue(motionId, out GameObject prefab))
+        {
+            Debug.LogWarning($"[PoolManager] Motion 프리팹 없음: {motionId}");
+            return null;
+        }
+
+        if (!motionPools.TryGetValue(motionId, out List<Motion> pool))
+        {
+            pool = new List<Motion>();
+            motionPools[motionId] = pool;
+        }
+
+        Motion motion = null;
+        foreach (Motion candidate in pool)
+        {
+            if (candidate != null && !candidate.gameObject.activeSelf)
+            {
+                motion = candidate;
+                break;
+            }
+        }
+
+        if (motion == null)
+        {
+            GameObject created = Instantiate(prefab, transform);
+            created.name = prefab.name;
+            motion = created.GetComponent<Motion>();
+            if (motion == null)
+            {
+                Debug.LogError($"[PoolManager] Motion 컴포넌트 없음: {prefab.name}");
+                Destroy(created);
+                return null;
+            }
+
+            pool.Add(motion);
+        }
+
+        motion.transform.SetPositionAndRotation(position, rotation);
+        motion.gameObject.SetActive(true);
+        return motion;
+    }
+
+    /// <summary>무기 Motion을 풀로 반환합니다.</summary>
+    public void ReleaseMotion(Motion motion)
+    {
+        if (motion == null)
+            return;
+
+        motion.ResetForPool();
+        motion.gameObject.SetActive(false);
+    }
+
+    public void ReturnAllActiveMotions()
+    {
+        foreach (List<Motion> pool in motionPools.Values)
+        {
+            foreach (Motion motion in pool)
+            {
+                if (motion != null && motion.gameObject.activeSelf)
+                    ReleaseMotion(motion);
+            }
+        }
+    }
     #endregion
 
     void EnsurePoolCapacity(ref List<GameObject>[] pools, GameObject[] prefabs)
@@ -207,6 +306,7 @@ public class PoolManager : MonoBehaviour
         ReturnAllActiveInPools(gimmickPools); // 다음 스테이지 이동 시 마법진도 여기서 자동 정리
         ReturnAllActiveInPools(coinPools);
         ReturnAllActiveInPools(chestPools);
+        ReturnAllActiveMotions();
     }
 
     // 하나의 풀 배열 내부에 켜져 있는 모든 오브젝트를 끄는 내부 메서드

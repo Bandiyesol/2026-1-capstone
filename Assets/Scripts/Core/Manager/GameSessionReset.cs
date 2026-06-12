@@ -26,6 +26,8 @@ public static class GameSessionReset
 	{
 		game.isLive = false;
 		game.gameTime = 0f;
+		if (PlayerStats.Instance != null)
+			PlayerStats.Instance.ResetRuntimeState();
 		game.Health = game.maxHealth;
 		game.Kill = 0;
 		game.Coin = 0;
@@ -52,10 +54,13 @@ public static class GameSessionReset
 
 	static void ResetWorldDropsAndMotions()
 	{
-		foreach (Motion motion in Object.FindObjectsByType<Motion>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		if (PoolManager.Instance == null)
 		{
-			if (motion != null)
-				Object.Destroy(motion.gameObject);
+			foreach (Motion motion in Object.FindObjectsByType<Motion>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+			{
+				if (motion != null)
+					Object.Destroy(motion.gameObject);
+			}
 		}
 
 		foreach (DroppedCoin coin in Object.FindObjectsByType<DroppedCoin>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -97,7 +102,7 @@ public static class GameSessionReset
 			potion.Clear();
 
 		if (RuneManager.instance != null)
-			RuneManager.instance.ResetToInitial();
+			RuneManager.instance.ClearAll();
 	}
 
 	static void ResetShop()

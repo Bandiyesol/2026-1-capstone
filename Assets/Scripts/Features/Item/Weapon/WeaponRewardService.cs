@@ -73,23 +73,61 @@ public static class WeaponRewardService
 
 	public static List<WeaponInstance> RollCandidates(IReadOnlyList<string> pool, int count = 3)
 	{
+		return RollCandidates(pool, count, ShopCatalogSettings.Instance);
+	}
+
+	/// <summary>등급 가중치(ShopCatalogSettings)로 후보 무기를 뽑습니다. 높은 등급일수록 확률이 낮습니다.</summary>
+	public static List<WeaponInstance> RollCandidates(
+		IReadOnlyList<string> pool,
+		int count,
+		ShopCatalogSettings gradeSettings)
+	{
 		var result = new List<WeaponInstance>();
-		if (pool == null || pool.Count == 0) return result;
+		if (pool == null || pool.Count == 0)
+			return result;
 
 		var pickedIds = new HashSet<string>();
 		int safety = 0;
 
-		while (result.Count < count && safety < 50)
+		while (result.Count < count && safety < 100)
 		{
 			safety++;
-			string id = pool[Random.Range(0, pool.Count)];
-			if (!pickedIds.Add(id)) continue;
+			ShopItemGrade grade = gradeSettings != null
+				? gradeSettings.RollListingGrade()
+				: ShopItemGrade.Common;
+
+			string id = PickWeaponIdForGrade(pool, grade);
+			if (string.IsNullOrEmpty(id) || !pickedIds.Add(id))
+				continue;
 
 			WeaponInstance instance = CreateInstance(id);
-			if (instance != null) result.Add(instance);
+			if (instance != null)
+				result.Add(instance);
 		}
 
 		return result;
+	}
+
+	static string PickWeaponIdForGrade(IReadOnlyList<string> pool, ShopItemGrade targetGrade)
+	{
+		if (pool == null || pool.Count == 0)
+			return null;
+
+		string gradeName = ShopGradeUtility.ToGradeName(targetGrade);
+		var filtered = new List<string>();
+		foreach (string id in pool)
+		{
+			if (WeaponRewardService.GetWeaponGrade(id) == gradeName)
+				filtered.Add(id);
+		}
+
+		if (filtered.Count == 0)
+		{
+			foreach (string id in pool)
+				filtered.Add(id);
+		}
+
+		return filtered[Random.Range(0, filtered.Count)];
 	}
 
 	public static string FormatTitle(WeaponInstance w)
@@ -120,11 +158,11 @@ public static class WeaponRewardService
 
 	public static Sprite GetIcon(WeaponInstance w)
 	{
-		if (w?.info == null || string.IsNullOrEmpty(w.info.spriteId))
+		if (w?.info == null)
 			return null;
 		if (WeaponManager.Instance == null)
 			return null;
-		return WeaponManager.Instance.GetWeaponSprite(w.info.spriteId);
+		return WeaponManager.Instance.GetWeaponSprite(w.info);
 	}
 
 	/// <summary>

@@ -31,13 +31,11 @@ public static class BossBriefingRuntime
 	public static string GetBossDisplayName(int stageIndex)
 	{
 		GameManager game = GameManager.instance;
-		if (game != null
-		    && game.bossBriefDatabase != null
-		    && game.bossBriefDatabase.TryGetBriefing(stageIndex, out BossBriefProfile profile)
-		    && profile != null
-		    && !string.IsNullOrEmpty(profile.displayName))
+		if (game != null && game.bossBriefDatabase != null
+		    && game.bossBriefDatabase.TryGetBriefing(stageIndex, out BossBriefProfile profile))
 		{
-			return profile.displayName;
+			if (profile != null && !string.IsNullOrEmpty(profile.displayName))
+				return profile.displayName;
 		}
 
 		if (BossBriefingDefaults.TryGet(stageIndex, out BossBriefingDefaults.Entry entry))
