@@ -19,6 +19,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     // 상태 제어 변수들
     protected bool isLive;     // 현재 살아있는지 여부 (자식 클래스 접근 가능)
+    public bool IsLive => isLive;  // 외부 접근용 프로퍼티
     bool isFrozen;             // 빙결(치명적 멈춤) 상태 여부
     bool hiddenInFog;          // 안개 속에 숨겨졌는지 여부
     float freezeTimer;         // 빙결 남은 시간 타이머

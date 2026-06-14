@@ -138,9 +138,6 @@ public class AccessoryEffect : MonoBehaviour
     // PhoenixFeather
     bool phoenixUsed = false;
 
-    // TheLastRune
-    bool theLastRuneActive = false;
-
     // InfiniteMana
     Coroutine infiniteManaRoutine;
 
@@ -148,10 +145,53 @@ public class AccessoryEffect : MonoBehaviour
     readonly System.Collections.Generic.Dictionary<Enemy,Coroutine> seedRoutines
         = new System.Collections.Generic.Dictionary<Enemy,Coroutine>();
 
+    // LightningStrike / ChainLightning
+    [Header("[ LightningStrike — 번개 맞은 나뭇가지 ]")]
+    // Resources/Effects/LightningEffect 에서 자동 로드
+    GameObject lightningEffectPrefab;
+    [Tooltip("낙뢰 발동 확률")]           public float lightningChance       = 0.1f;
+    [Tooltip("낙뢰 피해")]                public float lightningDamage        = 30f;
+    [Tooltip("낙뢰 범위")]                public float lightningRadius        = 1.5f;
+    [Tooltip("낙뢰 이펙트 지속 시간")]    public float lightningEffectTime    = 0.5f;
+    [Tooltip("낙뢰 이펙트 크기")]          public float lightningEffectScale   = 10f;
+
+    [Header("[ ChainLightning — 에키드나의 목걸이 ]")]
+    // Resources/Effects/ChainLightningEffect 에서 자동 로드
+    GameObject chainLightningEffectPrefab;
+
+    [Header("[ RevengeArrow — 가시 목걸이 ]")]
+    // Resources/Effects/RevengeArrowEffect 에서 자동 로드
+    GameObject revengeArrowEffectPrefab;
+    [Tooltip("연쇄 번개 발동 확률")]      public float chainLightningChance   = 0.15f;
+    [Tooltip("연쇄 번개 피해")]           public float chainLightningDamage   = 15f;
+    [Tooltip("연쇄 최대 횟수")]           public int   chainLightningCount    = 3;
+    [Tooltip("연쇄 탐색 범위")]           public float chainLightningRadius   = 5f;
+    [Tooltip("연쇄 번개 이펙트 지속 시간")] public float chainLightningEffectTime = 0.4f;
+    [Tooltip("연쇄 번개 이펙트 크기")]      public float chainLightningEffectScale = 5f;
+
+    [Header("[ RevengeArrow — 가시 목걸이 ]")]
+    [Tooltip("피격 시 발사할 화살 개수")] public int   revengeArrowCount      = 8;
+    [Tooltip("화살 피해 배율 (공격력 ×)")]public float revengeArrowDamageRatio= 0.3f;
+    [Tooltip("화살 이동 속도")]           public float revengeArrowSpeed      = 8f;
+    [Tooltip("화살 사거리")]              public float revengeArrowRange      = 6f;
+
     void Awake()
     {
         if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
+
+        // 이펙트 프리팹 자동 로드 (Assets/Resources/Effects/ 폴더에 있어야 함)
+        lightningEffectPrefab      = Resources.Load<GameObject>("Effects/LightningEffect");
+        chainLightningEffectPrefab = Resources.Load<GameObject>("Effects/ChainLightningEffect");
+
+        if (lightningEffectPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/LightningEffect 프리팹을 찾을 수 없습니다.");
+        if (chainLightningEffectPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/ChainLightningEffect 프리팹을 찾을 수 없습니다.");
+
+        revengeArrowEffectPrefab = Resources.Load<GameObject>("Effects/RevengeArrowEffect");
+        if (revengeArrowEffectPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/RevengeArrowEffect 프리팹을 찾을 수 없습니다.");
     }
 
     // ───────────────────────────────────────────
@@ -206,7 +246,6 @@ public class AccessoryEffect : MonoBehaviour
             case AccessoryEffectType.TheLastRune:
                 if (!owned.Contains(AccessoryEffectType.TheLastRune))
                 {
-                    theLastRuneActive = true;
                     if (RuneManager.instance != null)
                         RuneManager.instance.CooldownMultiplier = 0f;
                     Debug.Log("[AccessoryEffect] The Last Rune — 룬 쿨타임 0!");
@@ -231,6 +270,12 @@ public class AccessoryEffect : MonoBehaviour
                     if (infiniteManaRoutine != null) StopCoroutine(infiniteManaRoutine);
                     infiniteManaRoutine = StartCoroutine(InfiniteManaRoutine());
                 }
+                break;
+
+            case AccessoryEffectType.LightningStrike:
+            case AccessoryEffectType.ChainLightning:
+            case AccessoryEffectType.RevengeArrow:
+                // 훅(NotifyEnemyHit / NotifyPlayerDamaged)에서 처리
                 break;
 
             default:
@@ -267,7 +312,10 @@ public class AccessoryEffect : MonoBehaviour
         t == AccessoryEffectType.BurnOnAttack    ||
         t == AccessoryEffectType.PoisonOnAttack  ||
         t == AccessoryEffectType.BleedOnAttack   ||
-        t == AccessoryEffectType.PoisonSpread;
+        t == AccessoryEffectType.PoisonSpread    ||
+        t == AccessoryEffectType.LightningStrike ||
+        t == AccessoryEffectType.ChainLightning  ||
+        t == AccessoryEffectType.RevengeArrow;
 
     public bool Has(AccessoryEffectType type) => owned.Contains(type);
 
@@ -324,6 +372,10 @@ public class AccessoryEffect : MonoBehaviour
             foreach (Enemy e in FindEnemiesAround(playerPos, slowOnHitRadius))
                 e.ApplyFreeze(slowOnHitFreezeTime);
         }
+
+        // 가시 목걸이 — 피격 시 8방향 화살 발사
+        if (Has(AccessoryEffectType.RevengeArrow))
+            FireRevengeArrows(playerPos);
     }
 
     // ───────────────────────────────────────────
@@ -377,24 +429,34 @@ public class AccessoryEffect : MonoBehaviour
         }
 
         // 재앙의 씨앗 — 적중 시 씨앗 심기 (3초 후 최대체력 5% 피해)
-        if (Has(AccessoryEffectType.CalamitySeed) && enemy != null && enemy.isLive)
+        if (Has(AccessoryEffectType.CalamitySeed) && enemy != null && enemy.IsLive)
         {
             if (!seedRoutines.ContainsKey(enemy) || seedRoutines[enemy] == null)
                 seedRoutines[enemy] = StartCoroutine(CalamitySeedRoutine(enemy));
         }
 
         // 부싯돌 — 공격 시 화상
-        if (Has(AccessoryEffectType.BurnOnAttack) && enemy != null && enemy.isLive)
+        if (Has(AccessoryEffectType.BurnOnAttack) && enemy != null && enemy.IsLive)
             enemy.ApplyBurn(burnDamagePerTick, burnTickInterval, burnDuration);
 
         // 메두사의 이빨 — 공격 시 독
-        if (Has(AccessoryEffectType.PoisonOnAttack) && enemy != null && enemy.isLive)
+        if (Has(AccessoryEffectType.PoisonOnAttack) && enemy != null && enemy.IsLive)
             enemy.ApplyPoison(poisonDamagePerTick, poisonTickInterval, poisonDuration);
 
         // 사막의 전갈 꼬리 — 확률 출혈
-        if (Has(AccessoryEffectType.BleedOnAttack) && enemy != null && enemy.isLive)
+        if (Has(AccessoryEffectType.BleedOnAttack) && enemy != null && enemy.IsLive)
             if (Random.value < bleedChance)
                 enemy.ApplyBleed(bleedDamagePerTick, bleedTickInterval, bleedDuration);
+
+        // 번개 맞은 나뭇가지 — 확률 낙뢰 (적중 위치 주변 광역 피해)
+        if (Has(AccessoryEffectType.LightningStrike) && enemy != null && enemy.IsLive)
+            if (Random.value < lightningChance)
+                TriggerLightning(enemy.transform.position, lightningDamage, lightningRadius, null);
+
+        // 에키드나의 목걸이 — 확률 연쇄 번개
+        if (Has(AccessoryEffectType.ChainLightning) && enemy != null && enemy.IsLive)
+            if (Random.value < chainLightningChance)
+                TriggerChainLightning(enemy, chainLightningDamage, chainLightningCount);
     }
 
     // ───────────────────────────────────────────
@@ -628,7 +690,7 @@ public class AccessoryEffect : MonoBehaviour
     IEnumerator CalamitySeedRoutine(Enemy enemy)
     {
         yield return new WaitForSeconds(3f);
-        if (enemy != null && enemy.isLive)
+        if (enemy != null && enemy.IsLive)
         {
             float dmg = enemy.maxHealth * 0.05f;
             enemy.TakeDamage(dmg);
@@ -636,6 +698,130 @@ public class AccessoryEffect : MonoBehaviour
         }
         if (seedRoutines.ContainsKey(enemy))
             seedRoutines.Remove(enemy);
+    }
+
+    // ───────────────────────────────────────────
+    //  낙뢰 / 연쇄 번개 / 복수 화살
+    // ───────────────────────────────────────────
+
+    /// <summary>낙뢰 — 지정 위치 주변 적에게 광역 피해 + 이펙트</summary>
+    void TriggerLightning(Vector3 pos, float damage, float radius, Enemy exclude)
+    {
+        // 이펙트 소환
+        if (lightningEffectPrefab != null)
+            StartCoroutine(SpawnEffectRoutine(lightningEffectPrefab, pos, lightningEffectTime, lightningEffectScale));
+
+        foreach (Enemy e in FindEnemiesAround(pos, radius))
+        {
+            if (e == exclude) continue;
+            e.TakeDamage(damage);
+        }
+        Debug.Log($"[AccessoryEffect] 낙뢰 발동 — {damage:F0} 피해 (반경 {radius}m)");
+    }
+
+    /// <summary>연쇄 번개 — 첫 적부터 가까운 적으로 count회 연쇄 + 이펙트</summary>
+    void TriggerChainLightning(Enemy first, float damage, int count)
+    {
+        Enemy current = first;
+        var hit = new HashSet<Enemy> { first };
+        first.TakeDamage(damage);
+
+        // 첫 번째 이펙트
+        if (chainLightningEffectPrefab != null)
+            StartCoroutine(SpawnEffectRoutine(chainLightningEffectPrefab, first.transform.position, chainLightningEffectTime, chainLightningEffectScale));
+
+        for (int i = 1; i < count; i++)
+        {
+            Enemy next = null;
+            float minDist = float.MaxValue;
+
+            foreach (Enemy e in FindEnemiesAround(current.transform.position, chainLightningRadius))
+            {
+                if (hit.Contains(e)) continue;
+                float dist = Vector3.Distance(current.transform.position, e.transform.position);
+                if (dist < minDist) { minDist = dist; next = e; }
+            }
+
+            if (next == null) break;
+            next.TakeDamage(damage * (1f - i * 0.1f)); // 연쇄마다 10% 감쇠
+            hit.Add(next);
+
+            // 연쇄 이펙트
+            if (chainLightningEffectPrefab != null)
+                StartCoroutine(SpawnEffectRoutine(chainLightningEffectPrefab, next.transform.position, chainLightningEffectTime, chainLightningEffectScale));
+
+            current = next;
+        }
+        Debug.Log($"[AccessoryEffect] 연쇄 번개 — {hit.Count}마리 적중");
+    }
+
+    /// <summary>가시 목걸이 — 피격 시 n방향 화살 발사 (WeaponInstance 없이 직접 피해)</summary>
+    void FireRevengeArrows(Vector3 from)
+    {
+        if (PlayerStats.Instance == null) return;
+
+        float baseDamage = PlayerStats.Instance.AttackPower * revengeArrowDamageRatio;
+        float angleStep  = 360f / revengeArrowCount;
+
+        for (int i = 0; i < revengeArrowCount; i++)
+        {
+            float   angle = i * angleStep * Mathf.Deg2Rad;
+            Vector2 dir   = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            StartCoroutine(ArrowRoutine(from, dir, baseDamage));
+        }
+    }
+
+    IEnumerator ArrowRoutine(Vector3 startPos, Vector2 dir, float damage)
+    {
+        float elapsed  = 0f;
+        float duration = revengeArrowRange / revengeArrowSpeed;
+        Vector3 pos    = startPos;
+        var hit = new HashSet<Enemy>();
+
+        // 화살 이펙트 오브젝트 소환
+        GameObject arrowFx = null;
+        if (revengeArrowEffectPrefab != null)
+        {
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            arrowFx = Instantiate(revengeArrowEffectPrefab, pos, Quaternion.Euler(0, 0, angle));
+            arrowFx.transform.localScale = Vector3.one * 5f;
+        }
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            pos     += (Vector3)(dir * revengeArrowSpeed * Time.deltaTime);
+
+            // 이펙트 위치 갱신
+            if (arrowFx != null)
+                arrowFx.transform.position = pos;
+
+            // 이동 경로에서 적 감지
+            Collider2D[] cols = Physics2D.OverlapCircleAll(pos, 0.3f);
+            foreach (Collider2D col in cols)
+            {
+                Enemy e = col.GetComponent<Enemy>();
+                if (e != null && e.IsLive && !hit.Contains(e))
+                {
+                    e.TakeDamage(damage);
+                    hit.Add(e);
+                }
+            }
+            yield return null;
+        }
+
+        // 화살 이펙트 제거
+        if (arrowFx != null)
+            Destroy(arrowFx);
+    }
+
+    /// <summary>이펙트 프리팹을 소환하고 일정 시간 후 제거</summary>
+    IEnumerator SpawnEffectRoutine(GameObject prefab, Vector3 pos, float duration, float scale = 1f)
+    {
+        GameObject fx = Instantiate(prefab, pos, Quaternion.identity);
+        fx.transform.localScale = Vector3.one * scale;
+        yield return new WaitForSeconds(duration);
+        if (fx != null) Destroy(fx);
     }
 
     // ───────────────────────────────────────────
