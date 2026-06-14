@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// 활/화살과 같은 직선 투사체 계열 무기의 움직임과 파괴 로직을 담당하는 클래스

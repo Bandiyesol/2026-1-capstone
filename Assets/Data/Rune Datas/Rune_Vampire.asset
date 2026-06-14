@@ -16,8 +16,8 @@ MonoBehaviour:
   category: 1
   runeType: 7
   runeIcon: {fileID: 0}
-  runeDescription: 
-  runeDesc: 
+  runeDescription: "\uC801\uC5D0\uAC8C \uAC00\uD55C \uD53C\uD574\uC758 \uC77C\uBD80\uB97C \uC0DD\uBA85\uB825\uC73C\uB85C \uD9A1\uC218\uD569\uB2C8\uB2E4. [\uD2B8\uB9AC\uAC70]"
+  runeDesc: "[\uD9A1\uC218\uC728] \uD53C\uD574\uB7C9\uC758 power 30% \uBE44\uC728\uB85C \uD68C\uBCF5 / [\uC8FC\uAE30] interval \uCD08 \uB2E8\uC704\uB85C \uBC1C\uB3D9"
   isDestroyed: 0
   power: 0.3
   cooldownPenalty: 0

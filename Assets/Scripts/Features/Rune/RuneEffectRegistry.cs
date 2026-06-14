@@ -23,7 +23,6 @@ public static class RuneEffectRegistry
 		{ RuneType.Gravity, typeof(EffectGravity) },
 		{ RuneType.Growth, typeof(EffectGrowth) },
 		{ RuneType.Blink, typeof(EffectBlink) },
-		{ RuneType.Boing, typeof(EffectBoing) },
 	};
 
 	public static bool TryGetEffectType(RuneType runeType, out Type effectType) =>

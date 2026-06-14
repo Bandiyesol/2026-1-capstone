@@ -11,7 +11,7 @@ public class EffectFreeze : RuneEffect, ITriggerEffect
 
 	public void OnReflect(Collider2D collision)
 	{
-		if (!isReady || collision.GetComponent<IDamageable>() == null)
+		if (!isReady || !TryGetDamageable(collision, out _))
 			return;
 
 		float radius = RuneDataAccess.GetFreezeRadius(data);
@@ -19,11 +19,7 @@ public class EffectFreeze : RuneEffect, ITriggerEffect
 		if (radius <= 0f || duration <= 0f)
 			return;
 
-		Collider2D[] enemies = Physics2D.OverlapCircleAll(
-			collision.transform.position,
-			radius,
-			LayerMask.GetMask("Enemy")
-		);
+		Collider2D[] enemies = FindEnemyColliders(collision.transform.position, radius);
 
 		foreach (Collider2D enemyCollider in enemies)
 		{

@@ -77,14 +77,17 @@ public class EffectSplit : RuneEffect, ITriggerEffect
 		// 자식은 데미지가 반감됨 (power 값이 있으면 그 값 사용, 없으면 0.5배)
 		childInstance.damage *= data.power > 0 ? data.power : 0.5f;
 
-		GameObject prefab = WeaponManager.Instance.GetMotionPrefab(weapon.info.motionId);
+		GameObject prefab = WeaponManager.Instance != null
+			? WeaponManager.Instance.GetMotionPrefab(weapon.info.motionId)
+			: null;
 		Motion childMotion = PoolManager.Instance != null
-			? PoolManager.Instance.SpawnMotion(weapon.info.motionId, transform.position, Quaternion.Euler(0f, 0f, angleZ))
+			? PoolManager.Instance.SpawnMotion(weapon.info.motionId, transform.position, Quaternion.Euler(0f, 0f, angleZ), activateImmediately: false)
 			: null;
 
-		if (childMotion == null)
+		if (childMotion == null && prefab != null)
 		{
 			GameObject clone = Instantiate(prefab, transform.position, Quaternion.Euler(0f, 0f, angleZ));
+			clone.SetActive(false);
 			childMotion = clone.GetComponent<Motion>();
 		}
 
@@ -92,5 +95,6 @@ public class EffectSplit : RuneEffect, ITriggerEffect
 			return;
 
 		childMotion.Initialize(childInstance, childRunes, parentMotion.GetRemainingLife());
+		childMotion.gameObject.SetActive(true);
 	}
 }

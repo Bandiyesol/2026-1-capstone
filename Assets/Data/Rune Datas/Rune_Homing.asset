@@ -16,8 +16,8 @@ MonoBehaviour:
   category: 0
   runeType: 4
   runeIcon: {fileID: 0}
-  runeDescription: 
-  runeDesc: 
+  runeDescription: "\uBC1C\uC0AC\uB41C \uBB34\uAE30\uAC00 \uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uC801\uC744 \uD5A5\uD574 \uBC29\uD5A5\uC744 \uD2C0\uBA70 \uCD94\uC801\uD569\uB2C8\uB2E4. [\uC561\uD2F0\uBE0C]"
+  runeDesc: "[\uC720\uB3C4 \uC2DC\uAC04] 3\uCD08\n[\uD0D0\uC0C9 \uBC18\uACBD] affectedRange \uAC12\n[\uD68C\uC804 \uC18D\uB3C4] speedMultiplier \u00D7 180 \uB3C4/\uCD08"
   isDestroyed: 0
   power: 0
   cooldownPenalty: 0
@@ -27,4 +27,4 @@ MonoBehaviour:
   valueB: 1
   duration: 3
   speedMultiplier: 2
-  affectedRange: 6
+  affectedRange: 8

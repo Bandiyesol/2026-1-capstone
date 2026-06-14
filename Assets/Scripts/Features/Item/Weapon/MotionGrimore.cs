@@ -11,7 +11,7 @@ public class MotionGrimore : Motion
 	{
 		if (PlayerStats.Instance != null) owner = PlayerStats.Instance.transform;
 		orbitAngle = Random.Range(0f, 360f);
-		orbitRadius = Mathf.Max(0.7f, instance.reach * 0.3f);
+		orbitRadius = Mathf.Max(1.0f, instance.reach * 0.45f);
 	}
 
 	protected override float GetDefaultTime() => instance.spawntime;
@@ -33,7 +33,7 @@ public class MotionGrimore : Motion
 			return;
 		}
 
-		orbitAngle += Mathf.Max(90f, instance.movespeed * 90f) * Time.deltaTime;
+		orbitAngle += Mathf.Max(30f, instance.movespeed * 25f) * Time.deltaTime;
 		float radian = orbitAngle * Mathf.Deg2Rad;
 		Vector3 offset = new Vector3(Mathf.Cos(radian), Mathf.Sin(radian), 0f) * orbitRadius;
 		transform.position = owner.position + offset;

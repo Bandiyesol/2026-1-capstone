@@ -1,47 +1,10 @@
 using UnityEngine;
 
-public class MotionHammer : Motion
+/// <summary>
+/// 내려찍기 애니메이션을 재생하는 망치 모션입니다.
+/// 클립에서는 망치 타격과 바닥 균열 이펙트를 함께 키프레임으로 넣습니다.
+/// </summary>
+public class MotionHammer : MotionAnimatedMelee
 {
-	const float SlamDurationRatio = 0.25f;
-	const float SlamScaleBonus = 0.25f;
-	const float ForwardReachRatio = 0.2f;
-
-	Vector3 startPosition;
-	Vector3 baseScale;
-	float elapsed;
-
-	protected override void OnStartMotion()
-	{
-		elapsed = 0f;
-		startPosition = transform.position;
-		baseScale = transform.localScale;
-	}
-
-	protected override float GetDefaultTime() => instance.spawntime;
-
-	protected override bool ShouldDestroyOnHit() => false;
-
-	protected override void UpdateMovement()
-	{
-		base.UpdateMovement();
-
-		if (instance == null)
-			return;
-
-		elapsed += Time.deltaTime;
-
-		float slamDuration = Mathf.Max(0.08f, instance.spawntime * SlamDurationRatio);
-		float t = Mathf.Clamp01(elapsed / slamDuration);
-		float pulse = 1f + Mathf.Sin(t * Mathf.PI) * SlamScaleBonus;
-
-		transform.localScale = baseScale * pulse;
-		transform.position = startPosition + transform.right * (instance.reach * ForwardReachRatio * t);
-	}
-
-	public override void ResetForPool()
-	{
-		base.ResetForPool();
-		elapsed = 0f;
-		transform.localScale = baseScale == Vector3.zero ? transform.localScale : baseScale;
-	}
+	protected override string AttackStateName => "effect_hammer";
 }

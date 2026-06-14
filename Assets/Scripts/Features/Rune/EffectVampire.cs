@@ -11,14 +11,20 @@ public class EffectVampire : RuneEffect, ITriggerEffect
 
 	public void OnReflect(Collider2D collision)
 	{
-		if (!isReady || collision.GetComponent<IDamageable>() == null)
+		if (!isReady || !TryGetDamageable(collision, out _))
 			return;
 
 		float healAmount = DamageCalculator.CalculateBaseDamage(weapon, data);
 
 		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
 		if (stats != null)
+		{
+			float beforeHeal = stats.CurrentHP;
 			stats.Heal(healAmount);
+#if UNITY_EDITOR
+			Debug.Log($"[Vampire] Heal {stats.CurrentHP - beforeHeal:0.##}/{healAmount:0.##}");
+#endif
+		}
 
 		ResetCooltime();
 	}
