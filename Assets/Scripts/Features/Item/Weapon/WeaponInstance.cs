@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -81,11 +81,20 @@ public class WeaponInstance
 	{
 		timer += dlt;
 
-		if (timer >= cooltime)
+		// [PlayerStats 연동] AttackSpeed는 쿨타임 배율 (기본 1.0, 낮을수록 빠름)
+		float effectiveCooltime = cooltime * ResolveAttackSpeedMultiplier();
+
+		if (timer >= effectiveCooltime)
 		{
 			Attack(playerPos);
 			timer = 0;
 		}
+	}
+
+	static float ResolveAttackSpeedMultiplier()
+	{
+		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
+		return stats != null ? stats.AttackSpeed : 1f;
 	}
 
 	/// <summary>
@@ -192,6 +201,48 @@ public class WeaponInstance
 		}
 
 		WeaponInstance cloneInstance = new WeaponInstance(this);
+
+		// [PlayerStats 연동] 매 공격마다 최신 스탯을 복제본에 반영 (원본 스탯은 보존)
+		ApplyPlayerStats(cloneInstance);
+
 		motion.Initialize(cloneInstance, activeRunes);
+	}
+
+	/// <summary>
+	/// 악세사리 등으로 변한 PlayerStats를 무기 복제본에 배율로 적용합니다.
+	/// - ProjectileSpeed → 투사체 속도(movespeed)
+	/// - ProjectileRange → 원거리 무기 사거리(reach)
+	/// - MeleeRange      → 근접 무기 범위(reach)
+	/// ※ AttackPower / 치명타는 Motion → DamageCalculator에서 이미 반영됨
+	/// </summary>
+	void ApplyPlayerStats(WeaponInstance clone)
+	{
+		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
+		if (stats == null) return;
+
+		// 투사체 속도 배율 (기본 1.0)
+		clone.movespeed *= stats.ProjectileSpeed;
+
+		// 무기 타입별 사거리 배율 적용
+		switch (info.type)
+		{
+			// 근접 계열 → MeleeRange
+			case "Sword":
+			case "Hammer":
+			case "Sickle":
+			case "Grimore":
+			case "Orb":
+				clone.reach *= stats.MeleeRange;
+				break;
+
+			// 원거리 계열 → ProjectileRange
+			case "Bow":
+			case "Gun":
+			case "Whip":
+			case "Boomerang":
+			case "Staff":
+				clone.reach *= stats.ProjectileRange;
+				break;
+		}
 	}
 }

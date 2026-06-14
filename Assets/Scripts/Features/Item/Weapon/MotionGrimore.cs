@@ -22,6 +22,9 @@ public class MotionGrimore : Motion
 	protected override void UpdateMovement()
 	{
 		base.UpdateMovement();
+
+		// 수명 종료로 파괴됐다면 instance가 null이므로 즉시 중단
+		if (IsDestroyed) return;
 		if (currentActiveRune != null) return;
 
 		if (owner == null)

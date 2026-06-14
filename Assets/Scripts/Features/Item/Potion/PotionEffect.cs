@@ -1,92 +1,64 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
-/// 물약 효과를 실제로 실행하는 클래스.
-/// 상점에서 구매 확정 시 PotionEffect.instance.Use(data)를 호출하면 된다.
-/// 버프 물약은 코루틴으로 시간이 지나면 자동 해제.
+/// 물약 효과 실행 클래스.
+/// 상점에서 구매 시 pendingTypes에 등록 (즉시 적용 안 함).
+/// 포탈 통과 → NextStage() → OnStageChanged()에서 현재 버프 해제 후 대기 목록 적용.
 /// </summary>
 public class PotionEffect : MonoBehaviour
 {
     public static PotionEffect instance;
 
-    // ── 공격 버프 수치 ──────────────────────────
-    const float AttackPowerBonus   = 0.5f;  // +50%
-    const float AttackSpeedBonus   = 0.2f;  // +20%
-    const float AttackBuffDuration = 10f;
-
-    // ── 방어 버프 수치 ──────────────────────────
+    // ── 버프 수치 ────────────────────────────────
+    const float AttackPowerBonus      = 0.5f;  // +50%
+    const float AttackSpeedBonus      = 0.2f;  // +20%
     const float DamageReductionBonus  = 0.5f;  // +50%
-    const float DefenseBuffDuration   = 10f;
+    const float MoveSpeedBonus        = 0.4f;  // +40%
+    const float EvasionBonus          = 0.2f;  // +20%
+    const float RuneCooldownMultiplier = 0.5f; // 쿨타임 절반
 
-    // ── 속도 버프 수치 ──────────────────────────
-    const float MoveSpeedBonus     = 0.4f;  // +40%
-    const float EvasionBonus       = 0.2f;  // +20%
-    const float SpeedBuffDuration  = 15f;
-
-    // ── 특수 버프 수치 ──────────────────────────
-    const float RuneCooldownMultiplier = 0.5f;  // 쿨타임 절반
-    const float RuneBuffDuration       = 10f;
-
-    // 중복 방지 플래그
+    // ── 현재 적용 중인 버프 ──────────────────────
     bool isAttackBuffActive;
     bool isDefenseBuffActive;
     bool isSpeedBuffActive;
     bool isRuneBuffActive;
 
+    // ── 구매 대기 목록 (포탈 통과 시 적용) ───────
+    readonly HashSet<PotionType> pendingTypes = new HashSet<PotionType>();
+
     void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
     }
 
     // ───────────────────────────────────────────
-    //  테스트용 키 입력 — 상점 구현 후 삭제
-    //  1: 체력 회복 / 2: 공격 버프 / 3: 방어 버프
-    //  4: 속도 버프 / 5: 룬 버프
-    // ───────────────────────────────────────────
-    void Update()
-    {
-        var kb = Keyboard.current;
-        if (kb == null) return;
-
-        if (kb.digit1Key.wasPressedThisFrame) Use(PotionType.HealthRestore);
-        if (kb.digit2Key.wasPressedThisFrame) Use(PotionType.AttackBuff);
-        if (kb.digit3Key.wasPressedThisFrame) Use(PotionType.DefenseBuff);
-        if (kb.digit4Key.wasPressedThisFrame) Use(PotionType.SpeedBuff);
-        if (kb.digit5Key.wasPressedThisFrame) Use(PotionType.RuneBuff);
-    }
-
-    // ───────────────────────────────────────────
-    //  외부 진입점 — 상점에서 이 메서드만 호출하면 됨
+    //  외부 진입점 — 상점에서 구매 확정 시 호출
+    //  즉시 적용하지 않고 대기 목록에 등록
     // ───────────────────────────────────────────
 
-    /// <summary>PotionData를 받아서 효과 실행. 상점 구매 확정 시 호출.</summary>
     public void Use(PotionData data)
     {
         if (data == null) return;
         Use(data.potionType);
     }
 
-    /// <summary>PotionType만으로 효과 실행.</summary>
     public void Use(PotionType type)
     {
-        switch (type)
+        // [악세사리 훅] 신비한 약병
+        AccessoryEffect.instance?.NotifyPotionUsed();
+
+        if (type == PotionType.HealthRestore)
         {
-            case PotionType.HealthRestore: UseHealthRestore();  break;
-            case PotionType.AttackBuff:    StartAttackBuff();   break;
-            case PotionType.DefenseBuff:   StartDefenseBuff();  break;
-            case PotionType.SpeedBuff:     StartSpeedBuff();    break;
-            case PotionType.RuneBuff:      StartRuneBuff();     break;
-            default:
-                Debug.LogWarning($"[PotionEffect] 알 수 없는 PotionType: {type}");
-                break;
+            // 체력 회복만 즉시 적용
+            UseHealthRestore();
+            return;
         }
+
+        // 나머지 버프는 대기 목록에 등록
+        pendingTypes.Add(type);
+        Debug.Log($"[PotionEffect] {type} 구매 완료 — 다음 스테이지 진입 시 적용");
     }
 
     // ───────────────────────────────────────────
@@ -101,112 +73,112 @@ public class PotionEffect : MonoBehaviour
     }
 
     // ───────────────────────────────────────────
-    //  공격 버프 (10초)
+    //  포탈 통과 시 — StageManager.NextStage()에서 호출
+    //  1. 현재 적용 중인 버프 해제
+    //  2. 대기 목록의 버프 적용
     // ───────────────────────────────────────────
-    void StartAttackBuff()
+    public void OnStageChanged()
     {
-        if (isAttackBuffActive) StopCoroutine(nameof(AttackBuffRoutine));
-        StartCoroutine(nameof(AttackBuffRoutine));
+        // 1단계: 현재 버프 해제
+        RemoveActiveBuffs();
+
+        // 2단계: 대기 목록 적용
+        foreach (PotionType type in pendingTypes)
+            ApplyBuff(type);
+
+        pendingTypes.Clear();
     }
 
-    IEnumerator AttackBuffRoutine()
+    void RemoveActiveBuffs()
     {
-        isAttackBuffActive = true;
-        if (PlayerStats.Instance == null) { isAttackBuffActive = false; yield break; }
-
-        PlayerStats.Instance.AddMulti(StatType.AttackPower, AttackPowerBonus);
-        PlayerStats.Instance.AddMulti(StatType.AttackSpeed, AttackSpeedBonus);
-        Debug.Log($"[PotionEffect] 공격 버프 시작 ({AttackBuffDuration}초)");
-
-        yield return new WaitForSeconds(AttackBuffDuration);
-
         if (PlayerStats.Instance != null)
         {
-            PlayerStats.Instance.AddMulti(StatType.AttackPower, -AttackPowerBonus);
-            PlayerStats.Instance.AddMulti(StatType.AttackSpeed, -AttackSpeedBonus);
+            if (isAttackBuffActive)
+            {
+                PlayerStats.Instance.AddMulti(StatType.AttackPower, -AttackPowerBonus);
+                PlayerStats.Instance.AddMulti(StatType.AttackSpeed, -AttackSpeedBonus);
+                isAttackBuffActive = false;
+                Debug.Log("[PotionEffect] 공격 버프 해제");
+            }
+
+            if (isDefenseBuffActive)
+            {
+                PlayerStats.Instance.AddFlat(StatType.DamageReduction, -DamageReductionBonus);
+                isDefenseBuffActive = false;
+                Debug.Log("[PotionEffect] 방어 버프 해제");
+            }
+
+            if (isSpeedBuffActive)
+            {
+                PlayerStats.Instance.AddMulti(StatType.MovementSpeed, -MoveSpeedBonus);
+                PlayerStats.Instance.AddMulti(StatType.Evasion, -EvasionBonus);
+                isSpeedBuffActive = false;
+                Debug.Log("[PotionEffect] 속도 버프 해제");
+            }
         }
-        Debug.Log("[PotionEffect] 공격 버프 종료");
-        isAttackBuffActive = false;
-    }
 
-    // ───────────────────────────────────────────
-    //  방어 버프 (10초)
-    // ───────────────────────────────────────────
-    void StartDefenseBuff()
-    {
-        if (isDefenseBuffActive) StopCoroutine(nameof(DefenseBuffRoutine));
-        StartCoroutine(nameof(DefenseBuffRoutine));
-    }
-
-    IEnumerator DefenseBuffRoutine()
-    {
-        isDefenseBuffActive = true;
-        if (PlayerStats.Instance == null) { isDefenseBuffActive = false; yield break; }
-
-        PlayerStats.Instance.AddFlat(StatType.DamageReduction, DamageReductionBonus);
-        Debug.Log($"[PotionEffect] 방어 버프 시작 ({DefenseBuffDuration}초)");
-
-        yield return new WaitForSeconds(DefenseBuffDuration);
-
-        if (PlayerStats.Instance != null)
-            PlayerStats.Instance.AddFlat(StatType.DamageReduction, -DamageReductionBonus);
-        Debug.Log("[PotionEffect] 방어 버프 종료");
-        isDefenseBuffActive = false;
-    }
-
-    // ───────────────────────────────────────────
-    //  속도 버프 (15초)
-    // ───────────────────────────────────────────
-    void StartSpeedBuff()
-    {
-        if (isSpeedBuffActive) StopCoroutine(nameof(SpeedBuffRoutine));
-        StartCoroutine(nameof(SpeedBuffRoutine));
-    }
-
-    IEnumerator SpeedBuffRoutine()
-    {
-        isSpeedBuffActive = true;
-        if (PlayerStats.Instance == null) { isSpeedBuffActive = false; yield break; }
-
-        PlayerStats.Instance.AddMulti(StatType.MovementSpeed, MoveSpeedBonus);
-        PlayerStats.Instance.AddMulti(StatType.Evasion, EvasionBonus);
-        Debug.Log($"[PotionEffect] 속도 버프 시작 ({SpeedBuffDuration}초)");
-
-        yield return new WaitForSeconds(SpeedBuffDuration);
-
-        if (PlayerStats.Instance != null)
+        if (isRuneBuffActive && RuneManager.instance != null)
         {
-            PlayerStats.Instance.AddMulti(StatType.MovementSpeed, -MoveSpeedBonus);
-            PlayerStats.Instance.AddMulti(StatType.Evasion, -EvasionBonus);
-        }
-        Debug.Log("[PotionEffect] 속도 버프 종료");
-        isSpeedBuffActive = false;
-    }
-
-    // ───────────────────────────────────────────
-    //  특수 버프 — 룬 쿨타임 절반 (10초)
-    // ───────────────────────────────────────────
-    void StartRuneBuff()
-    {
-        if (isRuneBuffActive) StopCoroutine(nameof(RuneBuffRoutine));
-        StartCoroutine(nameof(RuneBuffRoutine));
-    }
-
-    IEnumerator RuneBuffRoutine()
-    {
-        isRuneBuffActive = true;
-
-        if (RuneManager.instance != null)
-            RuneManager.instance.CooldownMultiplier = RuneCooldownMultiplier;
-
-        Debug.Log($"[PotionEffect] 룬 버프 시작 — 쿨타임 x{RuneCooldownMultiplier} ({RuneBuffDuration}초)");
-
-        yield return new WaitForSeconds(RuneBuffDuration);
-
-        if (RuneManager.instance != null)
             RuneManager.instance.CooldownMultiplier = 1f;
-
-        Debug.Log("[PotionEffect] 룬 버프 종료");
-        isRuneBuffActive = false;
+            isRuneBuffActive = false;
+            Debug.Log("[PotionEffect] 룬 버프 해제");
+        }
     }
+
+    void ApplyBuff(PotionType type)
+    {
+        if (PlayerStats.Instance == null) return;
+
+        switch (type)
+        {
+            case PotionType.AttackBuff:
+                PlayerStats.Instance.AddMulti(StatType.AttackPower, AttackPowerBonus);
+                PlayerStats.Instance.AddMulti(StatType.AttackSpeed, AttackSpeedBonus);
+                isAttackBuffActive = true;
+                Debug.Log("[PotionEffect] 공격 버프 적용");
+                break;
+
+            case PotionType.DefenseBuff:
+                PlayerStats.Instance.AddFlat(StatType.DamageReduction, DamageReductionBonus);
+                isDefenseBuffActive = true;
+                Debug.Log("[PotionEffect] 방어 버프 적용");
+                break;
+
+            case PotionType.SpeedBuff:
+                PlayerStats.Instance.AddMulti(StatType.MovementSpeed, MoveSpeedBonus);
+                PlayerStats.Instance.AddMulti(StatType.Evasion, EvasionBonus);
+                isSpeedBuffActive = true;
+                Debug.Log("[PotionEffect] 속도 버프 적용");
+                break;
+
+            case PotionType.RuneBuff:
+                if (RuneManager.instance != null)
+                    RuneManager.instance.CooldownMultiplier = RuneCooldownMultiplier;
+                isRuneBuffActive = true;
+                Debug.Log("[PotionEffect] 룬 버프 적용");
+                break;
+        }
+    }
+
+    // ───────────────────────────────────────────
+    //  게임 오버/재시작 시 완전 초기화
+    // ───────────────────────────────────────────
+    public void ClearAllBuffs()
+    {
+        RemoveActiveBuffs();
+        pendingTypes.Clear();
+    }
+
+    /// <summary>현재 특정 버프가 적용 중인지 확인.</summary>
+    public bool IsBuffActive(PotionType type) => type switch
+    {
+        PotionType.AttackBuff  => isAttackBuffActive,
+        PotionType.DefenseBuff => isDefenseBuffActive,
+        PotionType.SpeedBuff   => isSpeedBuffActive,
+        PotionType.RuneBuff    => isRuneBuffActive,
+        _                      => false
+    };
+
+    /// <summary>특정 물약이 구매 대기 중인지 확인 (UI 표시용).</summary>
+    public bool IsPending(PotionType type) => pendingTypes.Contains(type);
 }

@@ -43,6 +43,9 @@ public abstract class Motion : MonoBehaviour
 	// 파괴가 여러 번 호출되어 에러가 발생하는 것을 막기 위한 중복 방지 플래그
 	private bool isDestroyRequested = false;
 
+	// 자식 클래스에서 파괴 여부를 확인할 수 있는 프로퍼티 (파괴 후 instance 접근 방지)
+	protected bool IsDestroyed => isDestroyRequested || instance == null;
+
 	/// <summary>
 	/// 무기가 생성될 때 최초로 호출되어 스탯과 룬을 세팅합니다.
 	/// </summary>
@@ -87,7 +90,12 @@ public abstract class Motion : MonoBehaviour
 
 		// 생존 시간이 0 이하가 되면 무기 고유 로직에 의한 파괴 요청
 		if (life <= 0f)
+		{
 			RequestDestroy(DestroyReason.WeaponLogic);
+
+			// 파괴가 실제로 진행되어 풀로 반환됐다면 (instance = null) 이후 로직 즉시 중단
+			if (IsDestroyed) return;
+		}
 
 		// 투사체 이동 처리 (활 등에서 오버라이드 됨)
 		UpdateMovement();
