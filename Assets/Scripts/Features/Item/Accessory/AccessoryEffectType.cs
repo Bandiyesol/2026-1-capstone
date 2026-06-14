@@ -35,6 +35,8 @@ public enum AccessoryEffectType
     ElementStack,       // 원소의 조율자      : 속성 중첩 버프
 
     // ── 유니크 ─────────────────────────────────────
+    Explosion,          // 폭탄광 : 공격 시 광역 폭발
+    BossArrow,          // 신기한 화살 : 보스 방향 안내 화살표
     RuneMaxEffect,      // 대마법사의 부서진 지팡이
     BloodContract,      // 피의 계약서
     DimensionCompass,   // 차원의 나침반

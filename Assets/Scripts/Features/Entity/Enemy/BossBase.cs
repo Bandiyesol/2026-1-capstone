@@ -161,6 +161,9 @@ public class BossBase : MonoBehaviour, IDamageable
 
         waveManager?.OnEnemyDead();
 
+        // [악세사리 훅] 신기한 화살 — 보스 사망 알림
+        AccessoryEffect.instance?.NotifyBossDead();
+
         rigid.linearVelocity = Vector2.zero;
         canMove = false;
 

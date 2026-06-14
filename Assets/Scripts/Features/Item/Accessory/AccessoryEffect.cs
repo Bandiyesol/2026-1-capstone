@@ -145,6 +145,57 @@ public class AccessoryEffect : MonoBehaviour
     readonly System.Collections.Generic.Dictionary<Enemy,Coroutine> seedRoutines
         = new System.Collections.Generic.Dictionary<Enemy,Coroutine>();
 
+    // BossArrow (신기한 화살 — 보스 방향 안내)
+    [Header("[ BossArrow — 신기한 화살 ]")]
+    GameObject bossArrowPrefab;
+    GameObject bossArrowInstance;
+    [HideInInspector] public Transform bossTarget;
+    [Tooltip("화살표 플레이어로부터 거리")] public float bossArrowDistance = 1.5f;
+
+    // SkeletonOnKill (흑마법의 인장 — 처치 시 주변 적 이동속도 감소)
+    [Header("[ SkeletonOnKill — 흑마법의 인장 ]")]
+    [Tooltip("이동속도 감소율 (0.2 = 20%)")] public float skeletonSlowRatio    = 0.2f;
+    [Tooltip("감소 지속 시간(초)")]           public float skeletonSlowDuration = 3f;
+    [Tooltip("범위")]                         public float skeletonSlowRadius   = 5f;
+
+    // ShadowTracker (투명 망토)
+    Coroutine shadowTrackerRoutine;
+    [Header("[ ShadowTracker — 투명 망토 ]")]
+    [Tooltip("은신 지속 시간(초)")] public float shadowTrackerDuration = 1f;
+    [Tooltip("은신 중 알파값 (0=완전투명)")] public float shadowTrackerAlpha = 0.3f;
+
+    // Explosion (폭탄광)
+    [Header("[ Explosion — 폭탄광 ]")]
+    GameObject explosionEffectPrefab;
+    [Tooltip("폭발 발동 확률 (0.2 = 20%)")] public float explosionChance  = 0.2f;
+    [Tooltip("폭발 피해")]                   public float explosionDamage  = 50f;
+    [Tooltip("폭발 범위")]                   public float explosionRadius  = 3f;
+    [Tooltip("폭발 이펙트 지속 시간")]       public float explosionEffectTime = 0.5f;
+    [Tooltip("폭발 이펙트 크기")]            public float explosionEffectScale = 3f;
+
+    // ShadowClone
+    [Header("[ ShadowClone — 그림자 가면 ]")]
+    GameObject shadowClonePrefab;
+    [HideInInspector] public GameObject shadowCloneInstance;
+    readonly HashSet<GameObject> homingBullets = new HashSet<GameObject>(); // 유도 중인 탄환
+    [Tooltip("분신 이동 딜레이")] public float shadowCloneDelay = 0.15f;
+    [Tooltip("분신 공격 발동 확률 (0.25 = 25%)")] public float shadowCloneAttackChance = 0.25f;
+    Vector3 shadowCloneTargetPos;
+
+    // SoulBullet
+    [Header("[ SoulBullet — 영혼의 등불 ]")]
+    GameObject soulBulletPrefab;
+    [Tooltip("영혼 탄환 개수")]          public int   soulBulletCount       = 3;
+    [Tooltip("궤도 반경")]               public float soulBulletOrbitRadius  = 2f;
+    [Tooltip("궤도 회전 속도 (도/초)")]  public float soulBulletOrbitSpeed   = 180f;
+    [Tooltip("유도 전환까지 시간(초)")]  public float soulBulletHomingDelay  = 5f;
+    [Tooltip("유도 이동 속도")]          public float soulBulletHomingSpeed  = 8f;
+    [Tooltip("유도 피해")]               public float soulBulletDamage       = 300f;
+    [Tooltip("탄환 재소환 주기(초)")]    public float soulBulletRespawnTime  = 8f;
+    readonly List<GameObject> soulBullets = new List<GameObject>();
+    float soulBulletAngleOffset = 0f;
+    Coroutine soulBulletRoutine;
+
     // LightningStrike / ChainLightning
     [Header("[ LightningStrike — 번개 맞은 나뭇가지 ]")]
     // Resources/Effects/LightningEffect 에서 자동 로드
@@ -159,15 +210,22 @@ public class AccessoryEffect : MonoBehaviour
     // Resources/Effects/ChainLightningEffect 에서 자동 로드
     GameObject chainLightningEffectPrefab;
 
-    [Header("[ RevengeArrow — 가시 목걸이 ]")]
+    [Header("[ DuplicateBullet — 랜턴 ]")]
+    [Tooltip("투사체 복제 확률 (0.1 = 10%)")] public float duplicateBulletChance = 0.1f;
+
+    [Header("[ RevengeArrow — 가시 목걸이 / 마법의 구 ]")]
     // Resources/Effects/RevengeArrowEffect 에서 자동 로드
     GameObject revengeArrowEffectPrefab;
+    // Resources/Effects/MagicOrbEffect 에서 자동 로드
+    GameObject magicOrbEffectPrefab;
     [Tooltip("연쇄 번개 발동 확률")]      public float chainLightningChance   = 0.15f;
     [Tooltip("연쇄 번개 피해")]           public float chainLightningDamage   = 15f;
     [Tooltip("연쇄 최대 횟수")]           public int   chainLightningCount    = 3;
     [Tooltip("연쇄 탐색 범위")]           public float chainLightningRadius   = 5f;
     [Tooltip("연쇄 번개 이펙트 지속 시간")] public float chainLightningEffectTime = 0.4f;
     [Tooltip("연쇄 번개 이펙트 크기")]      public float chainLightningEffectScale = 5f;
+
+    [Header("[ DuplicateBullet — 랜턴 ]")]
 
     [Header("[ RevengeArrow — 가시 목걸이 ]")]
     [Tooltip("피격 시 발사할 화살 개수")] public int   revengeArrowCount      = 8;
@@ -192,6 +250,26 @@ public class AccessoryEffect : MonoBehaviour
         revengeArrowEffectPrefab = Resources.Load<GameObject>("Effects/RevengeArrowEffect");
         if (revengeArrowEffectPrefab == null)
             Debug.LogWarning("[AccessoryEffect] Effects/RevengeArrowEffect 프리팹을 찾을 수 없습니다.");
+
+        explosionEffectPrefab = Resources.Load<GameObject>("Effects/ExplosionEffect");
+        if (explosionEffectPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/ExplosionEffect 프리팹을 찾을 수 없습니다.");
+
+        bossArrowPrefab = Resources.Load<GameObject>("Effects/BossArrowEffect");
+        if (bossArrowPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/BossArrowEffect 프리팹을 찾을 수 없습니다.");
+
+        shadowClonePrefab = Resources.Load<GameObject>("Effects/ShadowCloneEffect");
+        if (shadowClonePrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/ShadowCloneEffect 프리팹을 찾을 수 없습니다.");
+
+        soulBulletPrefab = Resources.Load<GameObject>("Effects/SoulBulletEffect");
+        if (soulBulletPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/SoulBulletEffect 프리팹을 찾을 수 없습니다.");
+
+        magicOrbEffectPrefab = Resources.Load<GameObject>("Effects/MagicOrbEffect");
+        if (magicOrbEffectPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/MagicOrbEffect 프리팹을 찾을 수 없습니다.");
     }
 
     // ───────────────────────────────────────────
@@ -272,6 +350,39 @@ public class AccessoryEffect : MonoBehaviour
                 }
                 break;
 
+            case AccessoryEffectType.DuplicateBullet:
+                // WeaponInstance.Attack()에서 직접 체크
+                break;
+
+            case AccessoryEffectType.Explosion:
+                // NotifyEnemyHit에서 처리
+                break;
+
+            case AccessoryEffectType.BossArrow:
+                // NotifyBossSpawn/NotifyBossDead에서 처리
+                break;
+
+            case AccessoryEffectType.ShadowTracker:
+                // NotifyEvasionSuccess에서 처리
+                break;
+
+            case AccessoryEffectType.SkeletonOnKill:
+                // NotifyEnemyKilled에서 처리
+                break;
+
+            case AccessoryEffectType.ShadowClone:
+                if (!owned.Contains(AccessoryEffectType.ShadowClone))
+                    SpawnShadowClone();
+                break;
+
+            case AccessoryEffectType.SoulBullet:
+                if (!owned.Contains(AccessoryEffectType.SoulBullet))
+                {
+                    if (soulBulletRoutine != null) StopCoroutine(soulBulletRoutine);
+                    soulBulletRoutine = StartCoroutine(SoulBulletRoutine());
+                }
+                break;
+
             case AccessoryEffectType.LightningStrike:
             case AccessoryEffectType.ChainLightning:
             case AccessoryEffectType.RevengeArrow:
@@ -313,6 +424,13 @@ public class AccessoryEffect : MonoBehaviour
         t == AccessoryEffectType.PoisonOnAttack  ||
         t == AccessoryEffectType.BleedOnAttack   ||
         t == AccessoryEffectType.PoisonSpread    ||
+        t == AccessoryEffectType.DuplicateBullet   ||
+        t == AccessoryEffectType.Explosion          ||
+        t == AccessoryEffectType.BossArrow          ||
+        t == AccessoryEffectType.ShadowTracker      ||
+        t == AccessoryEffectType.SkeletonOnKill     ||
+        t == AccessoryEffectType.ShadowClone        ||
+        t == AccessoryEffectType.SoulBullet         ||
         t == AccessoryEffectType.LightningStrike ||
         t == AccessoryEffectType.ChainLightning  ||
         t == AccessoryEffectType.RevengeArrow;
@@ -448,6 +566,22 @@ public class AccessoryEffect : MonoBehaviour
             if (Random.value < bleedChance)
                 enemy.ApplyBleed(bleedDamagePerTick, bleedTickInterval, bleedDuration);
 
+        // 폭탄광 — 20% 확률 광역 폭발
+        if (Has(AccessoryEffectType.Explosion) && enemy != null && enemy.IsLive)
+        {
+            if (Random.value < explosionChance)
+            {
+                Vector3 pos = enemy.transform.position;
+                // 폭발 이펙트 소환
+                if (explosionEffectPrefab != null)
+                    StartCoroutine(SpawnEffectRoutine(explosionEffectPrefab, pos, explosionEffectTime, explosionEffectScale));
+                // 광역 피해
+                foreach (Enemy e in FindEnemiesAround(pos, explosionRadius))
+                    e.TakeDamage(explosionDamage);
+                Debug.Log("[AccessoryEffect] 폭탄광 — 폭발!");
+            }
+        }
+
         // 번개 맞은 나뭇가지 — 확률 낙뢰 (적중 위치 주변 광역 피해)
         if (Has(AccessoryEffectType.LightningStrike) && enemy != null && enemy.IsLive)
             if (Random.value < lightningChance)
@@ -473,6 +607,15 @@ public class AccessoryEffect : MonoBehaviour
             GameManager.instance.AddCoin(midasGoldPerKill);
     }
 
+    /// <summary>흑마법의 인장 — 처치 시 주변 적 이동속도 20% 감소 3초.</summary>
+    public void NotifyEnemyKilledWithPos(Vector3 pos)
+    {
+        if (!Has(AccessoryEffectType.SkeletonOnKill)) return;
+        foreach (Enemy e in FindEnemiesAround(pos, skeletonSlowRadius))
+            e.ApplySlow(skeletonSlowRatio, skeletonSlowDuration);
+        Debug.Log("[AccessoryEffect] 흑마법의 인장 — 주변 적 이동속도 감소!");
+    }
+
     /// <summary>맹독성 확산기 — 독 상태인 적 처치 시 주변 적에게 독 전이.</summary>
     public void NotifyPoisonedEnemyKilled(Enemy killedEnemy)
     {
@@ -488,7 +631,45 @@ public class AccessoryEffect : MonoBehaviour
     }
 
     // ───────────────────────────────────────────
-    //  훅 6) 포션 사용 시
+    //  훅 6) 회피 성공 시
+    // ───────────────────────────────────────────
+    public void NotifyEvasionSuccess()
+    {
+        if (!Has(AccessoryEffectType.ShadowTracker)) return;
+        if (shadowTrackerRoutine != null) StopCoroutine(shadowTrackerRoutine);
+        shadowTrackerRoutine = StartCoroutine(ShadowTrackerRoutine());
+    }
+
+    IEnumerator ShadowTrackerRoutine()
+    {
+        // 플레이어 SpriteRenderer 찾기
+        SpriteRenderer sr = PlayerStats.Instance?.GetComponentInChildren<SpriteRenderer>();
+        if (sr == null) yield break;
+
+        // 반투명 적용
+        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, shadowTrackerAlpha);
+        Debug.Log("[AccessoryEffect] 투명 망토 — 은신!");
+
+        // 모든 적 어그로 해제 (target = null)
+        Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        foreach (Enemy e in enemies)
+            e.ClearTarget();
+
+        yield return new WaitForSeconds(shadowTrackerDuration);
+
+        // 원래 알파값 복구
+        if (sr != null)
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
+
+        // 어그로 복구
+        foreach (Enemy e in enemies)
+            if (e != null) e.RestoreTarget();
+
+        shadowTrackerRoutine = null;
+    }
+
+    // ───────────────────────────────────────────
+    //  훅 7) 포션 사용 시
     // ───────────────────────────────────────────
     public void NotifyPotionUsed()
     {
@@ -569,6 +750,55 @@ public class AccessoryEffect : MonoBehaviour
                 PlayerStats.Instance.AddMulti(StatType.AttackPower,  newBonus);
                 lastBloodContractBonus = newBonus;
             }
+        }
+
+        // 신기한 화살 — 보스 방향으로 화살표 회전
+        if (Has(AccessoryEffectType.BossArrow) && bossArrowInstance != null
+            && bossTarget != null && PlayerStats.Instance != null)
+        {
+            Vector3 dir = (bossTarget.position - PlayerStats.Instance.transform.position).normalized;
+            // 스프라이트 기본 방향이 위(↑)이므로 -90도 오프셋
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+            bossArrowInstance.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            bossArrowInstance.transform.position = PlayerStats.Instance.transform.position
+                                                   + dir * bossArrowDistance;
+        }
+
+        // 영혼의 등불 — 궤도 회전
+        if (Has(AccessoryEffectType.SoulBullet) && soulBullets.Count > 0 && PlayerStats.Instance != null)
+        {
+            soulBulletAngleOffset += soulBulletOrbitSpeed * Time.deltaTime;
+            float angleStep = 360f / soulBullets.Count;
+            for (int i = 0; i < soulBullets.Count; i++)
+            {
+                if (soulBullets[i] == null) continue;
+                float angle = (soulBulletAngleOffset + angleStep * i) * Mathf.Deg2Rad;
+                Vector3 offset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * soulBulletOrbitRadius;
+                soulBullets[i].transform.position = PlayerStats.Instance.transform.position + offset;
+
+                // 공전 중 충돌 피해 (0.5f 반경 내 적에게 틱 데미지)
+                Collider2D[] cols = Physics2D.OverlapCircleAll(soulBullets[i].transform.position, 0.5f);
+                foreach (Collider2D col in cols)
+                {
+                    Enemy e = col.GetComponent<Enemy>();
+                    if (e != null && e.IsLive)
+                        e.TakeDamage(soulBulletDamage * Time.deltaTime);
+                }
+            }
+            // 플레이어 바라보는 방향으로 탄환 뒤집기
+            UpdateSoulBulletFacing();
+
+        }
+
+        // 그림자 가면 — 분신이 플레이어 위치를 딜레이로 추적
+        if (Has(AccessoryEffectType.ShadowClone) && shadowCloneInstance != null && PlayerStats.Instance != null)
+        {
+            shadowCloneTargetPos = PlayerStats.Instance.transform.position;
+            shadowCloneInstance.transform.position = Vector3.Lerp(
+                shadowCloneInstance.transform.position,
+                shadowCloneTargetPos,
+                Time.deltaTime / shadowCloneDelay
+            );
         }
     }
 
@@ -771,6 +1001,15 @@ public class AccessoryEffect : MonoBehaviour
         }
     }
 
+    /// <summary>현재 어느 악세사리가 발동했는지에 따라 이펙트 프리팹 선택</summary>
+    GameObject ResolveArrowEffectPrefab()
+    {
+        // 마법의 구(ACC_R_019)가 활성화된 경우 MagicOrbEffect 우선 사용
+        if (magicOrbEffectPrefab != null)
+            return magicOrbEffectPrefab;
+        return revengeArrowEffectPrefab;
+    }
+
     IEnumerator ArrowRoutine(Vector3 startPos, Vector2 dir, float damage)
     {
         float elapsed  = 0f;
@@ -778,13 +1017,14 @@ public class AccessoryEffect : MonoBehaviour
         Vector3 pos    = startPos;
         var hit = new HashSet<Enemy>();
 
-        // 화살 이펙트 오브젝트 소환
+        // 화살/마법구 이펙트 오브젝트 소환 (악세사리 종류에 따라 자동 선택)
         GameObject arrowFx = null;
-        if (revengeArrowEffectPrefab != null)
+        GameObject fxPrefab = ResolveArrowEffectPrefab();
+        if (fxPrefab != null)
         {
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            arrowFx = Instantiate(revengeArrowEffectPrefab, pos, Quaternion.Euler(0, 0, angle));
-            arrowFx.transform.localScale = Vector3.one * 5f;
+            arrowFx = Instantiate(fxPrefab, pos, Quaternion.Euler(0, 0, angle));
+            arrowFx.transform.localScale = Vector3.one * 0.5f;
         }
 
         while (elapsed < duration)
@@ -822,6 +1062,258 @@ public class AccessoryEffect : MonoBehaviour
         fx.transform.localScale = Vector3.one * scale;
         yield return new WaitForSeconds(duration);
         if (fx != null) Destroy(fx);
+    }
+
+    // ───────────────────────────────────────────
+    //  BossArrow
+    // ───────────────────────────────────────────
+
+    /// <summary>보스 스폰 시 WaveManager에서 호출</summary>
+    public void NotifyBossSpawn(Transform boss)
+    {
+        if (!Has(AccessoryEffectType.BossArrow)) return;
+        bossTarget = boss;
+
+        if (bossArrowInstance != null) Destroy(bossArrowInstance);
+        if (bossArrowPrefab != null)
+        {
+            bossArrowInstance = Instantiate(bossArrowPrefab);
+
+            // 크기 4배
+            bossArrowInstance.transform.localScale = Vector3.one * 4f;
+
+            // Animator가 rotation을 덮어쓰지 않도록 전부 비활성화
+            foreach (Animator anim in bossArrowInstance.GetComponentsInChildren<Animator>(true))
+                anim.enabled = false;
+        }
+        Debug.Log("[AccessoryEffect] 신기한 화살 — 보스 방향 안내 시작!");
+    }
+
+    /// <summary>보스 사망 시 WaveManager에서 호출</summary>
+    public void NotifyBossDead()
+    {
+        if (!Has(AccessoryEffectType.BossArrow)) return;
+        bossTarget = null;
+        if (bossArrowInstance != null)
+        {
+            Destroy(bossArrowInstance);
+            bossArrowInstance = null;
+        }
+        Debug.Log("[AccessoryEffect] 신기한 화살 — 보스 처치, 화살표 제거");
+    }
+
+    // ───────────────────────────────────────────
+    //  SoulBullet
+    // ───────────────────────────────────────────
+    IEnumerator SoulBulletRoutine()
+    {
+        while (true)
+        {
+            // 탄환 소환
+            SpawnSoulBullets();
+
+            // 5초 공전 (Update에서 궤도 회전 + 충돌 데미지)
+            yield return new WaitForSeconds(soulBulletHomingDelay);
+
+            // 5초 후 적에게 유도 발사
+            FireSoulBulletsAtEnemies();
+
+            // 재소환 대기 (적중/시간초과 후 RespawnOneSoulBullet이 처리)
+            yield return new WaitForSeconds(soulBulletRespawnTime);
+        }
+    }
+
+    void FireSoulBulletsAtEnemies()
+    {
+        if (PlayerStats.Instance == null) return;
+        List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        if (nearby.Count == 0) return;
+
+        for (int i = soulBullets.Count - 1; i >= 0; i--)
+        {
+            if (soulBullets[i] == null) { soulBullets.RemoveAt(i); continue; }
+            GameObject b = soulBullets[i];
+            soulBullets.RemoveAt(i);
+            Enemy t = i < nearby.Count ? nearby[i] : nearby[0];
+            StartCoroutine(HomingBulletMove(b, t));
+        }
+    }
+
+    void SpawnSoulBullets()
+    {
+        // 기존 탄환 제거
+        foreach (GameObject b in soulBullets)
+            if (b != null) Destroy(b);
+        soulBullets.Clear();
+
+        if (soulBulletPrefab == null || PlayerStats.Instance == null) return;
+
+        for (int i = 0; i < soulBulletCount; i++)
+        {
+            GameObject bullet = Instantiate(soulBulletPrefab,
+                PlayerStats.Instance.transform.position, Quaternion.identity);
+            bullet.transform.localScale = Vector3.one * 10f;
+            soulBullets.Add(bullet);
+        }
+        Debug.Log("[AccessoryEffect] 영혼의 등불 — 탄환 3개 소환!");
+    }
+
+    /// <summary>플레이어 이동 방향 기준으로 영혼 탄환 flipX 갱신</summary>
+    void UpdateSoulBulletFacing()
+    {
+        if (PlayerStats.Instance == null) return;
+        Player player = PlayerStats.Instance.GetComponent<Player>();
+        if (player == null) return;
+
+        bool facingLeft = player.lastTravelDirection.x < 0f;
+        foreach (GameObject b in soulBullets)
+        {
+            if (b == null) continue;
+            if (homingBullets.Contains(b)) continue; // 유도 중인 탄환은 rotation으로 제어
+            SpriteRenderer sr = b.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.flipX = facingLeft;
+        }
+    }
+
+    IEnumerator HomingSoulBullets()
+    {
+        if (PlayerStats.Instance == null) yield break;
+
+        // 각 탄환마다 가장 가까운 적을 찾아 유도
+        var targets = new List<Enemy>();
+        List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+
+        for (int i = 0; i < soulBullets.Count; i++)
+        {
+            if (soulBullets[i] == null) continue;
+
+            // 아직 타겟되지 않은 적 중 가장 가까운 적 선택
+            Enemy target = null;
+            float minDist = float.MaxValue;
+            foreach (Enemy e in nearby)
+            {
+                if (targets.Contains(e)) continue;
+                float dist = Vector3.Distance(soulBullets[i].transform.position, e.transform.position);
+                if (dist < minDist) { minDist = dist; target = e; }
+            }
+            if (target != null) targets.Add(target);
+
+            // 유도 이동
+            StartCoroutine(HomingBulletMove(soulBullets[i], target));
+        }
+
+        // 유도 완료 대기
+        yield return new WaitForSeconds(3f);
+    }
+
+    IEnumerator HomingBulletMove(GameObject bullet, Enemy target)
+    {
+        if (bullet == null) yield break;
+
+        // 유도 시작 — flipX 초기화, rotation으로만 방향 제어
+        homingBullets.Add(bullet);
+        SpriteRenderer sr = bullet.GetComponent<SpriteRenderer>();
+        if (sr != null) sr.flipX = false;
+
+        float elapsed  = 0f;
+        float maxTime  = 5f;
+        Enemy current  = target;
+
+        while (elapsed < maxTime && bullet != null)
+        {
+            elapsed += Time.deltaTime;
+
+            // 현재 타겟이 죽었으면 새 타겟 탐색
+            if (current == null || !current.IsLive)
+            {
+                if (PlayerStats.Instance != null)
+                {
+                    List<Enemy> nearby = FindEnemiesAround(bullet.transform.position, 20f);
+                    current = nearby.Count > 0 ? nearby[0] : null;
+                }
+            }
+
+            // 타겟 있으면 유도, 없으면 계속 공전 (플레이어 주변 유지)
+            Vector3 dest;
+            if (current != null && current.IsLive)
+            {
+                dest = current.transform.position;
+            }
+            else if (PlayerStats.Instance != null)
+            {
+                // 타겟 없으면 플레이어 주변 궤도로 복귀
+                float angle = elapsed * soulBulletOrbitSpeed * Mathf.Deg2Rad;
+                dest = PlayerStats.Instance.transform.position +
+                       new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * soulBulletOrbitRadius;
+            }
+            else
+            {
+                yield return null;
+                continue;
+            }
+
+            // 날아가는 방향으로 스프라이트 회전
+            Vector3 moveDir = (dest - bullet.transform.position).normalized;
+            if (moveDir != Vector3.zero)
+            {
+                float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+                bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            }
+
+            bullet.transform.position = Vector3.MoveTowards(
+                bullet.transform.position, dest,
+                soulBulletHomingSpeed * Time.deltaTime);
+
+            // 적에게 도달하면 피해 후 제거
+            if (current != null && current.IsLive &&
+                Vector3.Distance(bullet.transform.position, current.transform.position) < 0.5f)
+            {
+                current.TakeDamage(soulBulletDamage);
+                Debug.Log("[AccessoryEffect] 영혼 탄환 적중!");
+                homingBullets.Remove(bullet);
+                if (bullet != null) Destroy(bullet);
+                if (Has(AccessoryEffectType.SoulBullet) && soulBullets.Count < soulBulletCount)
+                    StartCoroutine(RespawnOneSoulBullet());
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        // 시간 초과 시 제거 후 재소환
+        Debug.Log("[AccessoryEffect] 영혼 탄환 유도 시간 초과 — 재소환");
+        homingBullets.Remove(bullet);
+        if (bullet != null) Destroy(bullet);
+        yield return new WaitForSeconds(1f);
+        if (Has(AccessoryEffectType.SoulBullet) && soulBullets.Count < soulBulletCount)
+            StartCoroutine(RespawnOneSoulBullet());
+    }
+
+    IEnumerator RespawnOneSoulBullet()
+    {
+        yield return new WaitForSeconds(2f);
+        if (soulBulletPrefab == null || PlayerStats.Instance == null) yield break;
+        GameObject b = Instantiate(soulBulletPrefab,
+            PlayerStats.Instance.transform.position, Quaternion.identity);
+        b.transform.localScale = Vector3.one * 10f;
+        soulBullets.Add(b);
+        Debug.Log("[AccessoryEffect] 영혼 탄환 재소환!");
+    }
+
+    // ───────────────────────────────────────────
+    //  ShadowClone
+    // ───────────────────────────────────────────
+    void SpawnShadowClone()
+    {
+        if (shadowClonePrefab == null || PlayerStats.Instance == null) return;
+
+        // 기존 분신 제거 후 새로 소환
+        if (shadowCloneInstance != null)
+            Destroy(shadowCloneInstance);
+
+        Vector3 spawnPos = PlayerStats.Instance.transform.position + Vector3.left * 1f;
+        shadowCloneInstance = Instantiate(shadowClonePrefab, spawnPos, Quaternion.identity);
+        Debug.Log("[AccessoryEffect] 그림자 가면 — 분신 소환!");
     }
 
     // ───────────────────────────────────────────

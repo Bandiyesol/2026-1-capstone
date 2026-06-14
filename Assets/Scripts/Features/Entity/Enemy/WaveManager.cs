@@ -174,6 +174,11 @@ public class WaveManager : MonoBehaviour
         GameObject enemy = spawner.Spawn(index);
         if (enemy == null) return; // 풀에 잔여 수량이 없거나 스폰 실패 시 예외 차단
 
+        // [악세사리 훅] 신기한 화살 — 보스 스폰 알림
+        BossBase boss = enemy.GetComponent<BossBase>();
+        if (boss != null)
+            AccessoryEffect.instance?.NotifyBossSpawn(enemy.transform);
+
         // [주입 1] 일반 몬스터 컴포넌트(Enemy)가 존재하면 웨이브 매니저 참조 전달
         Enemy enemyScript = enemy.GetComponent<Enemy>();
         if (enemyScript != null)

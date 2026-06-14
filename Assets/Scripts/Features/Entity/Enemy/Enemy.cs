@@ -182,6 +182,33 @@ public class Enemy : MonoBehaviour, IDamageable
     }
 
     // 외부에서 빙결 상태(디버프 등)를 부여할 때 호출하는 메서드
+    /// <summary>이동속도 감소 (ratio: 0.2 = 20% 감소, duration: 지속 시간)</summary>
+    public void ApplySlow(float ratio, float duration)
+    {
+        if (!isLive) return;
+        StartCoroutine(SlowRoutine(ratio, duration));
+    }
+
+    IEnumerator SlowRoutine(float ratio, float duration)
+    {
+        speed *= (1f - ratio);
+        yield return new WaitForSeconds(duration);
+        speed /= (1f - ratio); // 원래 속도 복구
+    }
+
+    /// <summary>[악세사리] 투명 망토 — 어그로 해제</summary>
+    public void ClearTarget()
+    {
+        target = null;
+    }
+
+    /// <summary>[악세사리] 투명 망토 — 어그로 복구</summary>
+    public void RestoreTarget()
+    {
+        if (GameManager.instance?.player != null)
+            target = GameManager.instance.player.GetComponent<Rigidbody2D>();
+    }
+
     public void ApplyFreeze(float duration)
     {
         isFrozen = true;
@@ -319,6 +346,9 @@ public class Enemy : MonoBehaviour, IDamageable
 
         // [악세사리 훅] 흡혈귀의 송곳니·미다스의 장갑 — 처치 시 효과
         AccessoryEffect.instance?.NotifyEnemyKilled();
+
+        // [악세사리 훅] 흑마법의 인장 — 처치 시 주변 적 이동속도 감소
+        AccessoryEffect.instance?.NotifyEnemyKilledWithPos(transform.position);
 
         // [악세사리 훅] 맹독성 확산기 — 독 상태인 적 처치 시 독 전이
         if (IsPoisoned)

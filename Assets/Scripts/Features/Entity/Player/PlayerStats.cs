@@ -341,7 +341,11 @@ public class PlayerStats : MonoBehaviour
     public float CalculateReceivedDamage(float rawDamage, PlayerDamageKind kind = PlayerDamageKind.PerHit)
     {
         if (UnityEngine.Random.value < Evasion)
+        {
+            // [악세사리 훅] 투명 망토 — 회피 성공 시 은신
+            AccessoryEffect.instance?.NotifyEvasionSuccess();
             return 0f;
+        }
 
         float afterDefense = kind switch
         {
