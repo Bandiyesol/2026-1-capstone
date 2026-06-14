@@ -12,7 +12,7 @@ public class EffectChain : RuneEffect, ITriggerEffect
 
 	public void OnReflect(Collider2D collision)
 	{
-		if (!isReady || collision.GetComponent<IDamageable>() == null)
+		if (!isReady || !TryGetDamageable(collision, out _))
 			return;
 
 		int chainCount = RuneDataAccess.GetChainCount(data);
@@ -21,11 +21,7 @@ public class EffectChain : RuneEffect, ITriggerEffect
 			return;
 
 		float chainDamage = DamageCalculator.CalculateBaseDamage(weapon, data);
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(
-			collision.transform.position,
-			radius,
-			LayerMask.GetMask("Enemy")
-		);
+		Collider2D[] colliders = FindEnemyColliders(collision.transform.position, radius);
 		Vector3 hitPosition = collision.transform.position;
 
 		System.Array.Sort(colliders, (a, b) =>
@@ -36,20 +32,44 @@ public class EffectChain : RuneEffect, ITriggerEffect
 		});
 
 		List<IDamageable> targets = new();
+		List<Vector3> targetPositions = new();
 		foreach (Collider2D enemyCollider in colliders)
 		{
 			if (enemyCollider == collision) continue;
 
-			IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
-			if (damageable == null || targets.Contains(damageable)) continue;
+			if (!TryGetDamageable(enemyCollider, out IDamageable damageable) || targets.Contains(damageable)) continue;
 
 			targets.Add(damageable);
+			targetPositions.Add(enemyCollider.transform.position);
 			if (targets.Count >= chainCount) break;
 		}
 
 		foreach (IDamageable target in targets)
 			target.TakeDamage(chainDamage);
 
+		DrawChain(hitPosition, targetPositions);
 		ResetCooltime();
+	}
+
+	void DrawChain(Vector3 startPosition, List<Vector3> targetPositions)
+	{
+		if (targetPositions.Count == 0)
+			return;
+
+		GameObject visual = new GameObject("ChainRuneVisual");
+		LineRenderer line = visual.AddComponent<LineRenderer>();
+		line.positionCount = targetPositions.Count + 1;
+		line.useWorldSpace = true;
+		line.startWidth = 0.08f;
+		line.endWidth = 0.02f;
+		line.material = new Material(Shader.Find("Sprites/Default"));
+		line.startColor = new Color(0.45f, 0.85f, 1f, 1f);
+		line.endColor = new Color(0.85f, 1f, 1f, 0.15f);
+		line.SetPosition(0, startPosition);
+
+		for (int i = 0; i < targetPositions.Count; i++)
+			line.SetPosition(i + 1, targetPositions[i]);
+
+		Destroy(visual, 0.15f);
 	}
 }

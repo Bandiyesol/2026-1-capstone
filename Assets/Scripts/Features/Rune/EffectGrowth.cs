@@ -23,6 +23,12 @@ public class EffectGrowth : RuneEffect, IStateEffect
 		maxGrowthTime = RuneDataAccess.GetGrowthDuration(data);
 		maxScaleRatio = RuneDataAccess.GetGrowthScaleRatio(data);
 		maxDamageRatio = RuneDataAccess.GetGrowthDamageRatio(data);
+
+		// 무기 수명(spawntime)이 maxGrowthTime보다 짧으면 수명에 맞춰 스케일 시간을 단축.
+		// 이렇게 하면 검처럼 짧게 사는 무기도 수명 끝 무렵에 최대 크기에 도달한다.
+		float weaponLife = weapon.spawntime;
+		if (weaponLife > 0f && weaponLife < maxGrowthTime)
+			maxGrowthTime = weaponLife;
 	}
 
 
