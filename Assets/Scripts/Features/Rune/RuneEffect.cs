@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // [RuneEffect.cs] 인터페이스 정의
 public interface IActiveDriver  { bool isFinished { get; } void UpdateMovement(); }
@@ -38,5 +39,35 @@ public abstract class RuneEffect : MonoBehaviour
 	protected void UpdateCooltime()
 	{
 		if (currentCooltime > 0f) currentCooltime -= Time.deltaTime;
+	}
+
+	protected static bool TryGetDamageable(Collider2D collider, out IDamageable damageable)
+	{
+		damageable = null;
+		if (collider == null) return false;
+
+		damageable = collider.GetComponent<IDamageable>()
+			?? collider.GetComponentInParent<IDamageable>()
+			?? collider.GetComponentInChildren<IDamageable>();
+
+		return damageable != null;
+	}
+
+	protected static Collider2D[] FindEnemyColliders(Vector2 center, float radius)
+	{
+		if (radius <= 0f)
+			return System.Array.Empty<Collider2D>();
+
+		Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
+		List<Collider2D> enemies = new();
+
+		foreach (Collider2D hit in hits)
+		{
+			if (hit == null) continue;
+			if (hit.CompareTag("Enemy") || TryGetDamageable(hit, out _))
+				enemies.Add(hit);
+		}
+
+		return enemies.ToArray();
 	}
 }

@@ -12,7 +12,7 @@ public class EffectExplode : RuneEffect, ITriggerEffect
 
 	public void OnReflect(Collider2D collision)
 	{
-		if (!isReady || collision.GetComponent<IDamageable>() == null)
+		if (!isReady || !TryGetDamageable(collision, out _))
 			return;
 
 		float radius = RuneDataAccess.GetExplodeRadius(data);
@@ -20,19 +20,15 @@ public class EffectExplode : RuneEffect, ITriggerEffect
 			return;
 
 		float explodeDamage = DamageCalculator.CalculateBaseDamage(weapon, data);
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(
-			collision.transform.position,
-			radius,
-			LayerMask.GetMask("Enemy")
-		);
+		Collider2D[] colliders = FindEnemyColliders(collision.transform.position, radius);
 
 		HashSet<IDamageable> targets = new();
 		foreach (Collider2D enemyCollider in colliders)
 		{
 			if (enemyCollider == collision) continue;
 
-			IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
-			if (damageable != null) targets.Add(damageable);
+			if (TryGetDamageable(enemyCollider, out IDamageable damageable))
+				targets.Add(damageable);
 		}
 
 		foreach (IDamageable target in targets)

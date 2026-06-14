@@ -36,6 +36,7 @@ public static class RuneDataAccess
 		ExplodeRuneData e when e.interval > 0f => e.interval,
 		FreezeRuneData f when f.interval > 0f => f.interval,
 		ChainRuneData c when c.interval > 0f => c.interval,
+		{ runeType: RuneType.Split } => 0.35f,
 		LogicRuneData l when l.interval > 0f => l.interval,
 		_ => 0f
 	};
@@ -108,7 +109,7 @@ public static class RuneDataAccess
 
 	public static float GetGravityRadius(RuneData data) => data switch
 	{
-		{ valueA: > 0f } => data.valueA,
+		{ runeType: RuneType.Gravity, valueA: > 0f } => Mathf.Max(3f, data.valueA),
 		{ runeType: RuneType.Gravity } => 3f,
 		_ => 0f
 	};
