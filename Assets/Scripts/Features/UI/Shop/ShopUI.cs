@@ -69,7 +69,8 @@ public class ShopUI : MonoBehaviour
 	readonly List<ShopListing> potionStock = new List<ShopListing>();
 
 	int nextRerollCost;
-	bool stockGeneratedForRun;
+	/// <summary>현재 진열이 생성된 스테이지 인덱스. -1이면 아직 없음.</summary>
+	int stockStageIndex = -1;
 
 	void Awake()
 	{
@@ -89,6 +90,7 @@ public class ShopUI : MonoBehaviour
 
 	void OnDestroy()
 	{
+		GameAudioSettings.Instance?.ExitShopBgm();
 		ResumeGameIfPausedByShop();
 
 		if (closeButton != null)
@@ -147,12 +149,13 @@ public class ShopUI : MonoBehaviour
 
 		isOpen = true;
 		ShowPanelRoot();
-		EnsureStockForRun();
+		EnsureStockForCurrentStage();
 		TmpKoreanFontUtility.EnsureAllAccessoryGlyphs(koreanFont);
 		RefreshMerchantPresentation();
 		Refresh();
 		OverlayPanelUILayout.Apply(panel.transform);
 		PauseGameIfLive();
+		GameAudioSettings.Instance?.EnterShopBgm();
 	}
 
 	public void Close()
@@ -163,6 +166,7 @@ public class ShopUI : MonoBehaviour
 		isOpen = false;
 		HidePanelRoot();
 		HideTooltip();
+		GameAudioSettings.Instance?.ExitShopBgm();
 		ResumeGameIfPausedByShop();
 	}
 
@@ -415,13 +419,12 @@ public class ShopUI : MonoBehaviour
 		weaponStock.AddRange(ShopStockGenerator.GenerateWeapons(catalog));
 		accessoryStock.AddRange(ShopStockGenerator.GenerateAccessories(catalog));
 		potionStock.AddRange(ShopStockGenerator.GeneratePotions(catalog));
-		stockGeneratedForRun = true;
 	}
 
 	/// <summary>새 게임/메인 메뉴 복귀 시 진열·리롤 비용을 초기화합니다.</summary>
 	public void ResetSession()
 	{
-		stockGeneratedForRun = false;
+		stockStageIndex = -1;
 		nextRerollCost = 0;
 		weaponStock.Clear();
 		accessoryStock.Clear();
@@ -431,13 +434,25 @@ public class ShopUI : MonoBehaviour
 			Refresh();
 	}
 
-	void EnsureStockForRun()
+	void EnsureStockForCurrentStage()
 	{
-		if (stockGeneratedForRun)
+		int stageIndex = ResolveCurrentStageIndex();
+		if (stockStageIndex == stageIndex && HasAnyStock())
 			return;
 
+		stockStageIndex = stageIndex;
 		ResetRerollCost();
 		RollStockInternal();
+	}
+
+	static int ResolveCurrentStageIndex()
+	{
+		return StageManager.instance != null ? StageManager.instance.stageIndex : 0;
+	}
+
+	bool HasAnyStock()
+	{
+		return weaponStock.Count > 0 || accessoryStock.Count > 0 || potionStock.Count > 0;
 	}
 
 	public void TryPaidReroll()
@@ -452,7 +467,7 @@ public class ShopUI : MonoBehaviour
 
 		if (cost > 0 && !GameManager.instance.TrySpendCoin(cost))
 		{
-			SetMessage($"리롤에 {cost}G가 필요합니다.");
+			SetMessage($"재진열에 {cost}G가 필요합니다.");
 			return;
 		}
 
@@ -460,6 +475,7 @@ public class ShopUI : MonoBehaviour
 		if (cost > 0)
 			nextRerollCost = cost * 2;
 
+		GameAudio.Play(SfxId.ShopReroll);
 		Refresh();
 		SetMessage(cost > 0 ? $"진열을 변경했습니다. (-{cost}G)" : "진열을 변경했습니다.");
 	}
@@ -511,7 +527,7 @@ public class ShopUI : MonoBehaviour
 			return;
 
 		int cost = nextRerollCost;
-		rerollButtonLabel.text = cost > 0 ? $"리롤 {cost}G" : "리롤";
+		rerollButtonLabel.text = cost > 0 ? $"재진열 {cost}G" : "재진열";
 		TmpKoreanFontUtility.EnsureGlyphs(rerollButtonLabel, koreanFont, rerollButtonLabel.text);
 	}
 
@@ -583,6 +599,7 @@ public class ShopUI : MonoBehaviour
 	{
 		if (ShopService.TryPurchase(listing, out string message))
 		{
+			GameAudio.PlayPurchase();
 			SetMessage(message);
 			Refresh();
 			return;

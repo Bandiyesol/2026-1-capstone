@@ -72,6 +72,7 @@ public class StatusUI : MonoBehaviour
 
 		isOpen = true;
 		panel.SetActive(true);
+		GameAudio.PlayPanelOpen();
 		OverlayPanelUILayout.Apply(panel.transform);
 		SubscribeStats();
 		Refresh();

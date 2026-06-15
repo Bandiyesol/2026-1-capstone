@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>Status / Inventory / Shop / Settings 패널 — Esc 닫기, 6 상점 Toggle.</summary>
+/// <summary>Status / Inventory / Shop / Settings / Rune Loadout 패널 — Esc 닫기, 6 상점 Toggle.</summary>
 public class OverlayPanelEscapeInput : MonoBehaviour
 {
 	void Update()
@@ -13,6 +13,10 @@ public class OverlayPanelEscapeInput : MonoBehaviour
 
 		SettingsUI settings = FindFirstObjectByType<SettingsUI>(FindObjectsInactive.Include);
 		if (settings != null && settings.TryHandleEscape())
+			return;
+
+		RuneLoadoutViewUI runeLoadout = FindFirstObjectByType<RuneLoadoutViewUI>(FindObjectsInactive.Include);
+		if (runeLoadout != null && runeLoadout.TryHandleEscape())
 			return;
 
 		ShopUI shop = FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);

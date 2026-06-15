@@ -36,8 +36,12 @@ public static class ProtoTypeSceneSetup
 		ChoiceSelectUILayoutSetup.ApplyAll(saveScene: false, showDialog: false);
 		OverlayPanelUILayoutSetup.ApplyAll(saveScene: false, showDialog: false);
 		GameplayHudSetupEditor.TrySetupInActiveScene();
+		RuneLoadoutHudSetupEditor.Apply(saveScene: false);
+		BossHealthHudSetupEditor.Apply(saveScene: false);
 		BossStageConfigurationEditor.ApplyConfiguration();
 		ShopkeeperSetupEditor.TrySetupInActiveScene();
+		OverlayMenuStyleApplyAllEditor.ApplyAllInternal();
+		RuneIconAssigner.AssignAll();
 
 		EditorSceneManager.MarkSceneDirty(scene);
 		EditorSceneManager.SaveScene(scene);

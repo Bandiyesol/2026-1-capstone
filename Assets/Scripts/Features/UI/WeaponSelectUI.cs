@@ -28,6 +28,8 @@ public class WeaponSelectUI : MonoBehaviour
 	readonly List<WeaponInstance> currentCandidates = new List<WeaponInstance>();
 	bool openedFromChest;
 
+	public bool IsBlockingFromChest => openedFromChest && gameObject.activeSelf;
+
 
 	void Awake()
 	{
@@ -207,6 +209,7 @@ public class WeaponSelectUI : MonoBehaviour
 		else
 			Debug.LogError("[WeaponSelectUI] WeaponInventory가 없습니다.");
 
+		GameAudio.PlayPurchase();
 		currentCandidates.Clear();
 		HideAndContinue();
 	}
@@ -223,8 +226,19 @@ public class WeaponSelectUI : MonoBehaviour
 		}
 
 		if (GameManager.instance.uiRuneSelect != null)
-			GameManager.instance.uiRuneSelect.Show();
+			GameManager.instance.uiRuneSelect.ShowForGameStart();
 		else
 			GameManager.instance.Resume();
+	}
+
+	/// <summary>스테이지 전환 등 — 상자 보상 UI만 닫습니다.</summary>
+	public void ForceCloseChestWithoutResume()
+	{
+		if (!openedFromChest)
+			return;
+
+		openedFromChest = false;
+		currentCandidates.Clear();
+		gameObject.SetActive(false);
 	}
 }

@@ -19,7 +19,7 @@ public class EffectHoming : RuneEffect, IActiveDriver
 		duration = RuneDataAccess.GetDuration(data);
 		searchRadius = Mathf.Max(2f, RuneDataAccess.GetAffectedRange(data));
 		turnSpeed = GetActiveTurnSpeed();
-		moveSpeed = GetActiveMoveSpeed() * 0.65f;
+		moveSpeed = GetActiveMoveSpeed();
 		target = FindClosestEnemy();
 	}
 

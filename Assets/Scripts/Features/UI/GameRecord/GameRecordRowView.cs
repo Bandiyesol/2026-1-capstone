@@ -133,8 +133,7 @@ public class GameRecordRowView : MonoBehaviour
 
 		if (expandButton != null)
 		{
-			expandButton.onClick.RemoveAllListeners();
-			expandButton.onClick.AddListener(OnExpandClicked);
+			UiClickSfxUtility.Rewire(expandButton, OnExpandClicked);
 		}
 	}
 

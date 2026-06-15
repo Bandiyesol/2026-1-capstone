@@ -120,15 +120,8 @@ public class FallingRock : BiomeGimmick
 
         hit = true;
 
-        // [방어 시스템 연동] 즉사 대신 플레이어의 스탯 방어 처리를 거친 유효 낙석 데미지 차감
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.Instance.TakeDamage(fallDamage);
-        }
-        else
-        {
-            GameManager.instance.Health -= fallDamage;
-        }
+        // [방어 시스템 연동] 플레이어 스탯 방어 파이프라인으로 낙석 데미지 적용
+        PlayerStats.ApplyDamage(fallDamage);
 
         // 콜라이더 비활성화
         if (stoneColl != null)

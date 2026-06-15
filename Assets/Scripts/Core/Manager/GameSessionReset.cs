@@ -20,6 +20,7 @@ public static class GameSessionReset
 		ResetPlayer(game.player);
 		ResetGameManagerStats(game);
 		GameRunSessionTracker.Reset();
+		BossBriefingRuntime.ClearSession();
 	}
 
 	static void ResetGameManagerStats(GameManager game)
@@ -28,7 +29,7 @@ public static class GameSessionReset
 		game.gameTime = 0f;
 		if (PlayerStats.Instance != null)
 			PlayerStats.Instance.ResetRuntimeState();
-		game.Health = game.maxHealth;
+		game.SyncHealthFromPlayerStats();
 		game.Kill = 0;
 		game.Coin = 0;
 	}

@@ -167,7 +167,7 @@ public class BossAlarmUI : MonoBehaviour
 
 		if (patternsText != null)
 		{
-			patternsText.text = $"<b>패턴·룬</b>\n{BossBriefingRuntime.PatternsHint}";
+			patternsText.text = $"<b>패턴</b>\n{BossBriefingRuntime.PatternsHint}";
 			TmpKoreanFontUtility.ApplyFont(patternsText, koreanFont);
 			TmpKoreanFontUtility.EnsureGlyphs(patternsText, koreanFont, patternsText.text);
 			ScrollRectContentUtility.ApplyTopDownTextDefaults(patternsText);
@@ -232,8 +232,7 @@ public class BossAlarmUI : MonoBehaviour
 		if (continueButton == null)
 			return;
 
-		continueButton.onClick.RemoveAllListeners();
-		continueButton.onClick.AddListener(OnContinueClicked);
+		UiClickSfxUtility.Rewire(continueButton, OnContinueClicked);
 	}
 
 	static TextMeshProUGUI FindDeepTMP(Transform root, string childName)

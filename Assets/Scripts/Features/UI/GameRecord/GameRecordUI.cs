@@ -38,8 +38,7 @@ public class GameRecordUI : MonoBehaviour
 
 		if (confirmButton != null)
 		{
-			confirmButton.onClick.RemoveAllListeners();
-			confirmButton.onClick.AddListener(OnConfirmClicked);
+			UiClickSfxUtility.Rewire(confirmButton, OnConfirmClicked);
 		}
 	}
 
@@ -63,6 +62,7 @@ public class GameRecordUI : MonoBehaviour
 
 		ApplyTitle();
 		ApplyRecordScrollSettings();
+		ApplyRecordPanelLayout();
 		EnsureListContentLayout();
 		RebuildList();
 		StartCoroutine(ScrollAfterLayout());
@@ -163,7 +163,7 @@ public class GameRecordUI : MonoBehaviour
 			return GameRunRecordStore.LoadAll();
 
 		GameRunRecord record = !string.IsNullOrEmpty(expandRecordId)
-			? GameRunRecordStore.FindById(expandRecordId)
+			? GameRunLeaderboard.FindRecordById(expandRecordId)
 			: null;
 
 		if (record == null)
@@ -249,6 +249,42 @@ public class GameRecordUI : MonoBehaviour
 			return;
 
 		ScrollRectContentUtility.ApplyVerticalOnlyScroll(recordScrollRect, scrollSensitivity);
+	}
+
+	void ApplyRecordPanelLayout()
+	{
+		const float buttonBottomReserve = 128f;
+		const float titleTopReserve = 72f;
+		const float horizontalPad = 24f;
+
+		if (panel == null)
+			return;
+
+		Transform scroll = panel.transform.Find("Window/RecordScrollView");
+		if (scroll == null)
+			scroll = panel.transform.Find("RecordScrollView");
+		if (scroll != null && scroll.TryGetComponent(out RectTransform scrollRect))
+		{
+			scrollRect.anchorMin = new Vector2(0f, 0f);
+			scrollRect.anchorMax = new Vector2(1f, 1f);
+			scrollRect.pivot = new Vector2(0.5f, 0.5f);
+			scrollRect.anchoredPosition = Vector2.zero;
+			scrollRect.sizeDelta = Vector2.zero;
+			scrollRect.offsetMin = new Vector2(horizontalPad, buttonBottomReserve);
+			scrollRect.offsetMax = new Vector2(-horizontalPad, -titleTopReserve);
+		}
+
+		Transform confirm = panel.transform.Find("Window/ConfirmButton");
+		if (confirm == null)
+			confirm = panel.transform.Find("ConfirmButton");
+		if (confirm != null && confirm.TryGetComponent(out RectTransform confirmRect))
+		{
+			confirmRect.anchorMin = new Vector2(0.5f, 0f);
+			confirmRect.anchorMax = new Vector2(0.5f, 0f);
+			confirmRect.pivot = new Vector2(0.5f, 0.5f);
+			confirmRect.anchoredPosition = new Vector2(0f, 52f);
+			confirmRect.sizeDelta = new Vector2(340f, 96f);
+		}
 	}
 
 	void EnsureListContentLayout()
@@ -338,5 +374,6 @@ public class GameRecordUI : MonoBehaviour
 		}
 
 		koreanFont = TmpKoreanFontUtility.ResolveNeoDgmFont(koreanFont);
+		ApplyRecordPanelLayout();
 	}
 }

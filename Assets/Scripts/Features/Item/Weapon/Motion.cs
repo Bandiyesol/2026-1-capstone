@@ -44,6 +44,7 @@ public abstract class Motion : MonoBehaviour
 	// 파괴가 여러 번 호출되어 에러가 발생하는 것을 막기 위한 중복 방지 플래그
 	private bool isDestroyRequested = false;
 	private bool isFinalizing = false;
+	private bool poolReleaseScheduled = false;
 
 	// 동일 적에 대한 연속 타격 간격 (근접 OnTriggerStay 대응)
 	readonly Dictionary<int, float> hitCooldownUntil = new Dictionary<int, float>();
@@ -67,6 +68,13 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	public virtual void Initialize(WeaponInstance instance, List<RuneData> runes, float inheritedLifeTime = -1f)
 	{
+		ClearAttachedRuneEffects();
+
+		isDestroyRequested = false;
+		isFinalizing = false;
+		isExplosionRunning = false;
+		hitCooldownUntil.Clear();
+
 		this.instance = instance;
 
 		// 외부에서 받은 룬 리스트를 깊은 복사(새 리스트 할당)하여 보관
@@ -79,9 +87,6 @@ public abstract class Motion : MonoBehaviour
 		if (inheritedLifeTime > 0f) life = inheritedLifeTime;
 		else life = GetDefaultTime();
 
-		// 초기화 완료 플래그 켜기 (이후 Update문 실행 가능)
-		isInitialLifeSet = true;
-
 		// 무기 콜라이더가 플레이어를 물리적으로 밀어내지 않도록 충돌 무시 설정
 		IgnorePlayerCollision();
 
@@ -92,8 +97,14 @@ public abstract class Motion : MonoBehaviour
 		SetupPersistentRunes();
 		SetTriggerRunes();
 
+		if (instance?.info != null)
+			GameAudio.PlayWeapon(instance.info.type);
+
 		// 장착된 첫 번째 액티브 룬을 바로 실행
 		ExecuteActiveRune();
+
+		// 초기화 완료 (룬 부착 후 Update 허용)
+		isInitialLifeSet = true;
 	}
 
 	/// <summary>
@@ -331,6 +342,7 @@ public abstract class Motion : MonoBehaviour
 
 		// 무기에 장착된 트리거 효과(충돌 시 발동) 룬 가져오기
 		var triggerEffects = GetComponents<RuneEffect>()
+			.Where(r => r != null)
 			.OfType<ITriggerEffect>()
 			.ToList();
 
@@ -407,7 +419,10 @@ public abstract class Motion : MonoBehaviour
 
 		// 데미지를 받을 수 있는 대상이라면 피격 처리
 		if (damageable != null)
+		{
 			damageable.TakeDamage(finalDamage);
+			GameAudio.PlayEnemyHit(collision.gameObject);
+		}
 	}
 
 	/// <summary>
@@ -440,7 +455,7 @@ public abstract class Motion : MonoBehaviour
 		if (HasFinalRune())
 			StartCoroutine(FinalizeMotionAfterDelay());
 		else
-			ReleaseMotionToPool();
+			ScheduleReleaseMotionToPool();
 	}
 
 	bool HasFinalRune()
@@ -477,6 +492,27 @@ public abstract class Motion : MonoBehaviour
 			final.OnFinalExecute();
 	}
 
+	void ScheduleReleaseMotionToPool()
+	{
+		if (poolReleaseScheduled)
+			return;
+
+		poolReleaseScheduled = true;
+		StartCoroutine(ReleaseMotionToPoolDeferred());
+	}
+
+	IEnumerator ReleaseMotionToPoolDeferred()
+	{
+		// OnTriggerEnter2D 등 물리 콜백 중 DestroyImmediate 불가 → 다음 프레임에 풀 반환
+		yield return null;
+
+		poolReleaseScheduled = false;
+		if (!isDestroyRequested)
+			yield break;
+
+		ReleaseMotionToPool();
+	}
+
 	void ReleaseMotionToPool()
 	{
 		if (PoolManager.Instance != null)
@@ -490,23 +526,37 @@ public abstract class Motion : MonoBehaviour
 	{
 		isDestroyRequested = false;
 		isFinalizing = false;
+		poolReleaseScheduled = false;
 		isInitialLifeSet = false;
 		isExplosionRunning = false;
 		instance = null;
 		allRunes = null;
-		persistentEffects.Clear();
-		currentActiveRune = null;
-		activeIndex = -1;
 		life = 0f;
 		hitCooldownUntil.Clear();
 
 		RestoreVisualsForPool();
+		ClearAttachedRuneEffects();
+	}
+
+	/// <summary>
+	/// 풀 재사용 시 Destroy() 지연으로 이전 룬 상태(elapsedtime, remainingBounces 등)가 남는 문제 방지.
+	/// </summary>
+	void ClearAttachedRuneEffects()
+	{
+		persistentEffects.Clear();
+		currentActiveRune = null;
+		activeIndex = -1;
 
 		RuneEffect[] effects = GetComponents<RuneEffect>();
 		for (int i = effects.Length - 1; i >= 0; i--)
 		{
-			if (effects[i] != null)
+			if (effects[i] == null)
+				continue;
+
+			if (Application.isPlaying)
 				Destroy(effects[i]);
+			else
+				DestroyImmediate(effects[i]);
 		}
 	}
 
@@ -606,7 +656,11 @@ public abstract class Motion : MonoBehaviour
 
 		// 아직 실행할 액티브 룬이 남아있다면 해당 룬 컴포넌트 부착 및 실행 대기
 		if (activeIndex < activeRunes.Count)
+		{
 			currentActiveRune = AddRuneComponent(activeRunes[activeIndex]);
+			if (currentActiveRune == null)
+				Debug.LogWarning($"[Motion] 액티브 룬 Effect 부착 실패: {activeRunes[activeIndex].runeType}");
+		}
 		else
 			currentActiveRune = null; // 모두 실행했다면 널 처리
 	}
@@ -647,7 +701,11 @@ public abstract class Motion : MonoBehaviour
 		var triggers = allRunes.Where(r => r != null && r.category == RuneCategory.Trigger);
 
 		foreach (var trigger in triggers)
-			AddRuneComponent(trigger);
+		{
+			RuneEffect effect = AddRuneComponent(trigger);
+			if (effect == null)
+				Debug.LogWarning($"[Motion] 트리거 룬 Effect 부착 실패: {trigger.runeType}");
+		}
 	}
 
 	/// <summary>

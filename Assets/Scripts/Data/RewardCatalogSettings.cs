@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 상자 보상(RewardRollService)용 악세사리·성물 풀.
+/// 상자 보상(RewardRollService)용 악세사리 풀.
 /// Resources/Data/RewardCatalogSettings 에 두고 에디터에서 자동 갱신합니다.
 /// </summary>
 [CreateAssetMenu(
@@ -11,7 +11,6 @@ using UnityEngine;
 public class RewardCatalogSettings : ScriptableObject
 {
 	public List<AccessoryData> allAccessories = new List<AccessoryData>();
-	public List<RelicData> allRelics = new List<RelicData>();
 
 	static RewardCatalogSettings cached;
 

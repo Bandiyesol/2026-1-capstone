@@ -27,75 +27,99 @@ public class StageManager : MonoBehaviour
     {
         get
         {
-            if (stages != null && stages.Length > 0)
-                return stages.Length;
-
             if (stageDatas != null && stageDatas.Length > 0)
                 return stageDatas.Length;
+
+            if (stages != null && stages.Length > 0)
+                return stages.Length;
 
             return 1;
         }
     }
 
+    int MapCount => stages != null ? stages.Length : 0;
+
+    int ResolveMapIndex(int index)
+    {
+        if (MapCount <= 0)
+            return 0;
+
+        if (index < MapCount)
+            return index;
+
+        return index % MapCount;
+    }
+
     void Awake()
     {
         instance = this;
+        EnsureStageMaps();
+    }
+
+    void EnsureStageMaps()
+    {
+        if (stages != null && stages.Length >= TotalStages)
+            return;
+
+        GameObject stagesRoot = GameObject.Find("Stages");
+        if (stagesRoot == null)
+            return;
+
+        int childCount = stagesRoot.transform.childCount;
+        if (childCount <= 0)
+            return;
+
+        var maps = new GameObject[childCount];
+        for (int i = 0; i < childCount; i++)
+            maps[i] = stagesRoot.transform.GetChild(i).gameObject;
+
+        stages = maps;
     }
 
     void Start()
     {
-        // 처음엔 그냥 인덱스 0만 켜고 나머지는 끄기
-        for (int i = 0; i < stages.Length; i++)
-            stages[i].SetActive(i == 0);
+        UpdateStage();
     }
 
-    // 첫 스테이지 초기화
     public void ResetToFirstStage()
     {
         stageIndex = 0;
+        EnsureStageMaps();
         UpdateStage();
 
         if (GameManager.instance?.player != null)
             GameManager.instance.player.transform.position = Vector3.zero;
     }
 
-    // 현재 스테이지만 활성화
     void UpdateStage()
     {
-        for (int i = 0; i < stages.Length; i++)
+        if (MapCount <= 0)
+            return;
+
+        int activeMapIndex = ResolveMapIndex(stageIndex);
+        for (int i = 0; i < MapCount; i++)
         {
-            bool shouldBeActive = (i == stageIndex);
-            // 이미 원하는 상태면 SetActive 호출 자체를 스킵
+            bool shouldBeActive = i == activeMapIndex;
             if (stages[i].activeSelf != shouldBeActive)
                 stages[i].SetActive(shouldBeActive);
         }
     }
 
-    // 다음 스테이지 이동
     public bool NextStage()
     {
-        Debug.Log($"NextStage 호출 - stageIndex: {stageIndex}, stages.Length: {stages.Length}");
+        Debug.Log($"NextStage 호출 - stageIndex: {stageIndex}, TotalStages: {TotalStages}");
 
-        // 마지막 스테이지 클리어
-        if (stageIndex >= stages.Length - 1)
+        if (stageIndex >= TotalStages - 1)
         {
             GameManager.instance.GameVictory();
             return false;
         }
 
-        // 현재 비활성화
-        stages[stageIndex].SetActive(false);
-
-        // [물약] 현재 스테이지 종료 시 버프 카운트 감소/해제
         PotionEffect.instance?.OnStageChanged();
 
-        // 인덱스 증가
         stageIndex++;
+        UpdateStage();
 
-        // 다음 활성화
-        stages[stageIndex].SetActive(true);
-
-        // 플레이어 중앙 이동
         if (GameManager.instance?.player != null)
             GameManager.instance.player.transform.position = Vector3.zero;
 

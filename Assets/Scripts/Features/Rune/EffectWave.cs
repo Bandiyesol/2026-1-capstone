@@ -7,13 +7,16 @@ public class EffectWave : RuneEffect, IActiveDriver
 	float wavePhase;
 	float amplitude;
 	float angularFrequency;
+	float waveFrequencyPerUnit;
 	float moveSpeed;
 	Vector3 origin;
 	Vector2 forward;
 	Vector2 perpendicular;
 	Vector3 prevPosition;
 
-	public override bool isFinished => elapsedtime >= RuneDataAccess.GetDuration(data);
+	// 제자리 무기만 duration 종료. 투사체는 날아가는 동안 계속 물결.
+	public override bool isFinished =>
+		IsStationaryWeapon() && elapsedtime >= RuneDataAccess.GetDuration(data);
 
 	public override void InitEffect(WeaponInstance instance, Motion motion, RuneData runeData)
 	{
@@ -23,28 +26,42 @@ public class EffectWave : RuneEffect, IActiveDriver
 		forwardDistance = 0f;
 		wavePhase = 0f;
 		origin = transform.position;
+		prevPosition = origin;
 
-		float angleRad = transform.eulerAngles.z * Mathf.Deg2Rad;
-		forward = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)).normalized;
-		perpendicular = new Vector2(-forward.y, forward.x);
+		forward = transform.right;
+		perpendicular = transform.up;
 
 		float range = RuneDataAccess.GetAffectedRange(data);
-		amplitude = (range > 0f ? range : 0.75f) * weapon.size * (IsStationaryWeapon() ? 1.2f : 1.8f);
-
 		float speedMultiplier = RuneDataAccess.GetSpeedMultiplier(data);
-		angularFrequency = Mathf.Max(1.5f, speedMultiplier) * (IsStationaryWeapon() ? 2.5f : 5f);
-		moveSpeed = GetActiveMoveSpeed() * (IsStationaryWeapon() ? 0.35f : 0.75f);
-		prevPosition = transform.position;
+		moveSpeed = GetActiveMoveSpeed();
+
+		if (IsStationaryWeapon())
+		{
+			amplitude = (range > 0f ? range : 0.5f) * weapon.size * 0.35f;
+			angularFrequency = Mathf.Max(0.8f, speedMultiplier * 0.6f);
+			waveFrequencyPerUnit = 0f;
+		}
+		else
+		{
+			amplitude = (range > 0f ? range : 0.5f) * weapon.size * 0.65f;
+			// 이동 거리 기준 파형 — 빠른 투사체도 같은 비율로 흔들림
+			float wavelength = Mathf.Max(2.5f, weapon.reach / Mathf.Max(1f, speedMultiplier * 1.5f));
+			waveFrequencyPerUnit = (Mathf.PI * 2f) / wavelength;
+			angularFrequency = 0f;
+		}
 	}
 
 	public void UpdateMovement()
 	{
 		elapsedtime += Time.deltaTime;
-
 		forwardDistance += moveSpeed * Time.deltaTime;
-		wavePhase += angularFrequency * Time.deltaTime;
 
-		Vector2 offset = forward * forwardDistance + perpendicular * Mathf.Sin(wavePhase) * amplitude;
+		if (IsStationaryWeapon())
+			wavePhase += angularFrequency * Time.deltaTime;
+		else
+			wavePhase = forwardDistance * waveFrequencyPerUnit;
+
+		Vector2 offset = forward * forwardDistance + perpendicular * (Mathf.Sin(wavePhase) * amplitude);
 		Vector3 nextPosition = origin + new Vector3(offset.x, offset.y, 0f);
 		transform.position = nextPosition;
 

@@ -5,14 +5,13 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Unity 상단 메뉴 Tools → Create All Accessories / Create All Relics 로 실행.
-/// AccessoryData SO 118개 + RelicData SO 12개를 자동 생성한다.
+/// Unity 상단 메뉴 Tools → Create All Accessories 로 실행.
+/// AccessoryData SO를 자동 생성한다.
 /// 스프라이트는 자동 연결 불가 — 생성 후 인스펙터에서 직접 연결.
 /// </summary>
 public static class AccessoryCreator
 {
     const string AccessoryOutputPath = "Assets/Data/Accessory";
-    const string RelicOutputPath     = "Assets/Data/Relic";
 
     // ═══════════════════════════════════════════════════════
     //  메뉴 진입점
@@ -51,35 +50,6 @@ public static class AccessoryCreator
         AssetDatabase.Refresh();
         Debug.Log($"[AccessoryCreator] 악세사리 SO 생성 완료: {created}개");
         EditorUtility.DisplayDialog("완료", $"악세사리 SO {created}개 생성!\n경로: {AccessoryOutputPath}", "확인");
-    }
-
-    [MenuItem("Tools/Create All Relics")]
-    public static void CreateAllRelics()
-    {
-        EnsureDirectory(RelicOutputPath);
-
-        int created = 0;
-        foreach (var def in GetAllRelicDefs())
-        {
-            string path = $"{RelicOutputPath}/{def.fileName}.asset";
-            if (File.Exists(Path.GetFullPath(path)))
-            {
-                Debug.Log($"[AccessoryCreator] 이미 존재 — 건너뜀: {def.fileName}");
-                continue;
-            }
-
-            RelicData so = ScriptableObject.CreateInstance<RelicData>();
-            so.relicName   = def.relicName;
-            so.description = def.description;
-
-            AssetDatabase.CreateAsset(so, path);
-            created++;
-        }
-
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-        Debug.Log($"[AccessoryCreator] 성물 SO 생성 완료: {created}개");
-        EditorUtility.DisplayDialog("완료", $"성물 SO {created}개 생성!\n경로: {RelicOutputPath}", "확인");
     }
 
     // ═══════════════════════════════════════════════════════
@@ -121,13 +91,6 @@ public static class AccessoryCreator
         public string               description;
         public AccessoryEffectType  effectType;
         public List<StatModifier>   modifiers;
-    }
-
-    struct RelicDef
-    {
-        public string fileName;
-        public string relicName;
-        public string description;
     }
 
     // ═══════════════════════════════════════════════════════
@@ -267,29 +230,6 @@ public static class AccessoryCreator
         list.Add(new AccessoryDef { fileName="ACC_L_012", displayName="The Last Rune",         grade=AccessoryGrade.Legendary, accessoryType="특수", description="모든 스탯 100% 증가",      effectType=AccessoryEffectType.None, modifiers=new List<StatModifier>{ Multi(StatType.AttackPower, 1f), Multi(StatType.AttackSpeed, 1f), Multi(StatType.ProjectileSpeed, 1f), Multi(StatType.ProjectileRange, 1f), Multi(StatType.MeleeRange, 1f), Multi(StatType.CritChance, 1f), Multi(StatType.CritDamage, 1f), Multi(StatType.MovementSpeed, 1f), Multi(StatType.MaxHP, 1f), Multi(StatType.Defense, 1f), Multi(StatType.DamageReduction, 1f), Multi(StatType.Evasion, 1f), Multi(StatType.HealingBonus, 1f), Multi(StatType.GoldGainBonus, 1f) } });
 
         return list;
-    }
-
-    // ═══════════════════════════════════════════════════════
-    //  성물 정의 (12종)
-    // ═══════════════════════════════════════════════════════
-
-    static List<RelicDef> GetAllRelicDefs()
-    {
-        return new List<RelicDef>
-        {
-            new RelicDef { fileName="RELIC_001", relicName="검사 - 명예로운 기사의 인장",   description="[검성] 근접 공격 범위 100% 증가, 1초마다 가장 가까운 적에게 공격력 500% 관통 검기 발사, 검기 적중 시 2초 출혈" },
-            new RelicDef { fileName="RELIC_002", relicName="카우보이 - 보안관의 황금 벳지", description="[도탄의 폭풍] 모든 투사체 튕기기 5회 부여, 튕길 때마다 데미지 50% 복리 증폭, 마지막 튕김 시 폭발" },
-            new RelicDef { fileName="RELIC_003", relicName="스쿠버다이버 - 심해의 보물함", description="[심해의 유산] 룬 효과 3배, 처치 시 골드/아이템 드랍 300%, 상점 구매 시 확률적 골드 반환" },
-            new RelicDef { fileName="RELIC_004", relicName="사신 - 영혼 수확자의 후드",    description="[영혼의 군주] 처치 시 영혼 스택 획득(최대 200), 스택당 피해 2%, 최대 시 5% 확률로 즉사 발동" },
-            new RelicDef { fileName="RELIC_005", relicName="외계인 - 금단의 기술",         description="[멀티태스킹] 양옆에 동일 성능 분신 2개 상시 소환, 투사체와 특수 효과 100% 복사" },
-            new RelicDef { fileName="RELIC_006", relicName="해바라기 - 태양의 가호",       description="[태양신의 광휘] 10초마다 구체 생성, 획득 시 체력 20% 회복 + 7초 무적 + 자동 추적 레이저 발사" },
-            new RelicDef { fileName="RELIC_007", relicName="꿀벌 - 여왕벌의 로얄젤리",    description="[군단의 역습] 3초마다 자폭 벌 5마리 소환, 자폭 시 독 장판 생성, 장판 위 공격 속도 100% 증가" },
-            new RelicDef { fileName="RELIC_008", relicName="다람쥐 - 황금 도토리",         description="[황금 가속] 재화 획득 3배, 이속 비례 공격력 증가, 이동 중 투사체 회피 75% + 이속 100% 증가" },
-            new RelicDef { fileName="RELIC_009", relicName="루돌프 - 영원한 겨울밤",       description="[절대 영도] 주변 눈보라 영역 확장, 적 이속 -70% 방어 -50%, 5초 이상 머문 적 2초 동결" },
-            new RelicDef { fileName="RELIC_010", relicName="상어 - 포식자의 이빨",         description="[최상위 포식자] 처형 임계치 50% 고정, 처형 성공 시 이속 200% + 다음 공격 3회 치명타 100%" },
-            new RelicDef { fileName="RELIC_011", relicName="공룡 - 고대 생명의 화석",      description="[태초의 거인] 최대 체력 3배, 이동 시 지진 발생 + 공격 범위 100%, 피격 시 받은 데미지 100% 충격파 반사" },
-            new RelicDef { fileName="RELIC_012", relicName="검은고양이 - 대마법사의 마도서", description="[5원소의 성좌] 주변 5성구 화염·빙결·전격·독·물 번갈아 방출, 모든 속성 위력 150% 증가" },
-        };
     }
 }
 #endif

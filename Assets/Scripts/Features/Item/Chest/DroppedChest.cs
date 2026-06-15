@@ -58,6 +58,7 @@ public class DroppedChest : MonoBehaviour
     {
         isOpening = true;
         col.enabled = false;
+        GameAudio.Play(SfxId.ChestOpen);
         GameManager.instance.isLive = false;
 
         if (anim != null)
@@ -73,7 +74,7 @@ public class DroppedChest : MonoBehaviour
             yield return new WaitForSecondsRealtime(wait);
         }
 
-        // RewardRollService로 무기·악세사리·성물 후보 3개 뽑기
+        // RewardRollService로 무기·악세사리 후보 3개 뽑기
         if (RewardRollService.instance != null)
         {
             var candidates = RewardRollService.instance.Roll(grade);
@@ -95,7 +96,7 @@ public class DroppedChest : MonoBehaviour
                 else
                 {
                     Debug.LogWarning("[DroppedChest] RewardSelectUI, WeaponSelectUI 모두 없어 게임을 재개합니다.");
-                    GameManager.instance.Resume();
+                    GameManager.instance.ResumeGameplayFromOverlay();
                 }
             }
         }

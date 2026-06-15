@@ -31,6 +31,8 @@ public class ShopSlotInteract : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
+		GameAudio.PlayUiClick();
+
 		if (!canPurchase)
 			return;
 

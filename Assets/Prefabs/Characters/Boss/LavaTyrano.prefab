@@ -201,7 +201,7 @@ MonoBehaviour:
   health: 0
   maxHealth: 0
   core: {fileID: 0}
-  splitUnitPoolIndex: 8
+  splitUnitPoolIndex: -1
   BOSS_MAX_HEALTH: 0
   splitLevel: 0
   maxSplitLevel: 3

@@ -123,12 +123,6 @@ public class VolcanoPumpkinCore : MonoBehaviour
 
         cleared = true;
         SpawnRewards();
-
-        // 💡 보스 전체가 전멸했을 때만 WaveManager에게 보고합니다.
-        if (waveManager != null)
-        {
-            waveManager.OnEnemyDead();
-        }
     }
 
     void SpawnRewards()
@@ -142,11 +136,7 @@ public class VolcanoPumpkinCore : MonoBehaviour
         if (CoinDropManager.Instance != null) CoinDropManager.Instance.TryDropFromBoss(lastDeathPosition);
         if (ChestDropManager.Instance != null) ChestDropManager.Instance.TryDropFromBoss(lastDeathPosition);
 
-        if (PoolManager.Instance != null)
-        {
-            GameObject portal = PoolManager.Instance.GetGimmick(portalGimmickIndex);
-            if (portal != null) portal.transform.position = lastDeathPosition;
-        }
+        BossStageClearUtility.CompleteStage(lastDeathPosition, portalGimmickIndex, waveManager);
 
         gameObject.SetActive(false);
     }

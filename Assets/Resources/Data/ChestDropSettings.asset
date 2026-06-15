@@ -20,20 +20,16 @@ MonoBehaviour:
   legendaryWeight: 2
   normalChestReward:
     weapon: 50
-    accessory: 45
-    relic: 5
+    accessory: 50
   rareChestReward:
     weapon: 45
-    accessory: 50
-    relic: 5
+    accessory: 55
   uniqueChestReward:
     weapon: 40
-    accessory: 55
-    relic: 5
+    accessory: 60
   legendaryChestReward:
     weapon: 35
-    accessory: 55
-    relic: 10
+    accessory: 65
   normalItemGrade:
     common: 85
     rare: 12
