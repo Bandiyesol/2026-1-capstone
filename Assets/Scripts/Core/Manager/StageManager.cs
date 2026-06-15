@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// 게임의 전체적인 스테이지 전개, 구역별 맵 오브젝트의 활성/비활성 스왑,
-/// 그리고 스테이지 전환 시 플레이어 위치 초기화 등을 총괄하는 제어 매니저 클래스입니다.
-/// </summary>
 public class StageManager : MonoBehaviour
 {
     public static StageManager instance;
@@ -118,6 +114,8 @@ public class StageManager : MonoBehaviour
             GameManager.instance.GameVictory();
             return false;
         }
+
+        PotionEffect.instance?.OnStageChanged();
 
         stageIndex++;
         UpdateStage();

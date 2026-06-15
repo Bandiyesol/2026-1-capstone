@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // [RuneEffect.cs] 인터페이스 정의
 public interface IActiveDriver  { bool isFinished { get; } void UpdateMovement(); }
@@ -38,5 +39,62 @@ public abstract class RuneEffect : MonoBehaviour
 	protected void UpdateCooltime()
 	{
 		if (currentCooltime > 0f) currentCooltime -= Time.deltaTime;
+	}
+
+	/// <summary>애니메이션 근접 등 제자리 무기 여부</summary>
+	protected bool IsStationaryWeapon()
+	{
+		if (weapon?.info == null) return false;
+
+		return weapon.info.type is "Sword" or "Hammer" or "Sickle" or "Whip" or "Orb";
+	}
+
+	/// <summary>
+	/// 액티브 룬 이동 속도. 투사체는 기존 movespeed 유지, 제자리 무기는 룬이 이동 속도를 부여.
+	/// </summary>
+	protected float GetActiveMoveSpeed()
+	{
+		if (IsStationaryWeapon())
+			return Mathf.Max(1f, RuneDataAccess.GetAffectedRange(data) * 0.22f);
+
+		return Mathf.Max(0.35f, weapon.movespeed * 0.85f);
+	}
+
+	protected float GetActiveTurnSpeed()
+	{
+		if (IsStationaryWeapon())
+			return Mathf.Max(120f, RuneDataAccess.GetSpeedMultiplier(data) * 90f);
+
+		return Mathf.Max(180f, RuneDataAccess.GetSpeedMultiplier(data) * 140f);
+	}
+
+	protected static bool TryGetDamageable(Collider2D collider, out IDamageable damageable)
+	{
+		damageable = null;
+		if (collider == null) return false;
+
+		damageable = collider.GetComponent<IDamageable>()
+			?? collider.GetComponentInParent<IDamageable>()
+			?? collider.GetComponentInChildren<IDamageable>();
+
+		return damageable != null;
+	}
+
+	protected static Collider2D[] FindEnemyColliders(Vector2 center, float radius)
+	{
+		if (radius <= 0f)
+			return System.Array.Empty<Collider2D>();
+
+		Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
+		List<Collider2D> enemies = new();
+
+		foreach (Collider2D hit in hits)
+		{
+			if (hit == null) continue;
+			if (hit.CompareTag("Enemy") || TryGetDamageable(hit, out _))
+				enemies.Add(hit);
+		}
+
+		return enemies.ToArray();
 	}
 }

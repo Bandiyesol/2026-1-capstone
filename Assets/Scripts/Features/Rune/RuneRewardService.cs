@@ -15,6 +15,8 @@ public static class RuneRewardService
 		{
 			if (rune == null || rune.runeType == RuneType.None)
 				continue;
+			if (rune.runeType == RuneType.Boing)
+				continue;
 			if (exclude != null && ContainsRune(exclude, rune))
 				continue;
 			pool.Add(rune);

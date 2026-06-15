@@ -15,6 +15,9 @@ public class MotionGun : Motion
 	protected override void Update()
 	{
 		base.Update();
+		// base.Update()에서 수명 종료로 파괴됐다면 instance가 null이므로 즉시 중단
+		if (IsDestroyed) return;
+
 		if (Vector2.Distance(startPos, transform.position) > instance.reach) RequestDestroy(DestroyReason.WeaponLogic);
 	}
 

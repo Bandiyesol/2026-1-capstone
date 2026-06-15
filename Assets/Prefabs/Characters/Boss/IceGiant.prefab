@@ -298,7 +298,7 @@ MonoBehaviour:
   slamCooldown: 5
   slamRange: 2.5
   warningTime: 1
-  shardChance: 0.005
+  shardChance: 0.0075
   shardCount: 32
   enragedSpeedMultiplier: 3.5
   summonEnemyIndexes:

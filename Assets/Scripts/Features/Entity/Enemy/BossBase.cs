@@ -161,6 +161,9 @@ public class BossBase : MonoBehaviour, IDamageable
 
         waveManager?.OnEnemyDead();
 
+        // [악세사리 훅] 신기한 화살 — 보스 사망 알림
+        AccessoryEffect.instance?.NotifyBossDead();
+
         rigid.linearVelocity = Vector2.zero;
         canMove = false;
 
@@ -184,5 +187,14 @@ public class BossBase : MonoBehaviour, IDamageable
 
         if (gameObject.activeSelf)
             gameObject.SetActive(false);
+    }
+
+    // 보스가 무적상태일 때 공격을 받았을 때
+    protected IEnumerator FlashInvincible(Color flashColor)
+    {
+        if (spriter == null) yield break;
+        spriter.color = flashColor;
+        yield return new WaitForSeconds(0.15f);
+        spriter.color = Color.white;
     }
 }

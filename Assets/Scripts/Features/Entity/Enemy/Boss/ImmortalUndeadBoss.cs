@@ -209,7 +209,11 @@ public class ImmortalUndeadBoss : BossBase
 
     public override void TakeDamage(float damage)
     {
-        if (isInvincible) return;
+        if (isInvincible)
+        {
+            StartCoroutine(FlashInvincible(new Color(0.76f, 0.70f, 0.50f))); // 모래색
+            return;
+        }
         base.TakeDamage(damage);
     }
 

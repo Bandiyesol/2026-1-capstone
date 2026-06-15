@@ -669,9 +669,24 @@ public class RuneSelectUI : MonoBehaviour
 
         if (selectedSlotIndex != -1)
         {
+            if (RuneManager.instance.IsFinalSlotLocked(selectedSlotIndex)
+                || RuneManager.instance.IsFinalSlotLocked(slotIndex))
+            {
+                selectedSlotIndex = -1;
+                RefreshSlotHighlights();
+                ShowWarning("Final 룬은 마지막 슬롯에 고정되어 이동할 수 없습니다.");
+                return;
+            }
+
             RuneManager.instance.SwapSlots(selectedSlotIndex, slotIndex);
             selectedSlotIndex = -1;
             RefreshAll();
+            return;
+        }
+
+        if (RuneManager.instance.IsFinalSlotLocked(slotIndex))
+        {
+            ShowWarning("Final 룬은 마지막 슬롯에 고정되어 이동할 수 없습니다.");
             return;
         }
 

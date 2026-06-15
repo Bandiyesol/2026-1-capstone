@@ -2,16 +2,14 @@ using UnityEngine;
 
 public class EffectSpiral : RuneEffect, IActiveDriver
 {
-	private float elapsedtime;
-	private float currentRadius;
-	private float currentAngle;
-	private float radialSpeed;
-	private float angularSpeedMultiplier;
-	private Vector3 centerPoint;
-
+	float elapsedtime;
+	float currentRadius;
+	float currentAngle;
+	float radialSpeed;
+	float angularSpeed;
+	Vector3 centerPoint;
 
 	public override bool isFinished => elapsedtime >= RuneDataAccess.GetDuration(data);
-
 
 	public override void InitEffect(WeaponInstance instance, Motion motion, RuneData runeData)
 	{
@@ -24,12 +22,11 @@ public class EffectSpiral : RuneEffect, IActiveDriver
 
 		float range = RuneDataAccess.GetAffectedRange(data);
 		float radialMultiplier = range > 0f ? range : 1f;
-		radialSpeed = weapon.movespeed * 0.35f * radialMultiplier;
+		radialSpeed = GetActiveMoveSpeed() * (IsStationaryWeapon() ? 0.12f : 0.25f) * radialMultiplier;
 
 		float speedMultiplier = RuneDataAccess.GetSpeedMultiplier(data);
-		angularSpeedMultiplier = speedMultiplier > 0f ? speedMultiplier : 1f;
+		angularSpeed = Mathf.Max(1f, speedMultiplier * (IsStationaryWeapon() ? 0.8f : 1.5f));
 	}
-
 
 	public void UpdateMovement()
 	{
@@ -37,7 +34,7 @@ public class EffectSpiral : RuneEffect, IActiveDriver
 
 		currentRadius += radialSpeed * Time.deltaTime;
 		float safeRadius = Mathf.Max(currentRadius, 0.1f);
-		currentAngle += weapon.movespeed * angularSpeedMultiplier * Time.deltaTime / safeRadius;
+		currentAngle += angularSpeed * Time.deltaTime;
 
 		float x = Mathf.Cos(currentAngle) * currentRadius;
 		float y = Mathf.Sin(currentAngle) * currentRadius;

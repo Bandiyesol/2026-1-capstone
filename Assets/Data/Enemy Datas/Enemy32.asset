@@ -16,3 +16,4 @@ MonoBehaviour:
   moveSpeed: 6
   attackDamage: 800
   defense: 0.5
+  isUnique: 1

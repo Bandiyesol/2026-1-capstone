@@ -1,47 +1,40 @@
 using UnityEngine;
 
-// Æ¯Á¤ ÁöÁ¡À» Áß½ÉÀ¸·Î ±Ëµµ¸¦ µµ´Â ·é È¿°ú
 public class EffectOrbit : RuneEffect, IActiveDriver
 {
-	private float elapsedtime;     // ÁøÇà ½Ã°£
-	private Vector3 point;         // °øÀüÀÇ Áß½ÉÁ¡
-	private float currentAngle;    // ÇöÀç °øÀü °¢µµ(¶óµğ¾È)
-	private float orbitRange;      // °øÀü ¹İ°æ ¹üÀ§
+	float elapsedtime;
+	float duration;
+	float orbitRadius;
+	float orbitAngle;
+	float angularSpeed;
+	Vector3 center;
 
-	public override bool isFinished => elapsedtime >= RuneDataAccess.GetDuration(data);
+	public override bool isFinished => elapsedtime >= duration;
 
 	public override void InitEffect(WeaponInstance instance, Motion motion, RuneData runeData)
 	{
 		base.InitEffect(instance, motion, runeData);
 
-		orbitRange = RuneDataAccess.GetAffectedRange(data);
-		// ¹«±â Å©±â¸¦ ¹İ¿µÇÑ ÃÊ±â °øÀü ¹İ°æ °è»ê
-		float initialRadius = orbitRange > 0f ? orbitRange * weapon.size : 2f * weapon.size;
 		elapsedtime = 0f;
-		currentAngle = 0f;
+		duration = RuneDataAccess.GetDuration(data);
+		center = transform.position;
+		orbitAngle = transform.eulerAngles.z * Mathf.Deg2Rad;
 
-		// ¹«±â°¡ ¹Ù·Î ±Ëµµ¸¦ µ¹ ¼ö ÀÖµµ·Ï, ÇöÀç À§Ä¡¸¦ ±â¹İÀ¸·Î Áß½ÉÁ¡(point) ¿ª»ê
-		point = transform.position - new Vector3(Mathf.Cos(currentAngle) * initialRadius, Mathf.Sin(currentAngle) * initialRadius, 0);
+		float range = RuneDataAccess.GetAffectedRange(data);
+		orbitRadius = Mathf.Max(0.8f, (range > 0f ? range : weapon.reach) * 0.15f * weapon.size);
+		angularSpeed = Mathf.Max(25f, RuneDataAccess.GetSpeedMultiplier(data) * (IsStationaryWeapon() ? 35f : 55f)) * Mathf.Deg2Rad;
 	}
 
 	public void UpdateMovement()
 	{
 		elapsedtime += Time.deltaTime;
 
-		float currentRadius = orbitRange > 0f ? orbitRange * weapon.size : 2f * weapon.size;
-		// °¢¼Óµµ °è»ê (v = r * ¥ø °ø½Ä ÀÀ¿ë)
-		float angularSpeed = weapon.movespeed * RuneDataAccess.GetSpeedMultiplier(data) / currentRadius;
-		currentAngle += angularSpeed * Time.deltaTime;
+		// ìƒì„± ì‹œì  ìœ„ì¹˜ë¥¼ ì¤‘ì‹¬ìœ¼ë¡œ ê³ ì • ê³µì „ (í”Œë ˆì´ì–´ ì¶”ì  ì—†ìŒ)
+		orbitAngle += angularSpeed * Time.deltaTime;
+		Vector3 offset = new Vector3(Mathf.Cos(orbitAngle), Mathf.Sin(orbitAngle), 0f) * orbitRadius;
+		transform.position = center + offset;
 
-		// ¿ø¿îµ¿ÀÇ X, Y ÁÂÇ¥ °è»ê
-		float x = Mathf.Cos(currentAngle) * currentRadius;
-		float y = Mathf.Sin(currentAngle) * currentRadius;
-
-		// ¹«±â¸¦ Áß½ÉÁ¡(point)¿¡¼­ °è»êµÈ À§Ä¡·Î ÀÌµ¿
-		transform.position = point + new Vector3(x, y, 0f);
-
-		// ÁøÇà ¹æÇâÀ» ¹Ù¶óº¸µµ·Ï È¸Àü (Á¢¼± ¹æÇâÀÌ¹Ç·Î 90µµ(PI/2) ´õÇÔ)
-		float lookAngle = (currentAngle + Mathf.PI / 2f) * Mathf.Rad2Deg;
-		transform.rotation = Quaternion.Euler(0, 0, lookAngle);
+		float tangentAngle = (orbitAngle + Mathf.PI * 0.5f) * Mathf.Rad2Deg;
+		transform.rotation = Quaternion.Euler(0f, 0f, tangentAngle);
 	}
 }

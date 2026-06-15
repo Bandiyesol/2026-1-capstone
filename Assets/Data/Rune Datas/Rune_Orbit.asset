@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -15,16 +15,14 @@ MonoBehaviour:
   runeName: Orbit
   category: 0
   runeType: 1
-  runeIcon: {fileID: 4376907005291444959, guid: cac904f6eaa21034f9a1750e183cf9b2, type: 3}
-  runeDescription: 생성 지점 기준 원 궤도로 공전하며 공격합니다. 지속 중 충돌해도 파괴되지 않습니다.
-  runeDesc: 
+  runeIcon: {fileID: 0}
+  runeDescription: "\uBC1C\uC0AC\uB41C \uBB34\uAE30\uAC00 \uD50C\uB808\uC774\uC5B4 \uC8FC\uC704\uB97C \uACF5\uC804\uD558\uBA70 \uC8FC\uBCC0 \uC801\uC744 \uAC01\uACA9\uD569\uB2C8\uB2E4. [\uC561\uD2F0\uBE0C]"
+  runeDesc: "[\uAE30\uAC04] \uACF5\uC804 \uC9C0\uC18D \uC2DC\uAC04 3\uCD08\n[\uBC18\uC9C0\uB984] \uAC01 \uBB34\uAE30 reach \uAE30\uBC18\n[\uC18D\uB3C4] speedMultiplier \uBC30\uC728 \uC801\uC6A9"
   isDestroyed: 0
   power: 0
-  cooldownPenalty: 0
-  manaCost: 0
   incompatibleWith: 
   valueA: 1
   valueB: 1
   duration: 3
-  speedMultiplier: 2
-  affectedRange: 6
+  speedMultiplier: 1.5
+  affectedRange: 4

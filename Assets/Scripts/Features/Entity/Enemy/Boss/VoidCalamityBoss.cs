@@ -2,187 +2,166 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 전 우주의 재앙 (VoidCalamityBoss)
-/// - 부모 클래스(BossBase)의 패턴 쿨타임 시스템 상속 및 활용
-/// - 모든 소환수(기믹 적), 분신, 탄막을 PoolManager를 통해 오브젝트 풀링 제어
-/// </summary>
 public class VoidCalamityBoss : BossBase
 {
-    // ============================================================
-    // 혼돈의 세계 - 바이옴 기믹 소환 설정
-    // ============================================================
     [Header("혼돈의 세계 - 바이옴 기믹 소환")]
-    [Tooltip("소환할 바이옴 기믹 적들의 PoolManager 내 프리패브 인덱스 배열")]
+    [Tooltip("소환할 공허 바이옴 기믹 몬스터들의 PoolManager 내 오브젝트 풀 인덱스 배열")]
     [SerializeField] private int[] voidMinionIndexes = new int[0];
 
-    [Tooltip("보스의 체력이 100%일 때 적용되는 기본 소환 주기 (초)")]
+    [Tooltip("보스의 체력이 100%일 때 적용되는 기본 기믹 소환 주기 (초 단위)")]
     [SerializeField] private float voidSummonBaseInterval = 8f;
 
-    [Tooltip("보스의 체력이 바닥날 때 단축되는 한계 소환 주기 (초)")]
+    [Tooltip("보스의 체력이 0%에 가까워질 때 단축되는 최소 한계 소환 주기 (초 단위)")]
     [SerializeField] private float voidSummonMinInterval = 3f;
 
-    [Tooltip("보스 위치를 기준으로 기믹이 무작위 스폰될 수 있는 최대 원형 반경")]
+    [Tooltip("보스의 현재 위치를 기준으로 기믹이 무작위로 생성될 수 있는 최대 원형 반경 범위")]
     [SerializeField] private float voidSummonRadius = 6f;
 
-    // 실시간 경과 시간을 계산하여 기믹 소환 주기를 체크하는 누적 타이머
+    [Tooltip("보스의 체력이 100%일 때 한 번에 소환되는 기믹 몬스터의 최소 개수")]
+    [SerializeField] private int voidSummonMinCount = 1;
+
+    [Tooltip("보스의 체력이 0%에 가까워질 때 한 번에 소환되는 기믹 몬스터의 최대 개수")]
+    [SerializeField] private int voidSummonMaxCount = 4;
+
+    [Tooltip("실시간으로 흐른 시간을 누적하여 소환 주기를 체크하는 내부 타이머 변수")]
     private float voidSummonTimer = 0f;
 
-    // ============================================================
-    // 재앙의 전도사 - 분신 기믹
-    // ============================================================
     [Header("재앙의 전도사 - 분신 소환")]
-    [Tooltip("PoolManager.bossPrefabs 내에 등록된 분신 호위 적의 풀링 인덱스")]
+    [Tooltip("PoolManager에 등록된 전도사(분신) 호위 몬스터 프리패브의 오브젝트 풀 인덱스")]
     [SerializeField] private int apostlePoolIndex = 0;
 
-    [Tooltip("보스 중심점으로부터 분신들이 삼각형 구도로 배치될 거리 오프셋")]
+    [Tooltip("보스 중심점으로부터 분신들이 삼각형 구도로 사방에 배치될 거리 오프셋 수치")]
     [SerializeField] private float apostleSpawnOffset = 3f;
 
-    // 현재 분신 호위 페이즈(보스 무적 상태)가 활성화되어 작동 중인지 판별하는 플래그
+    [Tooltip("현재 분신 소환 패턴(보스 무적 상태 페이즈)이 발동 중인지 나타내는 상태 플래그")]
     private bool isApostlePatternActive = false;
 
-    // 풀에서 꺼내온 분신 게임 오브젝트(GameObject)들을 일괄 비활성화/관리하기 위한 참조 리스트
+    [Tooltip("생성된 분신 게임 오브젝트들을 참조하여 추후 일괄 비활성화/관리를 위해 담아두는 리스트")]
     private readonly List<GameObject> apostleObjects = new List<GameObject>();
 
-    // 분신 컴포넌트에 직접 접근하여 실시간 생사태(IsDead)를 감시하기 위한 스크립트 추적 리스트
+    [Tooltip("분신들의 실시간 사망 및 파괴 여부를 감시하기 위해 제어 스크립트 컴포넌트를 담아두는 리스트")]
     private readonly List<VoidApostleController> activeApostles = new List<VoidApostleController>();
 
-    // ============================================================
-    // 파멸 - 광역 공격 패턴
-    // ============================================================
     [Header("파멸 - 광역 공격 패턴")]
-    [Tooltip("파멸 패턴 발동 시 360도로 방사할 탄막의 풀링 인덱스")]
+    [Tooltip("광역 파멸 패턴 발동 시 풀에서 꺼내어 사용할 폭발 탄막/장판의 오브젝트 풀 인덱스")]
     [SerializeField] private int doomBulletIndex = 3;
 
-    [Tooltip("폭발 탄막을 전개하기 전, 자리에 멈춰 기를 모으는 선딜레이 시간 (초)")]
+    [Tooltip("폭발 탄막이 발사되기 전, 제자리에 멈춰 서서 주문을 캐스팅(차징)하는 총 대기 시간")]
     [SerializeField] private float doomChargeDuration = 4f;
 
-    [Tooltip("파멸 차징을 강제 취소(인터럽트)시키기 위해 차징 중 플레이어가 입혀야 하는 누적 데미지 통곡의 벽")]
+    [Tooltip("파멸 차징 상태의 보스를 저지(인터럽트)하기 위해 플레이어가 단시간에 입혀야 하는 누적 데미지 요구량")]
     [SerializeField] private float doomInterruptDamageThreshold = 150f;
 
-    [Tooltip("파멸 차징 중 바닥에 깔아줄 범위 경고 원형 이펙트 오브젝트")]
+    [Tooltip("파멸 주문이 차징되는 동안 바닥에 활성화되어 위험 구역을 보여줄 원형 경고 범위 이펙트 오브젝트")]
     [SerializeField] private GameObject doomWarningCircle;
 
-    // 현재 보스가 파멸 주문을 차징(기 모으기)하고 있는 중인지 나타내는 상태 플래그
+    [Tooltip("현재 보스가 파멸 주문을 영창하며 기를 모으고 있는 차징 상태인지 판별하는 플래그")]
     private bool isDoomCharging = false;
 
-    // 파멸 차징이 시작된 순간부터 보스가 입은 최종 누적 피해량을 저장하는 계측 변수
+    [Tooltip("파멸 차징이 시작된 이후 보스가 플레이어로부터 받은 실시간 누적 데미지 양을 기록하는 변수")]
     private float doomAccumulatedDamage = 0f;
 
-    // 파멸 차징 타이머 코루틴을 실행 도중 안전하게 제어하고 중도 정지하기 위한 코루틴 핸들 주소
+    [Tooltip("시간 경과 및 차징 취소 처리를 제어하는 코루틴의 중복 방지 및 강제 정지용 참조 핸들")]
     private Coroutine doomCoroutine = null;
 
-    // ============================================================
-    // 공통 시스템
-    // ============================================================
-    // 보스 및 분신들이 필드에 생성한 모든 탄막 오브젝트들을 유실 없이 추적하여 사망 시 소거하기 위한 리스트
+    [Tooltip("보스가 시전한 공격 탄막 및 기믹 투사체 오브젝트들의 실시간 추적 및 메모리 회수용 리스트")]
     private readonly List<GameObject> spawnedBullets = new List<GameObject>();
 
-    // 상시 기믹으로 소환된 바이옴 일반 적(몬스터) 오브젝트들을 보스 사망 시 함께 퇴장시키기 위한 추적 리스트
+    [Tooltip("필드에 상시 주기적으로 스폰되는 일반 공허 기믹 몬스터들의 추적 및 일괄 제거용 리스트")]
     private readonly List<GameObject> spawnedVoidGimmicks = new List<GameObject>();
 
     protected override void Start()
     {
-        // 부모의 Start 로직(기본 컴포넌트 할당 등)이 있다면 먼저 수행하도록 베이스 호출 포함 가능
-        // 리지드바디2D 구성 요소가 비어있다면 실시간 내부 룩업으로 자동 안전 컴포넌트 바인딩
-        if (rigid == null) rigid = GetComponent<Rigidbody2D>();
+        base.Start(); // 부모 클래스인 BossBase의 기본 초기화 세팅(타깃 추적 등) 수행
 
-        // 할당받은 보스 스크립터블 오브젝트(data)가 존재한다면 런타임 기초 능력치 정보 동기화
-        if (data != null)
+        if (rigid == null) rigid = GetComponent<Rigidbody2D>(); // 리지드바디가 누락된 경우 컴포넌트 안전하게 자동 할당
+
+        if (data != null) // 보스 능력치 데이터 시트가 존재하는지 검사
         {
-            maxHealth = data.maxHealth;
-            health = maxHealth;
-            defense = data.damageReduction; // 부모 스탯 구조의 피해 감소율을 방어력으로 치환 반영
+            maxHealth = data.maxHealth; // 데이터 시트에 저장된 최대 체력을 할당
+            health = maxHealth; // 시작 시점에 현재 체력을 최대 체력 수치로 전체 충전
+            defense = data.damageReduction; // 피해 감소율(0~1) 스탯을 방어력(defense) 필드에 대입
         }
 
-        // 게임 시작 시 기믹 스폰용 누적 타이머 초기화
-        voidSummonTimer = 0f;
+        voidSummonTimer = 0f; // 첫 기믹 소환 쿨타임을 위해 누적 스폰 타이머를 0으로 초기화
     }
 
     protected override void Update()
     {
-        // 게임 구조상 매니저가 유실되었거나, 일시정지 상태 혹은 플레이 중이 아니라면 프레임 연산 완전 차단
-        if (GameManager.instance == null || !GameManager.instance.isLive) return;
-        // 보스가 이미 생명을 다해 쓰러진 상태라면 불필요한 매 프레임 업데이트 연산 즉시 패스
-        if (isDead) return;
+        base.Update(); // 부모 클래스의 프레임별 기본 타이머 및 내부 쿨타임 연산 작동
 
-        // [기믹 최우선 규칙]: 현재 분신 소환 패턴이 활성화된 특수 페이즈라면
-        if (isApostlePatternActive)
+        if (GameManager.instance == null || !GameManager.instance.isLive) return; // 게임 매니저가 없거나 일시정지 상태면 정지
+        if (isDead) return; // 보스가 이미 사망한 상태라면 하위 루프 연산을 전부 스킵
+
+        if (isApostlePatternActive) // 만약 현재 전도사(분신) 패턴 페이즈가 작동 중이라면
         {
-            // 상시 기믹 타이머 흐름을 멈추고 오직 호위 분신들의 생존 현황만 실시간 하드웨어 감시
-            CheckApostlesStatus();
-            return;
+            CheckApostlesStatus(); // 실시간으로 소환된 분신들의 생존 상태를 정밀 체크하러 이동
+            return; // 분신 페이즈 중에는 보스가 무적이므로 상시 기믹 소환 타이머 처리를 차단
         }
 
-        // 분신 페이즈가 아닐 때만 평시 상태로 간주하여 상시 바이옴 기믹 소환 루틴 가동
-        UpdateVoidSummon();
+        UpdateVoidSummon(); // 평시 상태일 때만 주기적으로 소환수를 스폰하는 가변 타이머 로직 업데이트
     }
 
-    /// <summary>
-    /// 외부 타임라인 제어기 혹은 부모의 패턴 다이스 시스템에서 무작위 스킬을 발동시킬 때 호출하는 공용 매개 진입점
-    /// </summary>
+    protected override void StartRandomPattern()
+    {
+        ExecuteRandomPattern(); // 부모의 기본 무작위 패턴 호출 시, 커스텀 무작위 패턴 실행 함수로 연결
+    }
+
     public void ExecuteRandomPattern()
     {
-        // 반반(50%) 확률 연산을 통해 분신 소환 수호 패턴 또는 파멸 광역 방사 패턴 중 하나를 무작위 시전
-        if (Random.Range(0, 2) == 0) TriggerApostlePattern();
-        else TriggerDoomPattern();
+        if (Random.Range(0, 2) == 0) TriggerApostlePattern(); // 50% 확률로 0이 나오면 전도사 분신 소환 페이즈 시전
+        else TriggerDoomPattern();                            // 50% 확률로 1이 나오면 파멸 광역기 차징 패턴 시전
     }
 
-    // ============================================================
-    // [패턴 1] 혼돈의 세계 : 현재 체력량에 반비례하여 가속되는 실시간 적 소환
-    // ============================================================
     private void UpdateVoidSummon()
     {
-        // 매 프레임의 델타 타임을 누적 시켜 타이머 갱신
-        voidSummonTimer += Time.deltaTime;
+        voidSummonTimer += Time.deltaTime; // 전 프레임 대비 경과 시간을 타이머에 누적
 
-        // 보스의 현재 체력 비율을 0.0(사망) ~ 1.0(만개) 사이의 안전 규격 스케일로 정규화
-        float healthRatio = Mathf.Clamp01(health / maxHealth);
-
-        // 선형 보간(Lerp) 연산을 적용하여 보스의 체력이 떨어질수록(0에 수렴할수록) 스폰 대기 주기가 min값까지 극단적으로 짧아짐
+        float healthRatio = Mathf.Clamp01(health / maxHealth); // 현재 체력 비율을 0.0 ~ 1.0 범위로 제한하여 계산
+        // 체력 비율에 맞춰 소환 주기를 선형 보간 (체력이 줄어들수록 간격이 최소 수치에 가깝게 짧아짐)
         float currentInterval = Mathf.Lerp(voidSummonMinInterval, voidSummonBaseInterval, healthRatio);
 
-        // 유동적으로 변화하는 타깃 주기에 도달했을 때 기믹을 사방에 소환하고 타이머 리셋
-        if (voidSummonTimer >= currentInterval)
+        if (voidSummonTimer >= currentInterval) // 누적 시간이 계산된 동적 소환 주기를 초과했는지 체크
         {
-            voidSummonTimer = 0f;
-            SpawnVoidGimmick();
+            voidSummonTimer = 0f; // 소환 주기를 정상 만족했으므로 카운트 타이머 리셋
+            SpawnVoidGimmick();   // 실제 공허 기믹 몬스터 스폰 프로세스 구동
         }
     }
 
     private void SpawnVoidGimmick()
     {
-        // 인덱스 풀링 데이터 예외 가드 및 싱글톤 풀 매니저 널 체크
+        // 배열이 비어있거나 풀 매니저 싱글톤 인스턴스가 존재하지 않는 비정상 예외 상황 가드 코드
         if (voidMinionIndexes == null || voidMinionIndexes.Length == 0 || PoolManager.Instance == null) return;
 
-        // 소환 가능한 바이옴 적 인덱스 중 하나를 무작위로 추첨
-        int randomIndex = voidMinionIndexes[Random.Range(0, voidMinionIndexes.Length)];
+        float healthRatio = Mathf.Clamp01(health / maxHealth); // 체력 비율 연산
+        // 체력이 낮을수록 난이도 상승을 위해 한 번에 소환될 기믹 몬스터 수를 최대 수치에 가깝게 보간 및 반올림
+        int spawnCount = Mathf.RoundToInt(Mathf.Lerp(voidSummonMaxCount, voidSummonMinCount, healthRatio));
 
-        // 일반 에너미 풀(GetEnemy)에서 재사용 대기 중인 게임 오브젝트 참조 인출
-        GameObject gimmick = PoolManager.Instance.GetEnemy(randomIndex);
-        if (gimmick != null)
+        for (int i = 0; i < spawnCount; i++) // 결정된 소환 개수만큼 루프 반복 수행
         {
-            // 보스의 현재 중심 좌표를 기준으로 설정된 소환 반경 내 임의의 원형 무작위 2D 좌표 연산 후 배치
-            gimmick.transform.position = (Vector2)transform.position + Random.insideUnitCircle * voidSummonRadius;
-            gimmick.SetActive(true); // 필드 상에 실시간 기능 활성화 시전
-            spawnedVoidGimmicks.Add(gimmick); // 보스 급사 혹은 클리어 시 일괄 회수를 위해 관리 리스트에 적재
+            int randomIndex = voidMinionIndexes[Random.Range(0, voidMinionIndexes.Length)]; // 인덱스 배열에서 임의의 속성 인덱스 추첨
+            GameObject gimmick = PoolManager.Instance.GetGimmick(randomIndex); // 오브젝트 풀 시스템에서 알맞은 기믹 프리패브 인출
+
+            if (gimmick != null) // 풀에서 정상적으로 오브젝트가 반환되었는지 체크
+            {
+                // 보스의 현재 좌표를 기반으로 무작위 원형 범위(Inside Unit Circle) 내에 스폰 좌표 설정 및 오프셋 부여
+                gimmick.transform.position = (Vector2)transform.position + Random.insideUnitCircle * voidSummonRadius;
+                gimmick.SetActive(true); // 비활성화되어 있던 풀링 오브젝트를 활성화하여 필드에 등장시킴
+                spawnedVoidGimmicks.Add(gimmick); // 보스 사망 또는 페이즈 전환 시 일괄 정리를 위해 추적 리스트에 삽입
+            }
         }
     }
 
-    // ============================================================
-    // [패턴 2] 재앙의 전도사 : 3대 유니크 분신 소환 및 보스 절대 무적화
-    // ============================================================
     private void TriggerApostlePattern()
     {
-        anim.SetTrigger("Summon");
+        anim.SetTrigger("Summon"); // 소환 동작 전용 애니메이션 상태 트리거 구동
 
-        isApostlePatternActive = true; // 무적 상태 돌입용 플래그 마킹 (이 상태 동안 TakeDamage 대미지 완전 면역)
-        canMove = false;               // 기믹 연출 수행 및 자리를 지키기 위해 보스의 자체 AI 이동 정지
+        isApostlePatternActive = true; // 무적 및 특수 페이즈 전환 플래그 셋업
+        isPatternPlaying = true;       // 부모 클래스의 기본 자동 패턴 쿨타임 타이머 흐름을 일시 정지
+        canMove = false;               // 보스 자체의 인공지능 네비게이션 및 자율 이동 차단
+        if (rigid != null) rigid.linearVelocity = Vector2.zero; // 이동 정지 시 물리적 관성이 남아 미끄러지는 현상 제거
 
-        // 보스가 이동 관성에 의해 미끄러지는 현상을 방지하고자 물리 선형 속도를 즉각 제로(0)로 중립화
-        if (rigid != null) rigid.linearVelocity = Vector2.zero;
-
-        // 3마리의 분신이 완전히 고유하고 서로 다른 ApostleType을 가지도록 열거형 배열 기본 세팅
+        // 소환할 분신의 3가지 유니크 속성(씨앗, 파동, 강림) 타입을 배열로 순차 구성
         VoidApostleController.ApostleType[] types =
         {
             VoidApostleController.ApostleType.Seed,
@@ -190,178 +169,156 @@ public class VoidCalamityBoss : BossBase
             VoidApostleController.ApostleType.Advent
         };
 
-        // 피셔-예이츠 셔플(Fisher-Yates Shuffle) 알고리즘을 구동하여 중복 없는 유니크 타입 배열 무작위 무작위 난수 셔플
+        // 피셔-예이츠(Fisher-Yates) 셔플 알고리즘을 사용해 3가지 속성의 배치 순서를 무작위로 혼합
         for (int s = types.Length - 1; s > 0; s--)
         {
-            int r = Random.Range(0, s + 1);
-            (types[s], types[r]) = (types[r], types[s]); // 튜플을 이용한 원소 스왑 연산
+            int r = Random.Range(0, s + 1); // 현재 인덱스 이하의 무작위 위치 선택
+            (types[s], types[r]) = (types[r], types[s]); // 튜플 구조 분해 스왑을 이용해 두 원소의 위치를 서로 맞바꿈
         }
 
-        // 360도 평면 공간을 완벽히 3등분한 120도 단일 배치 각 오프셋 지정
-        float angleStep = 120f;
-        for (int i = 0; i < 3; i++)
+        float angleStep = 120f; // 360도를 3등분하여 정삼각형 구도를 형성하기 위한 배치 각도 단계 수치
+        for (int i = 0; i < 3; i++) // 3마리의 분신을 원형 배치하기 위한 생성 루프
         {
-            // 루프 순번 각도에 삼각함수 호도법 변환(Deg2Rad)을 투과하여 코사인(Cos), 사인(Sin) 기반 원형 좌표 벡터 연산
-            float angle = i * angleStep * Mathf.Deg2Rad;
+            float angle = i * angleStep * Mathf.Deg2Rad; // 각도를 삼각함수 연산용 호도법(라디안) 수치로 정밀 변환
+            // 코사인과 사인을 활용하여 보스 중심점에서 삼각 배율 거리 오프셋이 적용된 로컬 좌표 벡터 연산
             Vector3 spawnPos = transform.position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * apostleSpawnOffset;
 
-            // 보스/분신 전용 풀 카테고리(GetBoss)에서 재사용 대기 중인 분신 오브젝트 참조 인출
-            GameObject apostleObj = PoolManager.Instance.GetBoss(apostlePoolIndex);
-            if (apostleObj == null) continue;
+            GameObject apostleObj = PoolManager.Instance.GetBoss(apostlePoolIndex); // 보스 소환수 전용 풀에서 분신 인출
+            if (apostleObj == null) continue; // 풀에 잔여 오브젝트가 없어 인출에 실패했다면 예외 스킵
 
-            // 미리 연산해 둔 삼각 편대 꼭짓점 좌표 좌표로 분신 이동 후 필드에 개방
-            apostleObj.transform.position = spawnPos;
-            apostleObj.SetActive(true);
+            apostleObj.transform.position = spawnPos; // 연산된 월드 좌표계 위치로 분신의 스폰 위치 조정
+            apostleObj.SetActive(true); // 분신 오브젝트 실시간 활성화
 
-            // 해당 오브젝트의 제어 전담 컨트롤러 컴포넌트를 정밀 추출
-            VoidApostleController apostle = apostleObj.GetComponent<VoidApostleController>();
-            if (apostle != null)
+            VoidApostleController apostle = apostleObj.GetComponent<VoidApostleController>(); // 분신 제어 컴포넌트 획득
+            if (apostle != null) // 컴포넌트 유효성 검사
             {
-                // 완전히 셔플되어 중복이 차단된 고유 속성 타입(types[i]) 정보와 공유 투사체 목록 주소 바인딩 초기화 하달
+                // 셔플된 무작위 속성 타입, 원본 보스 스탯, 추적할 타깃 데이터, 생성된 탄막 리스트를 일괄 전달하며 초기화
                 apostle.Init(types[i], data, target, spawnedBullets);
-                activeApostles.Add(apostle); // 프레임 레벨 생사 추적 리스트에 연결
+                activeApostles.Add(apostle); // 실시간 생존 연산 및 생사 확인을 위한 감시 리스트에 바인딩
             }
-            apostleObjects.Add(apostleObj); // 페이즈 해제 시 풀 일괄 반환을 위한 컨테이너 적재
+            apostleObjects.Add(apostleObj); // 페이즈 강제 종료 시 메모리 회수 처리를 위한 추적 목록에 추가
         }
     }
 
     private void CheckApostlesStatus()
     {
-        // 가비지 컬렉션 부하 유발을 차단하고 탐색 도중 원소 탈락 순서 꼬임을 예방하고자 역순(Count-1부터 하향) 루프 가동
+        // 리스트 원소 삭제 시 인덱스가 앞으로 밀려 연산이 누락되는 현상을 원천 방지하기 위해 역순 루프 탐색 실행
         for (int i = activeApostles.Count - 1; i >= 0; i--)
         {
-            // 예상치 못하게 참조 주소가 소실되었거나, 분신 스크립트 내부 규칙 상 격파 판정(IsDead)이 완료된 객체 검출
+            // 분신 스크립트가 파괴되었거나 내부 상태가 사망(IsDead == true) 상태인지 체크
             if (activeApostles[i] == null || activeApostles[i].IsDead)
-                activeApostles.RemoveAt(i); // 실시간 생존 연산 목록에서 안전하게 제외 분리
+                activeApostles.RemoveAt(i); // 조건을 만족해 사망한 분신은 실시간 실효성 감시 리스트에서 즉각 배제
         }
 
-        // 실시간 연산 도중 필드 상의 호위 분신이 완벽히 0마리가 되었다면 기믹 파훼 성공으로 간주, 패턴 정상 종료 시퀀스 돌입
-        if (activeApostles.Count == 0)
-            EndApostlePattern(interrupted: false);
+        if (activeApostles.Count == 0) // 감시 리스트 안의 모든 분신이 제거되어 카운트가 0이 되었는지 판단
+            EndApostlePattern(interrupted: false); // 모든 분신이 완전 소멸했다면 플레이어의 기믹 성공이므로 패턴 정상 클리어 종료
     }
 
     private void EndApostlePattern(bool interrupted)
     {
-        // 무적 플래그 해제 및 보스의 자율 이동 컴포넌트 제어권 복구
-        isApostlePatternActive = false;
-        canMove = true;
+        isApostlePatternActive = false; // 보스의 페이즈 무적 상태를 원상 복구하여 해제
+        isPatternPlaying = false;       // 정지되어 있던 부모 패턴 제어용 내부 타이머 재개 활성화
+        canMove = true;                 // 고정되어 있던 보스의 자율 이동 및 AI 행동 권한 전면 복구
 
-        // 필드에 생존해 있거나 깔려 있던 모든 분신 원형 오브젝트들을 풀매니저 규칙에 입각해 비활성화 회수
-        foreach (GameObject obj in apostleObjects)
+        foreach (GameObject obj in apostleObjects) // 필드에 등록되었던 모든 분신 오브젝트를 순회
         {
-            if (obj != null) obj.SetActive(false);
+            if (obj != null) obj.SetActive(false); // 생존해 있거나 비활성화되지 않은 분신들을 전부 오브젝트 풀로 일괄 회수
         }
-        // 다음 정밀 페이즈 기동에 영향을 주지 않도록 잔여 참조 포인터 리스트 일괄 초기화
-        apostleObjects.Clear();
-        activeApostles.Clear();
+        apostleObjects.Clear(); // 캐싱용 오브젝트 리스트 메모리 청소
+        activeApostles.Clear(); // 감시용 컴포넌트 리스트 메모리 청소
 
-        // 보스가 사망하여 강제 중단(interrupted == true)된 특수 케이스가 아닌, 플레이어가 기믹을 완수해 종료된 상황인 경우
-        if (!interrupted)
+        if (!interrupted) // 만약 타임아웃 등의 강제 중단이 아닌 플레이어의 기믹 파훼로 정상 종료되었다면
         {
-            // [파훼 보상 기믹]: 보스의 최대 체력에 직결되는 고정 피해 5%를 페널티로 직접 감산 타격
-            health -= maxHealth * 0.05f;
-
-            // 페널티 강제 타격 연산으로 체력이 소진되었다면 사망 프로세스 가동
-            if (health <= 0) Dead();
+            health -= maxHealth * 0.05f; // [기믹 성공 보상] 보스의 최대 체력 기준 5%의 절대 고정 자해 대미지 페널티 부여
+            if (health <= 0) Dead();     // 자해 대미지로 인해 체력이 0 이하로 떨어졌을 경우 즉시 사망 처리 프로세스로 이관
         }
     }
 
-    // ============================================================
-    // [패턴 3] 파멸 : 캐스팅 인터럽트 시스템 및 360도 전방위 탄막 방사
-    // ============================================================
     private void TriggerDoomPattern()
     {
-        isDoomCharging = true;           // 파멸 피해량 누적 카운팅 활성화 플래그 온
-        canMove = false;                 // 대주문 주문 영창 연출을 위해 보스 기동 정지
-        doomAccumulatedDamage = 0f;      // 신규 패턴 시작에 따른 누적 피해량 미터기 리셋
+        isDoomCharging = true;           // 파멸 주문 영창 시전 플래그 활성화
+        isPatternPlaying = true;         // 부모 클래스의 기본 무작위 자동 패턴 주기 카운트 타이머 중지
+        canMove = false;                 // 강력한 광역 스펠 시전을 위해 시전 중 보스의 이동 상태를 강제 고정
+        doomAccumulatedDamage = 0f;      // 이전 차징 시 누적되었던 피격 데미지 기록 카운터를 0으로 초기화
 
-        // 특정 프레임 타임라인을 안전하게 제어하고 중도 취소하기 위해 비동기 코루틴 가동 후 핸들 주소 박싱 저장
-        doomCoroutine = StartCoroutine(DoomChargeRoutine());
+        doomCoroutine = StartCoroutine(DoomChargeRoutine()); // 일정 시간 차징 및 취소 처리를 관장하는 코루틴 스트림 시전
     }
 
     private IEnumerator DoomChargeRoutine()
     {
-        // 주문 차징 영창과 동시에 바닥 영역 시각적 예고 경고 범위 서클 오브젝트 상영 개시
-        if (doomWarningCircle != null) doomWarningCircle.SetActive(true);
+        if (doomWarningCircle != null) doomWarningCircle.SetActive(true); // 시각적으로 폭발 범위를 표시할 장판 경고 데칼 활성화
 
-        // 기를 모으도록 설계된 설정 임계 시간(4초) 동안 이 코루틴 흐름을 양보 대기
-        yield return new WaitForSeconds(doomChargeDuration);
+        yield return new WaitForSeconds(doomChargeDuration); // 설정된 주문 영창 시간(선딜레이) 동안 제자리에서 차징 대기
 
-        // 지정된 영창 시간 동안 플레이어가 딜 컷을 넘기지 못해 차징 상태가 온전히 유지되었다면 최종 주문 파멸 폭발 실행
-        if (isDoomCharging)
-            FireDoomBlast();
+        if (isDoomCharging) // 영창 시간이 흐르는 동안 플레이어의 방해로 차징이 깨지지 않고 유지되었는지 검사
+        {
+            FireDoomBlast(); // 끊기지 않았다면 파멸 광역 폭발 공격 최종 투사체 발사 프로세스 가동
+        }
 
-        // 코루틴 사이클이 완전히 종료되었으므로 연동 핸들 참조 주소 초기화
-        doomCoroutine = null;
-        canMove = true;         // 보스 다시 자유 이동 상태 복구
+        doomCoroutine = null; // 사용이 종료된 코루틴 참조 핸들 리셋
+
+        yield return new WaitForSeconds(1.0f); // 폭발 발사 이후 보스가 취하는 잠깐의 후딜레이 모션 시간 추가 대기
+
+        isPatternPlaying = false; // 보스 액션 종결에 따라 부모 클래스 패턴 타이머 흐름 정상 재개
+        canMove = true;           // 후딜레이가 끝났으므로 보스의 자유 이동 권한 다시 오픈
     }
 
     private void FireDoomBlast()
     {
-        isDoomCharging = false;
-        canMove = true;
+        isDoomCharging = false; // 주문 캐스팅 상태 종료 처리
 
-        if (doomWarningCircle != null) doomWarningCircle.SetActive(false);
+        if (doomWarningCircle != null) doomWarningCircle.SetActive(false); // 화면에 표시 중이던 경고 장판 데칼 비활성화 소거
+        if (PoolManager.Instance == null) return; // 싱글톤 인스턴스 예외 가드
 
-        if (PoolManager.Instance == null) return;
+        anim.SetTrigger("Attack"); // 보스의 강력한 광역 타격 공격 애니메이션 모션 트리거 시전
 
-        anim.SetTrigger("Attack");
+        GameObject doom = PoolManager.Instance.GetBossBullet(doomBulletIndex); // 오브젝트 풀 매니저에서 광역 파멸 탄환 객체 인출
+        if (doom == null) return; // 풀 인출 예외 발생 시 하위 처리 차단
 
-        // 보스 위치에 장판 오브젝트 소환 (IceGiantBoss SlamPattern과 동일한 방식)
-        GameObject doom = PoolManager.Instance.GetBossBullet(doomBulletIndex);
-        if (doom == null) return;
-
-        doom.transform.position = transform.position;
-        spawnedBullets.Add(doom);
+        doom.transform.position = transform.position; // 광역 장판 탄환의 원점 중심 좌표를 보스의 현재 월드 위치로 설정
+        spawnedBullets.Add(doom); // 보스 사망 또는 룸 클리어 시 강제 정리를 위해 공격 탄환 추적 목록에 바인딩
     }
 
-    // ============================================================
-    // 피격 연산 및 플레이어의 기믹 인터럽트(방해) 처리
-    // ============================================================
     public override void TakeDamage(float damageAmount)
     {
-        // [분신 페이즈 절대 규칙]: 수호 분신이 단 1마리라도 필드에 배치되어 있다면 완벽한 절대 무적이므로 피해량 연산을 수행하지 않고 즉시 스킵
-        if (isApostlePatternActive) return;
-
-        // 보스의 방어 스탯 수치(피해량 경감율)를 대입 연산하여 필터링된 최종 최종 대미지 산출
-        float finalDamage = damageAmount * (1f - defense);
-        health -= finalDamage; // 최종 차감 대미지를 실시간 보스 체력에서 차감
-
-        // [파멸 인터럽트 감지 규칙]: 현재 보스가 파멸 캐스팅 기 모으기 상태에 놓여 있다면
-        if (isDoomCharging)
+        if (isApostlePatternActive) // 만약 현재 전도사(분신) 페이즈 패턴이 돌아가는 상태라면 (보스 무적)
         {
-            // 플레이어가 입힌 최종 실제 피해 수치를 누적 감지 계측기에 고스란히 축적 스택
-            doomAccumulatedDamage += finalDamage;
+            StartCoroutine(FlashInvincible(new Color(0.4f, 0.15f, 0.6f))); // 데미지를 흡수하고 공허 특유의 보라색 무적 반짝임 이펙트만 송출 후 무시
+            return; // 타격 데미지 연산을 원천 차단하고 탈출
+        }
 
-            // 실시간 적립된 누적 딜량이 패턴 파쇄 임계값(150f)을 돌파했는지 조건 검사
-            if (doomAccumulatedDamage >= doomInterruptDamageThreshold)
+        float finalDamage = damageAmount * (1f - defense); // 플레이어 원본 데미지에 보스의 방어력(피해 감소율) 비율을 반영한 실 최종 데미지 산출
+        health -= finalDamage; // 산출된 실 데미지를 보스의 현재 체력에서 차감
+
+        if (isDoomCharging) // 보스가 무적 상태는 아니지만 파멸 주문을 영창하고 기를 모으던 중이었는지 확인
+        {
+            doomAccumulatedDamage += finalDamage; // 영창 중 받은 최종 실 데미지 수치를 인터럽트 카운터 누적치에 적립
+
+            if (doomAccumulatedDamage >= doomInterruptDamageThreshold) // 누적된 피격 데미지가 주문 파괴 임계값을 초과했는지 체크
             {
-                // 영창 시간 지연을 처리하고 있던 파멸 코루틴 타임라인이 존재한다면 엔진 레벨에서 중도 파괴(Stop) 지시
-                if (doomCoroutine != null)
+                if (doomCoroutine != null) // 구동되고 있던 영창 대기 코루틴이 유효하게 살아있는지 검사
                 {
-                    StopCoroutine(doomCoroutine);
-                    doomCoroutine = null; // 메모리 주소 초기화
+                    StopCoroutine(doomCoroutine); // 대기 중이던 차징 영창 코루틴 강제 정지
+                    doomCoroutine = null;
                 }
 
-                // 탄막 방사(FireDoomBlast) 시퀀스로 흐름이 이탈하는 것을 전면 무산시키고자 차징 플래그를 강제 오프하고 경직 상태(이동 허용)로 비상 탈출
-                isDoomCharging = false;
+                isDoomCharging = false;   // 차징 모드 강제 취소 및 경직 탈출(이동 회복)
+                isPatternPlaying = false; // BossBase 쿨타임 타이머 재개
                 canMove = true;
 
-                // 패턴 취소 처리에 따른 바닥 경고 원형 오브젝트 즉시 비활성화 은닉
-                if (doomWarningCircle != null) doomWarningCircle.SetActive(false);
+                if (doomWarningCircle != null) doomWarningCircle.SetActive(false); // 바닥 경고 서클 즉시 소거
             }
         }
 
-        // 피해 반영 최종 연산 결과 보스의 생명력이 0 이하 사망 임계선 밑으로 가라앉았다면 소멸 시퀀스 트리거
-        if (health <= 0) Dead();
+        if (health <= 0) Dead(); // 피격 후 체력이 0 이하면 사망 프로세스 호출
     }
 
     protected override void Dead()
     {
         if (isDead) return;
+        isDead = true;
 
         if (doomCoroutine != null) StopCoroutine(doomCoroutine);
-
         if (doomWarningCircle != null) doomWarningCircle.SetActive(false);
 
         if (isApostlePatternActive)
@@ -380,6 +337,6 @@ public class VoidCalamityBoss : BossBase
             if (gimmick != null) gimmick.SetActive(false);
         spawnedVoidGimmicks.Clear();
 
-        base.Dead();
+        gameObject.SetActive(false);
     }
 }

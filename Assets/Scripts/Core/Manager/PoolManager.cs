@@ -180,7 +180,7 @@ public class PoolManager : MonoBehaviour
     }
 
     /// <summary>무기 Motion 프리팹을 풀에서 꺼냅니다. motionId = 프리팹 이름 (예: effect_sword).</summary>
-    public Motion SpawnMotion(string motionId, Vector3 position, Quaternion rotation)
+    public Motion SpawnMotion(string motionId, Vector3 position, Quaternion rotation, bool activateImmediately = true)
     {
         if (string.IsNullOrEmpty(motionId) || !motionPrefabById.TryGetValue(motionId, out GameObject prefab))
         {
@@ -208,6 +208,7 @@ public class PoolManager : MonoBehaviour
         {
             GameObject created = Instantiate(prefab, transform);
             created.name = prefab.name;
+            created.SetActive(false);
             motion = created.GetComponent<Motion>();
             if (motion == null)
             {
@@ -220,7 +221,8 @@ public class PoolManager : MonoBehaviour
         }
 
         motion.transform.SetPositionAndRotation(position, rotation);
-        motion.gameObject.SetActive(true);
+        if (activateImmediately)
+            motion.gameObject.SetActive(true);
         return motion;
     }
 

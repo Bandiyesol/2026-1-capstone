@@ -22,10 +22,16 @@ public class LavaTyranoCore : MonoBehaviour
 
     void OnEnable()
     {
-        if (waveManager == null)
-            waveManager = StageManager.instance != null ? StageManager.instance.waveManager : null;
-
         portalSpawned = false;
+        units.Clear();
+        activeBullets.Clear();
+
+        if (waveManager == null)
+        {
+            waveManager = StageManager.instance != null ? StageManager.instance.waveManager : null;
+            if (waveManager == null)
+                waveManager = FindFirstObjectByType<WaveManager>();
+        }
     }
 
     // 신생 유닛 리스트 등록 가동
@@ -71,6 +77,12 @@ public class LavaTyranoCore : MonoBehaviour
             ClearAllBullets();
 
             SpawnPortal();
+
+            // 모든 분열체가 소멸 완료 → 웨이브 매니저에 보스 처치 1회 통보
+            waveManager?.OnEnemyDead();
+
+            // 코어 오브젝트 풀 반환
+            gameObject.SetActive(false);
         }
     }
 

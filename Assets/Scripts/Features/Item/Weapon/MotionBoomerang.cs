@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class MotionBoomerang : Motion
 {
-	private Vector3 startPos;
-	private Transform owner;
-	private bool isReturning;
-
+	Vector3 startPos;
+	Transform owner;
+	bool isReturning;
+	float outboundSpeed;
+	float returnSpeed;
+	const float CatchDistance = 0.35f;
 
 	protected override void OnStartMotion()
 	{
 		startPos = transform.position;
+		isReturning = false;
+		outboundSpeed = instance.movespeed * 1.15f;
+		returnSpeed = instance.movespeed * 0.6f;
 		if (PlayerStats.Instance != null) owner = PlayerStats.Instance.transform;
 	}
 
@@ -17,24 +22,28 @@ public class MotionBoomerang : Motion
 
 	protected override bool ShouldDestroyOnHit() => false;
 
-
 	protected override void Update()
 	{
 		base.Update();
+		if (IsDestroyed) return;
 
 		if (!isReturning && Vector2.Distance(startPos, transform.position) >= instance.reach)
 			isReturning = true;
 
-		if (isReturning && owner != null && Vector2.Distance(owner.position, transform.position) <= 0.2f)
+		if (isReturning && owner != null && Vector2.Distance(owner.position, transform.position) <= CatchDistance)
 			RequestDestroy(DestroyReason.WeaponLogic);
 	}
 
 	protected override void UpdateMovement()
 	{
 		base.UpdateMovement();
-		if (currentActiveRune != null) return;
+
+		if (currentActiveRune is IActiveDriver driver && !driver.isFinished)
+			return;
 
 		Vector2 moveDirection = transform.right;
+		float speed = outboundSpeed;
+
 		if (isReturning)
 		{
 			if (owner == null)
@@ -43,11 +52,22 @@ public class MotionBoomerang : Motion
 				return;
 			}
 
-			moveDirection = (owner.position - transform.position).normalized;
+			moveDirection = ((Vector2)owner.position - (Vector2)transform.position).normalized;
+			speed = returnSpeed;
 		}
 
 		float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
 		transform.rotation = Quaternion.Euler(0f, 0f, angle);
-		transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime);
+		transform.Translate(Vector3.right * speed * Time.deltaTime, Space.Self);
+	}
+
+	public override void ResetForPool()
+	{
+		base.ResetForPool();
+		isReturning = false;
+		startPos = Vector3.zero;
+		owner = null;
+		outboundSpeed = 0f;
+		returnSpeed = 0f;
 	}
 }
