@@ -25,6 +25,13 @@ public class EffectHoming : RuneEffect, IActiveDriver
 
 	public void UpdateMovement()
 	{
+		EffectRicochet ricochet = GetComponent<EffectRicochet>();
+		if (ricochet != null && ricochet.PreferStraightTravel)
+		{
+			transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+			return;
+		}
+
 		elapsedtime += Time.deltaTime;
 
 		if (target == null)
