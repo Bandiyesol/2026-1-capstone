@@ -36,9 +36,9 @@ public class MotionOrb : Motion
         // 프레임 경과 시간을 틱 타이머에 누적
         ticktimer += Time.deltaTime;
 
-        // 누적 시간이 무기 공격 속도(틱 간격)를 넘어서면
-        float tickInterval = Mathf.Max(0.05f, instance.attackspeed);
-        if (ticktimer >= tickInterval)
+        // 누적 시간이 틱 간격을 넘어서면 (공속 배율 반영)
+        float effectiveTickInterval = instance.ResolveEffectiveTickInterval();
+        if (ticktimer >= effectiveTickInterval)
         {
             // 범위 내 적들에게 데미지 적용
             ApplyTickDamage();

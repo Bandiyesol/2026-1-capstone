@@ -170,8 +170,7 @@ public class DeepSeaMutant : BossBase
     {
         for (int i = 0; i < summonCount; i++)
         {
-            GameObject enemy =
-                GameManager.instance.pool.GetEnemy(summonEnemyIndex);
+            GameObject enemy = GameManager.instance.pool.GetEnemy(summonEnemyIndex);
 
             if (enemy == null)
                 continue;
@@ -193,21 +192,20 @@ public class DeepSeaMutant : BossBase
     // ==========================================
     public override void TakeDamage(float damage)
     {
-        // 부하 링크 무적 페이즈 작동 중에는 본체 피해 완전 면역
         if (invinciblePhase)
+        {
+            StartCoroutine(FlashInvincible(new Color(0.2f, 0.4f, 0.5f))); // 어두운 물색
             return;
+        }
 
-        base.TakeDamage(damage); // 일반 상태일 때 실 데미지 연산
+        base.TakeDamage(damage);
 
-        // 체력이 50% 이하로 떨어지면 1회 한정 무적/소환 페이즈 돌입
-        if (!phaseTriggered &&
-            health <= maxHealth * 0.5f)
+        if (!phaseTriggered && health <= maxHealth * 0.5f)
         {
             phaseTriggered = true;
-            invinciblePhase = true; // 무적 상태 ON
-            summonTimer = 0f;       // 증식 타이머 리셋
-
-            SummonMinions(); // 최초 1차 부하 군단 즉시 소환
+            invinciblePhase = true;
+            summonTimer = 0f;
+            SummonMinions();
         }
     }
 
@@ -233,15 +231,15 @@ public class DeepSeaMutant : BossBase
             return;
         }
 
-        // 맵에 살아있는 부하가 단 한 마리도 없다면 보스의 무적 상태 강제 해제
+        /*// 맵에 살아있는 부하가 단 한 마리도 없다면 보스의 무적 상태 강제 해제
         if (!HasAliveSummons())
         {
             invinciblePhase = false;
-        }
+        }*/
     }
 
     // 소환수 리스트 정밀 검사
-    bool HasAliveSummons()
+    /*bool HasAliveSummons()
     {
         summons.RemoveAll(x => x == null); // 파괴된 객체 1차 정리
 
@@ -253,7 +251,7 @@ public class DeepSeaMutant : BossBase
         }
 
         return false; // 전멸 상태 시 false 반환
-    }
+    }*/
 
     // ==========================================
     // 사망 처리 오버라이드

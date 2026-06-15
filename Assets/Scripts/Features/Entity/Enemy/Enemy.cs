@@ -36,6 +36,11 @@ public class Enemy : MonoBehaviour, IDamageable
     bool isPoisoning;
     bool isBleeding;
 
+    // ── 중력장(블랙홀 등) ───────────────────────────
+    Vector2? gravityPullCenter;
+    float gravityPullForce;
+    int gravityPullFrame = -1;
+
     // 컴포넌트 캐싱 변수들
     Rigidbody2D rigid;
     Collider2D coll;
@@ -110,11 +115,32 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (target == null) return;
 
+        if (gravityPullFrame != Time.frameCount)
+        {
+            gravityPullCenter = null;
+            gravityPullForce = 0f;
+        }
+
         // 플레이어 방향으로 등속 이동 처리 및 관성(떨림) 방지를 위한 속도 제로화
         Vector2 dirVec = target.position - rigid.position;
         Vector2 nextVec = dirVec.normalized * speed * Time.fixedDeltaTime;
+
+        if (gravityPullCenter.HasValue && gravityPullForce > 0f)
+        {
+            Vector2 pullDir = gravityPullCenter.Value - rigid.position;
+            if (pullDir.sqrMagnitude > 0.0025f)
+                nextVec += pullDir.normalized * gravityPullForce * Time.fixedDeltaTime;
+        }
+
         rigid.MovePosition(rigid.position + nextVec);
         rigid.linearVelocity = Vector2.zero;
+    }
+
+    public void ApplyGravityPull(Vector2 center, float force)
+    {
+        gravityPullCenter = center;
+        gravityPullForce = force;
+        gravityPullFrame = Time.frameCount;
     }
 
     void LateUpdate()

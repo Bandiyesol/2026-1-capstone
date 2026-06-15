@@ -376,9 +376,11 @@ public class VolcanoPumpkinUnit : BossBase
     // -------------------------------------------------------
     public override void TakeDamage(float damage)
     {
-        // 소대원은 리더가 살아있는 동안 데미지 무시
         if (!isLeader && core != null && core.IsLeaderAlive())
+        {
+            StartCoroutine(FlashInvincible(new Color(0.9f, 0.45f, 0.1f))); // 주황색
             return;
+        }
 
         base.TakeDamage(damage);
     }

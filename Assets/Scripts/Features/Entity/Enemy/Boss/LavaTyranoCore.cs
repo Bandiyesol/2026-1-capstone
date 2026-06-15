@@ -17,6 +17,19 @@ public class LavaTyranoCore : MonoBehaviour
 
     bool portalSpawned; // 클리어 포탈이 중복 스폰되는 현상을 원천 방지하기 위한 플래그
 
+    WaveManager waveManager; // 전멸 판정 시 OnEnemyDead 통보용 (씬에서 자동 취득)
+
+    void OnEnable()
+    {
+        // 풀링 재사용 시 상태 완전 초기화
+        portalSpawned = false;
+        units.Clear();
+        activeBullets.Clear();
+
+        // 씬에 존재하는 WaveManager를 자동으로 취득 (WaveManager 수정 없이 자기완결)
+        waveManager = FindFirstObjectByType<WaveManager>();
+    }
+
     // 신생 유닛 리스트 등록 가동
     public void RegisterUnit(LavaTyranoUnit unit)
     {
@@ -60,6 +73,12 @@ public class LavaTyranoCore : MonoBehaviour
             ClearAllBullets();
 
             SpawnPortal();
+
+            // 모든 분열체가 소멸 완료 → 웨이브 매니저에 보스 처치 1회 통보
+            waveManager?.OnEnemyDead();
+
+            // 코어 오브젝트 풀 반환
+            gameObject.SetActive(false);
         }
     }
 

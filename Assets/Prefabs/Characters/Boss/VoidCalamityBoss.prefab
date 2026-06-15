@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 7701901604786962903}
   - component: {fileID: 5204176893511402109}
   - component: {fileID: 3576924690629770708}
+  - component: {fileID: -1934167680542377752}
   m_Layer: 6
   m_Name: VoidCalamityBoss
   m_TagString: Enemy
@@ -292,12 +293,30 @@ MonoBehaviour:
   health: 0
   maxHealth: 0
   voidMinionIndexes: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
-  voidSummonBaseInterval: 7.5
+  voidSummonBaseInterval: 7
   voidSummonMinInterval: 2.5
   voidSummonRadius: 15
+  voidSummonMinCount: 5
+  voidSummonMaxCount: 12
   apostlePoolIndex: 17
   apostleSpawnOffset: 5.5
   doomBulletIndex: 20
   doomChargeDuration: 10
   doomInterruptDamageThreshold: 750
   doomWarningCircle: {fileID: 784352810030098290}
+--- !u!114 &-1934167680542377752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5146501596607594757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
+  enemyFarFromPlayerDistance: 25
+  pastScreenEdge: 10
+  lateralPastScreen: 0
+  gameplayCamera: {fileID: 0}

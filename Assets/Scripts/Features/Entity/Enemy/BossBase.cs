@@ -191,4 +191,13 @@ public class BossBase : MonoBehaviour, IDamageable
         // 보스 오브젝트 비활성화 (풀로 반환 가능한 상태가 됨)
         gameObject.SetActive(false);
     }
+
+    // 보스가 무적상태일 때 공격을 받았을 때
+    protected IEnumerator FlashInvincible(Color flashColor)
+    {
+        if (spriter == null) yield break;
+        spriter.color = flashColor;
+        yield return new WaitForSeconds(0.15f);
+        spriter.color = Color.white;
+    }
 }

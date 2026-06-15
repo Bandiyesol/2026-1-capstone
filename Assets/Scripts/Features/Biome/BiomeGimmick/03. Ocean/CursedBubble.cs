@@ -50,8 +50,7 @@ public class CursedBubble : BiomeGimmick, IDamageable
             return;
 
         // 플레이어 따라가기
-        transform.position =
-            attachedPlayer.transform.position;
+        transform.position = attachedPlayer.transform.position;
 
         // 부착 후 대기 시간
         if (!damageStarted)

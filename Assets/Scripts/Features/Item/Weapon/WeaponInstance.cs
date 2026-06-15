@@ -15,8 +15,11 @@ public class WeaponInstance
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
 
-	// 무기가 룬 효과 등에 의해 분열된 상태인지 나타내는 플래그
+	// 무기가 룬 효과 등에 의해 분열된 상태인지 나타내는 플래그 (밸런스: 분열 가능 여부)
 	public bool isSplited;
+
+	// Split 룬으로 생성된 자식 투사체인지 (재분열 방지)
+	public bool isSplitChild;
 
 	// 부활(재사용) 여부를 나타내는 플래그
 	public bool isRevived;
@@ -28,7 +31,8 @@ public class WeaponInstance
 	public float reach;       // 사거리 (활의 소멸 거리, 오브의 생성 범위 등)
 	public float spawntime;   // 필드 지속 시간
 	public float cooltime;    // 공격 재사용 대기 시간
-	public float attackspeed; // 공격 속도 (오브 틱 데미지 주기 등)
+	public float attackspeed; // 무기 공격 속도 배율 (높을수록 빠름)
+	public float tickInterval; // Orb 전용: 틱 데미지 기본 간격(초)
 	public float movespeed;   // 투사체 날아가는 속도
 
 	// 다음 공격까지 남은 시간을 재는 내부 타이머
@@ -53,6 +57,9 @@ public class WeaponInstance
 		spawntime = UnityEngine.Random.Range(balance.spawntimeRange[0], balance.spawntimeRange[1]);
 		cooltime = UnityEngine.Random.Range(balance.cooltimeRange[0], balance.cooltimeRange[1]);
 		attackspeed = UnityEngine.Random.Range(balance.attackspeedRange[0], balance.attackspeedRange[1]);
+		tickInterval = balance.tickIntervalRange != null && balance.tickIntervalRange.Length >= 2
+			? UnityEngine.Random.Range(balance.tickIntervalRange[0], balance.tickIntervalRange[1])
+			: 0f;
 		movespeed = UnityEngine.Random.Range(balance.movespeedRange[0], balance.movespeedRange[1]);
 	}
 
@@ -63,6 +70,7 @@ public class WeaponInstance
 	{
 		info = other.info;
 		isSplited = other.isSplited;
+		isSplitChild = other.isSplitChild;
 		isRevived = other.isRevived;
 		damage = other.damage;
 		weight = other.weight;
@@ -71,6 +79,7 @@ public class WeaponInstance
 		spawntime = other.spawntime;
 		cooltime = other.cooltime;
 		attackspeed = other.attackspeed;
+		tickInterval = other.tickInterval;
 		movespeed = other.movespeed;
 	}
 
@@ -81,8 +90,8 @@ public class WeaponInstance
 	{
 		timer += dlt;
 
-		// [PlayerStats 연동] AttackSpeed는 쿨타임 배율 (기본 1.0, 낮을수록 빠름)
-		float effectiveCooltime = cooltime * ResolveAttackSpeedMultiplier();
+		// [PlayerStats 연동] effectiveAS = playerAS × weaponAS, cooltime ÷ effectiveAS
+		float effectiveCooltime = cooltime / ResolveEffectiveAttackSpeed();
 
 		if (timer >= effectiveCooltime)
 		{
@@ -92,10 +101,19 @@ public class WeaponInstance
 		}
 	}
 
-	static float ResolveAttackSpeedMultiplier()
+	/// <summary>플레이어 AttackSpeed × 무기 attackspeed 배율 (높을수록 빠름).</summary>
+	public float ResolveEffectiveAttackSpeed()
 	{
 		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
-		return stats != null ? stats.AttackSpeed : 1f;
+		float playerMultiplier = stats != null ? stats.AttackSpeed : 1f;
+		return playerMultiplier * Mathf.Max(0.01f, attackspeed);
+	}
+
+	/// <summary>Orb 틱 간격(초). tickInterval ÷ effectiveAS.</summary>
+	public float ResolveEffectiveTickInterval()
+	{
+		float baseInterval = tickInterval > 0f ? tickInterval : 1f;
+		return Mathf.Max(0.05f, baseInterval / ResolveEffectiveAttackSpeed());
 	}
 
 	/// <summary>
@@ -164,15 +182,8 @@ public class WeaponInstance
 			case "Sword":
 			case "Hammer":
 			case "Sickle":
-			case "Grimore":
-				spawnPos = playerPosition + (Vector3)(shotDirection * MeleeSpawnOffset);
-				break;
-
-			case "Bow":
-			case "Gun":
 			case "Whip":
-			case "Boomerang":
-			case "Staff":
+			case "Grimore":
 				spawnPos = playerPosition + (Vector3)(shotDirection * MeleeSpawnOffset);
 				break;
 
@@ -180,6 +191,13 @@ public class WeaponInstance
 				Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * reach;
 				spawnPos = playerPosition + new Vector3(randomOffset.x, randomOffset.y, 0f);
 				spawnRotation = Quaternion.identity;
+				break;
+
+			case "Bow":
+			case "Gun":
+			case "Boomerang":
+			case "Staff":
+				spawnPos = playerPosition + (Vector3)(shotDirection * MeleeSpawnOffset);
 				break;
 
 			default:
@@ -247,6 +265,7 @@ public class WeaponInstance
 			case "Sword":
 			case "Hammer":
 			case "Sickle":
+			case "Whip":
 			case "Grimore":
 			case "Orb":
 				clone.reach *= stats.MeleeRange;
@@ -255,7 +274,6 @@ public class WeaponInstance
 			// 원거리 계열 → ProjectileRange
 			case "Bow":
 			case "Gun":
-			case "Whip":
 			case "Boomerang":
 			case "Staff":
 				clone.reach *= stats.ProjectileRange;
