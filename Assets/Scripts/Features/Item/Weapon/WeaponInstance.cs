@@ -11,6 +11,8 @@ public class WeaponInstance
 {
 	const float MeleeSpawnOffset = 0.7f;
 	const float ProjectileSpreadDegrees = 12f;
+	const float ReachFromRangeBonusRatio = 0.65f;
+	const float SizeFromRangeBonusRatio = 0.4f;
 
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
@@ -258,28 +260,52 @@ public class WeaponInstance
 		// 투사체 속도 배율 (기본 1.0)
 		clone.movespeed *= stats.ProjectileSpeed;
 
-		// 무기 타입별 사거리 + 크기 배율 적용
+		// 무기 타입별 사거리·크기 배율 적용 (상한 없이 완만한 비율로 누적)
 		switch (info.type)
 		{
-			// 근접 계열 → MeleeRange
 			case "Sword":
 			case "Hammer":
 			case "Sickle":
 			case "Grimore":
 			case "Orb":
-				clone.reach *= stats.MeleeRange;
-				clone.size  *= stats.MeleeRange;
+				ApplyRangeScaling(clone, stats.MeleeRange);
 				break;
 
-			// 원거리 계열 → ProjectileRange
 			case "Bow":
 			case "Gun":
 			case "Whip":
 			case "Boomerang":
 			case "Staff":
-				clone.reach *= stats.ProjectileRange;
-				clone.size  *= stats.ProjectileRange;
+				ApplyRangeScaling(clone, stats.ProjectileRange);
 				break;
 		}
+	}
+
+	static void ApplyRangeScaling(WeaponInstance clone, float rangeStat)
+	{
+		float reachMultiplier = ResolveReachMultiplier(rangeStat);
+		float sizeMultiplier = ResolveSizeMultiplier(rangeStat);
+
+		clone.reach *= reachMultiplier;
+		clone.size *= sizeMultiplier;
+	}
+
+	static float ResolveReachMultiplier(float rangeStat)
+	{
+		return SoftenedRangeMultiplier(rangeStat, ReachFromRangeBonusRatio);
+	}
+
+	static float ResolveSizeMultiplier(float rangeStat)
+	{
+		return SoftenedRangeMultiplier(rangeStat, SizeFromRangeBonusRatio);
+	}
+
+	/// <summary>스탯 1.0 기준, 초과·감소분에만 비율을 곱해 완만하게 반영합니다.</summary>
+	static float SoftenedRangeMultiplier(float rangeStat, float bonusRatio)
+	{
+		if (rangeStat <= 0f)
+			return 0.25f;
+
+		return 1f + (rangeStat - 1f) * bonusRatio;
 	}
 }

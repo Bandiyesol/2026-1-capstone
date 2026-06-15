@@ -18,11 +18,13 @@ public class StagePortal : MonoBehaviour
                 return;
 
             isTriggered = true;
+            GameAudio.PlayPortalTravel();
             GameManager.instance.AdvanceStageViaPortal();
         }
         else if (StageManager.instance != null)
         {
             isTriggered = true;
+            GameAudio.PlayPortalTravel();
             StageManager.instance.NextStage();
         }
 
