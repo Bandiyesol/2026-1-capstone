@@ -62,7 +62,6 @@ public class AccessoryEffect : MonoBehaviour
 
     // MidasGlove (황금색 틴트)
     SpriteRenderer playerSpriter;
-    float lastMidasGoldCheck = 0f;
 
     // BurningAura
     Coroutine burningAuraRoutine;
@@ -163,7 +162,6 @@ public class AccessoryEffect : MonoBehaviour
     public float timeStopDuration       = 3f;
     [Tooltip("시간 정지 쿨타임(초)")]
     public float timeStopCooldown       = 30f;
-    float timeStopTimer = 0f;
 
     // DimensionBoots
     float lastMoveSpeedBonus = 0f;

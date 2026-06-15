@@ -367,7 +367,8 @@ public class FrostWolfBoss : BossBase
 
     void Pattern_Summon(int count)
     {
-        if (PoolManager.Instance == null) return;
+        if (BossSummonGuard.IsBlocked() || PoolManager.Instance == null)
+            return;
 
         for (int i = 0; i < count; i++)
         {

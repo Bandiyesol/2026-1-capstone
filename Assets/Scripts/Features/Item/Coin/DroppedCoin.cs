@@ -94,6 +94,7 @@ public class DroppedCoin : MonoBehaviour
 
         int value = settings != null ? settings.GetValue(coinType) : GetDefaultValue(coinType);
         GameManager.instance.AddCoin(value);
+        GameAudio.Play(SfxId.CoinPickup);
 
         gameObject.SetActive(false);
     }

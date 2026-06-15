@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>WeaponSelectUI / RewardSelectUI 공통 레이아웃.</summary>
 public static class ChoiceSelectUILayout
@@ -20,10 +21,29 @@ public static class ChoiceSelectUILayout
 		if (uiRoot == null)
 			return;
 
-		Transform panel = FindChoicePanel(uiRoot);
-		if (panel == null)
-			return;
+		foreach (Transform panel in FindChoicePanels(uiRoot))
+			ApplyToPanel(panel);
+	}
 
+	static System.Collections.Generic.IEnumerable<Transform> FindChoicePanels(Transform uiRoot)
+	{
+		var seen = new System.Collections.Generic.HashSet<Transform>();
+		foreach (Transform t in uiRoot.GetComponentsInChildren<Transform>(true))
+		{
+			if (t.name != "Btn0")
+				continue;
+
+			Transform parent = t.parent;
+			if (parent == null || parent.Find("Btn1") == null || parent.Find("Btn2") == null)
+				continue;
+
+			if (seen.Add(parent))
+				yield return parent;
+		}
+	}
+
+	static void ApplyToPanel(Transform panel)
+	{
 		ApplyPanel(panel);
 		ApplyHeaderTitle(panel);
 		ApplyCards(panel);
@@ -31,15 +51,8 @@ public static class ChoiceSelectUILayout
 
 	static Transform FindChoicePanel(Transform uiRoot)
 	{
-		foreach (Transform t in uiRoot.GetComponentsInChildren<Transform>(true))
-		{
-			if (t.name != "Btn0")
-				continue;
-
-			Transform parent = t.parent;
-			if (parent != null && parent.Find("Btn1") != null && parent.Find("Btn2") != null)
-				return parent;
-		}
+		foreach (Transform panel in FindChoicePanels(uiRoot))
+			return panel;
 
 		return null;
 	}
@@ -101,6 +114,9 @@ public static class ChoiceSelectUILayout
 		card.pivot = new Vector2(0.5f, 0.5f);
 		card.anchoredPosition = new Vector2(x + CardGroupOffsetX, CardOffsetY);
 		card.sizeDelta = new Vector2(CardWidth, CardHeight);
+
+		if (card.TryGetComponent(out Image cardImage))
+			cardImage.preserveAspect = false;
 
 		ApplyCardTitle(card);
 		ApplyCardIcon(card);

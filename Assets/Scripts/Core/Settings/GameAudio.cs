@@ -1,0 +1,49 @@
+using UnityEngine;
+
+/// <summary>런타임 효과음·짧은 BGM 재생 진입점.</summary>
+public static class GameAudio
+{
+	public static void Play(SfxId id)
+	{
+		GameAudioSettings.Instance?.PlaySfx(id);
+	}
+
+	public static void PlayWeapon(string weaponType)
+	{
+		GameAudioSettings.Instance?.PlayWeaponSfx(weaponType);
+	}
+
+	public static void PlayEnemyHit(GameObject target)
+	{
+		GameAudioSettings.Instance?.PlayEnemyHitSfx(target);
+	}
+
+	public static void PlayPlayerHit()
+	{
+		GameAudioSettings.Instance?.PlayPlayerHitSfx();
+	}
+
+	public static void PlayStageClear()
+	{
+		GameAudioSettings.Instance?.PlayStageClearStinger();
+	}
+
+	public static void PlayDeath()
+	{
+		GameAudioSettings.Instance?.PlayDeathStinger();
+	}
+
+	public static void PlayMainMenu()
+	{
+		GameAudioSettings.Instance?.TransitionToMainMenuBgm();
+	}
+
+	public static void EnsureStageBgm(int stageIndex)
+	{
+		GameAudioSettings.Instance?.EnsureStageBgmPlaying(stageIndex);
+	}
+
+	public static void PlayPanelOpen() => Play(SfxId.PanelOpen);
+	public static void PlayUiClick() => Play(SfxId.UiClick);
+	public static void PlayPurchase() => Play(SfxId.ItemPurchaseReward);
+}

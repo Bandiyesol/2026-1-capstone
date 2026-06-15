@@ -5,7 +5,11 @@ public static class BossDataDisplayUtility
 {
 	public static BossData ResolveForStage(int stageIndex, GameObject[] portraitPrefabFallback = null)
 	{
-		GameObject prefab = BossBriefPortraitResolver.ResolvePrefab(stageIndex, portraitPrefabFallback);
+		return ResolveFromPrefab(BossBriefPortraitResolver.ResolvePrefab(stageIndex, portraitPrefabFallback));
+	}
+
+	public static BossData ResolveFromPrefab(GameObject prefab)
+	{
 		if (prefab == null)
 			return null;
 

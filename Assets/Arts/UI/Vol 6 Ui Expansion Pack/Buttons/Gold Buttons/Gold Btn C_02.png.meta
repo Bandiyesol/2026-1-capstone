@@ -5,6 +5,9 @@ TextureImporter:
   - first:
       213: -93586019915418993
     second: Gold Btn C_02_0
+  - first:
+      213: -2847192836012345678
+    second: Gold Btn C_02_center
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,6 +137,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Gold Btn C_02_center
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 5
+        width: 60
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 8, y: 4, z: 8, w: 4}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1b2c3d4e5f6789012345678abcdef01
+      internalID: -2847192836012345678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -149,6 +174,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Gold Btn C_02_0: -93586019915418993
+      Gold Btn C_02_center: -2847192836012345678
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

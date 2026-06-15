@@ -103,6 +103,15 @@ public class PoolManager : MonoBehaviour
         return GetFromPool(gimmickPrefabs, gimmickPools, resolved, "Gimmick");
     }
 
+    public bool IsStagePortalGimmickIndex(int index)
+    {
+        if (gimmickPrefabs == null || index < 0 || index >= gimmickPrefabs.Length)
+            return false;
+
+        GameObject prefab = gimmickPrefabs[index];
+        return prefab != null && prefab.GetComponent<StagePortal>() != null;
+    }
+
     /// <summary>Stage Portal 프리팹이 gimmickPrefabs에 있으면 해당 인덱스를 반환합니다.</summary>
     public int FindStagePortalGimmickIndex()
     {
@@ -309,6 +318,34 @@ public class PoolManager : MonoBehaviour
         ReturnAllActiveInPools(coinPools);
         ReturnAllActiveInPools(chestPools);
         ReturnAllActiveMotions();
+    }
+
+    public void ReturnStageClearGimmicks()
+    {
+        if (gimmickPools == null)
+            return;
+
+        foreach (List<GameObject> pool in gimmickPools)
+        {
+            if (pool == null)
+                continue;
+
+            foreach (GameObject item in pool)
+            {
+                if (item == null || !item.activeSelf)
+                    continue;
+
+                if (item.GetComponent<StagePortal>() != null || item.GetComponent<ShopkeeperNpc>() != null)
+                    item.SetActive(false);
+            }
+        }
+    }
+
+    public void ReturnActiveEnemiesAndBosses()
+    {
+        ReturnAllActiveInPools(enemyPools);
+        ReturnAllActiveInPools(bossPools);
+        ReturnAllActiveInPools(bossBulletPools);
     }
 
     // 하나의 풀 배열 내부에 켜져 있는 모든 오브젝트를 끄는 내부 메서드

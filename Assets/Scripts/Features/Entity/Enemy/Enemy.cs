@@ -351,6 +351,8 @@ public class Enemy : MonoBehaviour, IDamageable
     // 적 사망 처리 메서드
     protected virtual void Die()
     {
+        GameAudio.Play(SfxId.EnemyDeath);
+
         BossBase.RecordEnemyDeath(transform.position);
 
         isLive = false;

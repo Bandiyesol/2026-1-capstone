@@ -7,16 +7,10 @@ using UnityEngine;
 public static class RewardCatalogEditorUtility
 {
 	const string AccessoryFolder = "Assets/Data/Accessory";
-	const string RelicFolder = "Assets/Data/Relic";
 
 	public static List<AccessoryData> LoadAllAccessories()
 	{
 		return LoadAssets<AccessoryData>(AccessoryFolder);
-	}
-
-	public static List<RelicData> LoadAllRelics()
-	{
-		return LoadAssets<RelicData>(RelicFolder);
 	}
 
 	static List<T> LoadAssets<T>(string folder) where T : Object

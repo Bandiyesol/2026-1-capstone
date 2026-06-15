@@ -311,8 +311,7 @@ public class VoidApostleController : BossBase
             Player player = collision.gameObject.GetComponent<Player>();
             if (player != null)
             {
-                if (GameManager.instance != null)
-                    GameManager.instance.Health -= attackDamage;
+                PlayerStats.ApplyDamage(attackDamage);
 
                 Vector2 knockDir = (collision.transform.position - transform.position).normalized;
                 player.ApplyKnockback(knockDir, dashKnockbackForce);

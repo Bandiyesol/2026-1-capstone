@@ -16,7 +16,25 @@ public class UHD : MonoBehaviour
         myText = GetComponent<Text>();
         mySlider = GetComponent<Slider>();
         stageManager = FindFirstObjectByType<StageManager>();
+        if (type == InfoType.Health && mySlider != null)
+        {
+            mySlider.minValue = 0f;
+            mySlider.maxValue = 1f;
+            mySlider.wholeNumbers = false;
+        }
         RefreshTextStyle(force: true);
+    }
+
+    void OnEnable()
+    {
+        if (type == InfoType.Health && PlayerStats.Instance != null)
+            PlayerStats.Instance.OnStatsChanged += RefreshHealthBar;
+    }
+
+    void OnDisable()
+    {
+        if (type == InfoType.Health && PlayerStats.Instance != null)
+            PlayerStats.Instance.OnStatsChanged -= RefreshHealthBar;
     }
 
     void LateUpdate()
@@ -51,20 +69,7 @@ public class UHD : MonoBehaviour
                 }
                 break;
             case InfoType.Health:
-                if (mySlider != null)
-                {
-                    // PlayerStats 우선 참조, 없으면 GameManager 폴백
-                    if (PlayerStats.Instance != null)
-                    {
-                        mySlider.value = PlayerStats.Instance.CurrentHP / PlayerStats.Instance.MaxHP;
-                    }
-                    else
-                    {
-                        float curHealth = GameManager.instance.Health;
-                        float maxHealth = GameManager.instance.maxHealth;
-                        mySlider.value = maxHealth > 0f ? curHealth / maxHealth : 0f;
-                    }
-                }
+                RefreshHealthBar();
                 break;
             case InfoType.Kill:
                 if (myText != null)
@@ -84,5 +89,31 @@ public class UHD : MonoBehaviour
 
         appliedStageIndex = stageIndex;
         HudStatTextStyle.Apply(myText, stageIndex);
+    }
+
+    void RefreshHealthBar()
+    {
+        if (mySlider == null)
+            return;
+
+        float curHealth;
+        float maxHp;
+        if (PlayerStats.Instance != null)
+        {
+            curHealth = PlayerStats.Instance.CurrentHP;
+            maxHp = PlayerStats.Instance.MaxHP;
+        }
+        else if (GameManager.instance != null)
+        {
+            curHealth = GameManager.instance.Health;
+            maxHp = GameManager.instance.maxHealth;
+        }
+        else
+        {
+            return;
+        }
+
+        float ratio = maxHp > 0f ? Mathf.Clamp01(curHealth / maxHp) : 0f;
+        mySlider.value = ratio;
     }
 }

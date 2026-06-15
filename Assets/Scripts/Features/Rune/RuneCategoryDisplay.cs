@@ -51,7 +51,8 @@ public static class RuneCategoryDisplay
 
 		Sprite sprite = GetIcon(rune);
 		image.sprite = sprite;
-		image.enabled = true;
+		image.enabled = sprite != null;
+		image.preserveAspect = true;
 		image.color = sprite != null ? Color.white : GetTint(rune.category);
 	}
 }

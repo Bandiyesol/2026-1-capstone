@@ -232,8 +232,7 @@ public class MainStoryUI : MonoBehaviour
 			return;
 
 		// Inspector 에 다른 OnClick(메뉴 복귀 등)이 있으면 스킵 후 루프가 납니다.
-		skipButton.onClick.RemoveAllListeners();
-		skipButton.onClick.AddListener(Skip);
+		UiClickSfxUtility.Rewire(skipButton, Skip);
 	}
 
 	static Transform FindDeep(Transform root, string childName)

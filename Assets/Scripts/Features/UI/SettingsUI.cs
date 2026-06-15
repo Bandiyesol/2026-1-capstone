@@ -103,6 +103,7 @@ public class SettingsUI : MonoBehaviour
 		isOpen = true;
 		HideDeleteAccountPanel();
 		panel.SetActive(true);
+		GameAudio.PlayPanelOpen();
 		panel.transform.SetAsLastSibling();
 		EnsurePanelInteractable();
 		FixUiRaycastBlockers();

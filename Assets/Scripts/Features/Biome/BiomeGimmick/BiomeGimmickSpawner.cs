@@ -70,9 +70,12 @@ public class BiomeGimmickSpawner : MonoBehaviour
         if (waveManager == null)
             return;
 
-        // 현재 스테이지 웨이브가 끝났으면 생성 중단
-        if (waveManager.currentWave >=
-            stageManager.stageDatas[stageManager.stageIndex].waves.Length)
+        StageData stageData = stageManager.stageDatas[stageManager.stageIndex];
+        if (stageData?.waves == null || stageData.waves.Length == 0)
+            return;
+
+        // 보스 웨이브(마지막 웨이브)부터 기믹 추가 스폰 중단
+        if (waveManager.currentWave >= stageData.waves.Length - 1)
             return;
 
         // 현재 웨이브

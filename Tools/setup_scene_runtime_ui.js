@@ -331,7 +331,7 @@ function addSimpleComponent(goId, compId, guid, className, extra = "") {
 // [ Manager ]
 addSimpleComponent(MANAGER_GO, ID(1), GUIDS.AccessoryManager, "AccessoryManager");
 addSimpleComponent(MANAGER_GO, ID(2), GUIDS.AccessoryEffect, "AccessoryEffect");
-addSimpleComponent(MANAGER_GO, ID(3), GUIDS.RewardRollService, "RewardRollService", "  allAccessories: []\r\n  allRelics: []\r\n");
+addSimpleComponent(MANAGER_GO, ID(3), GUIDS.RewardRollService, "RewardRollService", "  allAccessories: []\r\n");
 
 // Player
 addSimpleComponent(PLAYER_GO, ID(4), GUIDS.AccessoryInventory, "AccessoryInventory", "  maxAccessories: 12\r\n");

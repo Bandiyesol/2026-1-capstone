@@ -315,23 +315,28 @@ public class VoidCalamityBoss : BossBase
 
     protected override void Dead()
     {
-        if (isDead) return; // 중복 사망 연산 가드
+        if (isDead) return;
         isDead = true;
 
-        if (doomCoroutine != null) StopCoroutine(doomCoroutine); // 사망 시 구동 중인 파멸 코루틴 안전 강제 종료
+        if (doomCoroutine != null) StopCoroutine(doomCoroutine);
         if (doomWarningCircle != null) doomWarningCircle.SetActive(false);
 
-        // [오브젝트 풀링 관리] 필드 상에 열려 있던 모든 분신 오브젝트 일괄 비활성화 회수
-        foreach (GameObject obj in apostleObjects) if (obj != null) obj.SetActive(false);
+        if (isApostlePatternActive)
+            EndApostlePattern(interrupted: true);
 
-        // 잔존하던 공격 장판 오브젝트 일괄 비활성화 회수 및 리스트 비우기
-        foreach (GameObject bullet in spawnedBullets) if (bullet != null) bullet.SetActive(false);
+        foreach (GameObject obj in apostleObjects)
+            if (obj != null) obj.SetActive(false);
+        apostleObjects.Clear();
+        activeApostles.Clear();
+
+        foreach (GameObject bullet in spawnedBullets)
+            if (bullet != null) bullet.SetActive(false);
         spawnedBullets.Clear();
 
-        // 필드 상에 살아있던 일반 공허 소환 몬스터 오브젝트 일괄 비활성화 회수 및 리스트 비우기
-        foreach (GameObject gimmick in spawnedVoidGimmicks) if (gimmick != null) gimmick.SetActive(false);
+        foreach (GameObject gimmick in spawnedVoidGimmicks)
+            if (gimmick != null) gimmick.SetActive(false);
         spawnedVoidGimmicks.Clear();
 
-        gameObject.SetActive(false); // 모든 처리가 끝난 최종 보스 본체 오브젝트를 풀에 비활성화 반환
+        gameObject.SetActive(false);
     }
 }

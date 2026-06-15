@@ -47,6 +47,13 @@ public static class ChoiceSelectUILayoutSetup
 			count++;
 		}
 
+		foreach (RuneLoadoutViewUI ui in Object.FindObjectsByType<RuneLoadoutViewUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		{
+			ChoiceSelectUILayout.Apply(ui.transform);
+			EditorUtility.SetDirty(ui);
+			count++;
+		}
+
 		if (saveScene && !Application.isPlaying)
 		{
 			EditorSceneManager.MarkSceneDirty(scene);
