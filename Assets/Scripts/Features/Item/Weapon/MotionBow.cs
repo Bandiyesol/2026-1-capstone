@@ -52,7 +52,7 @@ public class MotionBow : Motion
 		base.UpdateMovement();
 
 		// 액티브 룬이 이동을 제어하지 않는 순수 화살 상태라면
-		if (currentActiveRune == null)
+		if (currentActiveRune == null && !RicochetStraightMovementActive)
 			// 현재 방향(로컬 right)을 기준으로 무기 이동속도만큼 직선 이동
 			transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime);
 	}

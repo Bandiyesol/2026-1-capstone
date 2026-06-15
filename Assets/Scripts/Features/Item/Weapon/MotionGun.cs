@@ -24,6 +24,6 @@ public class MotionGun : Motion
 	protected override void UpdateMovement()
 	{
 		base.UpdateMovement();
-		if (currentActiveRune == null) transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime);
+		if (currentActiveRune == null && !RicochetStraightMovementActive) transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime);
 	}
 }
