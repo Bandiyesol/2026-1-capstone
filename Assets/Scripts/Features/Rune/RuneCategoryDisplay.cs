@@ -31,6 +31,10 @@ public static class RuneCategoryDisplay
 		if (rune.runeIcon != null)
 			return rune.runeIcon;
 
+		Sprite fromCatalog = RuneIconLookup.GetByType(rune.runeType);
+		if (fromCatalog != null)
+			return fromCatalog;
+
 		return Resources.Load<Sprite>($"Sprites/RuneCategories/{rune.category}");
 	}
 

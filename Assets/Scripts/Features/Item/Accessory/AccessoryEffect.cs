@@ -203,9 +203,6 @@ public class AccessoryEffect : MonoBehaviour
     [Tooltip("시간 정지 쿨타임(초)")]
     public float timeStopCooldown       = 30f;
 
-    // DimensionBoots
-    float lastMoveSpeedBonus = 0f;
-
     // GodShield
     Coroutine godShieldRoutine;
     bool godShieldDamageFixed = false;

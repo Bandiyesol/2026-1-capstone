@@ -10,6 +10,7 @@ public static class ShopkeeperSetupEditor
 	const string ScenePath = "Assets/Scenes/ProtoType_LTG.unity";
 	const string TexturePath = "Assets/Arts/Characters/Player/shop v1.png";
 	const string PrefabPath = "Assets/Prefabs/Gimmick Objects/ShopkeeperNpc.prefab";
+	const string ResourcesPrefabPath = "Assets/Resources/Prefabs/Gimmick/ShopkeeperNpc.prefab";
 
 	[MenuItem("Tools/Game/Setup Shopkeeper NPC")]
 	public static void SetupFromMenu()
@@ -56,7 +57,38 @@ public static class ShopkeeperSetupEditor
 			return false;
 
 		RegisterInPool(pool, prefab);
+		EnsureResourcesCopy(prefab);
 		return true;
+	}
+
+	static void EnsureResourcesCopy(GameObject prefab)
+	{
+		if (prefab == null)
+			return;
+
+		string directory = System.IO.Path.GetDirectoryName(ResourcesPrefabPath);
+		if (!string.IsNullOrEmpty(directory) && !AssetDatabase.IsValidFolder(directory))
+		{
+			System.IO.Directory.CreateDirectory(directory.Replace('\\', '/'));
+			AssetDatabase.Refresh();
+		}
+
+		GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(ResourcesPrefabPath);
+		if (existing == prefab)
+			return;
+
+		if (existing != null)
+		{
+			AssetDatabase.DeleteAsset(ResourcesPrefabPath);
+		}
+
+		if (!AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(prefab), ResourcesPrefabPath))
+		{
+			Debug.LogWarning("[ShopkeeperSetup] Resources 복사에 실패했습니다: " + ResourcesPrefabPath);
+			return;
+		}
+
+		AssetDatabase.SaveAssets();
 	}
 
 	static Sprite[] LoadIdleSprites()
