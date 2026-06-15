@@ -286,7 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9457a8b5d0654024cb6094e644e55477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  data: {fileID: 11400000, guid: 11bbcddc7b2edd3479ab9d374476dded, type: 2}
+  data: {fileID: 11400000, guid: 6ba0744cfa8e6404f8ebe7887327db37, type: 2}
   target: {fileID: 0}
   waveManager: {fileID: 0}
   health: 0

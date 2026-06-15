@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b73513227a2e95439619d59611c7198, type: 3}
   m_Name: Enemy31
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  maxHealth: 850
+  maxHealth: 15000
   moveSpeed: 2
   attackDamage: 800
   defense: 0.4
+  isUnique: 0

@@ -35,6 +35,14 @@ public class PoisonSpore : BiomeGimmick
 
         // 성장 중엔 충돌 비활성화
         DisableCollider();
+
+        // 애니메이션 재시작
+        if (anim != null)
+        {
+            anim.Rebind();                        // 상태 완전 초기화
+            anim.Update(0f);                      // 즉시 반영
+            anim.Play("PoisonSpore", 0, 0f);      // 첫 프레임부터 재생
+        }
     }
 
     protected override void OnPlayerTrigger(Player player)
