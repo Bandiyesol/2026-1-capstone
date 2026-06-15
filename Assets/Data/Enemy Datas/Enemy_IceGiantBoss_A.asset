@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b73513227a2e95439619d59611c7198, type: 3}
   m_Name: Enemy_IceGiantBoss_A
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  maxHealth: 300
+  maxHealth: 5000
   moveSpeed: 1
-  attackDamage: 10
+  attackDamage: 8
   defense: 0.8
   isUnique: 0
