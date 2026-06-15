@@ -362,6 +362,10 @@ public class AccessoryEffect : MonoBehaviour
                 // NotifyBossSpawn/NotifyBossDead에서 처리
                 break;
 
+            case AccessoryEffectType.RandomElement:
+                // NotifyEnemyHit에서 처리
+                break;
+
             case AccessoryEffectType.ShadowTracker:
                 // NotifyEvasionSuccess에서 처리
                 break;
@@ -427,6 +431,7 @@ public class AccessoryEffect : MonoBehaviour
         t == AccessoryEffectType.DuplicateBullet   ||
         t == AccessoryEffectType.Explosion          ||
         t == AccessoryEffectType.BossArrow          ||
+        t == AccessoryEffectType.RandomElement      ||
         t == AccessoryEffectType.ShadowTracker      ||
         t == AccessoryEffectType.SkeletonOnKill     ||
         t == AccessoryEffectType.ShadowClone        ||
@@ -565,6 +570,18 @@ public class AccessoryEffect : MonoBehaviour
         if (Has(AccessoryEffectType.BleedOnAttack) && enemy != null && enemy.IsLive)
             if (Random.value < bleedChance)
                 enemy.ApplyBleed(bleedDamagePerTick, bleedTickInterval, bleedDuration);
+
+        // 불투명한 프리즘 — 공격 시 랜덤 상태이상 (화상/독/출혈 중 하나)
+        if (Has(AccessoryEffectType.RandomElement) && enemy != null && enemy.IsLive)
+        {
+            int rand = UnityEngine.Random.Range(0, 3);
+            switch (rand)
+            {
+                case 0: enemy.ApplyBurn(burnDamagePerTick, burnTickInterval, burnDuration); break;
+                case 1: enemy.ApplyPoison(poisonDamagePerTick, poisonTickInterval, poisonDuration); break;
+                case 2: enemy.ApplyBleed(bleedDamagePerTick, bleedTickInterval, bleedDuration); break;
+            }
+        }
 
         // 폭탄광 — 20% 확률 광역 폭발
         if (Has(AccessoryEffectType.Explosion) && enemy != null && enemy.IsLive)

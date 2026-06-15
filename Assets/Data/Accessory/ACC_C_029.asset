@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "\uC791\uC740 \uC57D\uBCD1"
   grade: 0
   accessoryType: "\uC720\uD2F8"
-  description: "\uD3EC\uC158 \uCFE8\uD0C0\uC784 -10%"
+  description: "\uD3EC\uC158 \uD6A8\uACFC +5%"
   icon: {fileID: 21300000, guid: 063359fdf4bdb1740bd6a1b25289023d, type: 3}
   modifiers:
   - statType: 19
