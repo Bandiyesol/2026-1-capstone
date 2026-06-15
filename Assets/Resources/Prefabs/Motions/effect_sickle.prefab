@@ -179,6 +179,7 @@ MonoBehaviour:
       weaponCategory: 
       legendaryPassiveId: 
     isSplited: 0
+    isSplitChild: 0
     isRevived: 0
     damage: 0
     weight: 0

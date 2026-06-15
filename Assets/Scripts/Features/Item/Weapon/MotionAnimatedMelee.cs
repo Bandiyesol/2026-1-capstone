@@ -26,22 +26,6 @@ public abstract class MotionAnimatedMelee : Motion
 
 	protected override bool ShouldDestroyOnHit() => false;
 
-	/// <summary>
-	/// 액티브 룬이 없으면 무기가 향한 방향(로컬 오른쪽)으로 전진합니다.
-	/// 액티브 룬이 있으면 룬이 이동을 제어합니다.
-	/// </summary>
-	protected override void UpdateMovement()
-	{
-		base.UpdateMovement();
-
-		// IActiveDriver 룬이 이동을 제어 중이면 추가 이동 없음
-		if (currentActiveRune is IActiveDriver)
-			return;
-
-		// 향한 방향(로컬 X축 = 스폰 시 rotation 기준 정면)으로 전진
-		transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime, Space.Self);
-	}
-
 	protected override void Update()
 	{
 		// 오브젝트가 활성화된 첫 프레임에 애니메이션을 시작한다.
@@ -105,10 +89,11 @@ public abstract class MotionAnimatedMelee : Motion
 		}
 	}
 
-	protected override bool ActuallyDestroy()
+	protected override bool CanDestroyNow(DestroyReason reason)
 	{
-		if (!base.ActuallyDestroy())
-			return false;
+		// Explode 등 트리거 룬은 애니메이션 중에도 즉시 파괴 허용
+		if (reason == DestroyReason.TriggerRune)
+			return true;
 
 		return isFinished || life <= 0f;
 	}
@@ -118,9 +103,6 @@ public abstract class MotionAnimatedMelee : Motion
 		base.ResetForPool();
 		isFinished = false;
 		animationStarted = false;
-
-		if (spriteRenderer != null)
-			spriteRenderer.enabled = true;
 
 		foreach (TrailRenderer trail in GetComponentsInChildren<TrailRenderer>(true))
 		{

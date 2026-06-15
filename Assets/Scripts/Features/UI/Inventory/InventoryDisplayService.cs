@@ -373,6 +373,7 @@ public static class InventoryDisplayService
 		float spawntime;
 		float cooltime;
 		float attackspeed;
+		float tickInterval;
 		float movespeed;
 
 		public WeaponStackGroup(WeaponInstance first)
@@ -394,6 +395,7 @@ public static class InventoryDisplayService
 			spawntime += weapon.spawntime;
 			cooltime += weapon.cooltime;
 			attackspeed += weapon.attackspeed;
+			tickInterval += weapon.tickInterval;
 			movespeed += weapon.movespeed;
 
 			if (icon == null)
@@ -410,6 +412,8 @@ public static class InventoryDisplayService
 			sb.AppendLine($"데미지 {damage:F0} (합산)");
 			sb.AppendLine($"쿨 {cooltime:F1}s (합산)");
 			sb.AppendLine($"공속 {attackspeed:F2} (합산)");
+			if (Type == "Orb" && tickInterval > 0f)
+				sb.AppendLine($"틱 {tickInterval:F2}s (합산)");
 			sb.AppendLine($"사거리 {reach:F1} (합산)");
 			sb.AppendLine($"크기 {size:F2} (합산)");
 
