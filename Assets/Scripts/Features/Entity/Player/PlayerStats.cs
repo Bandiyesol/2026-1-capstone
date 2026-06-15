@@ -421,6 +421,10 @@ public class PlayerStats : MonoBehaviour
             if (AccessoryEffect.instance != null && AccessoryEffect.instance.TryRevive())
                 return;
 
+            // [악세사리 훅] 불사조의 망토 — 풀체력 부활 (게임 내 1회)
+            if (AccessoryEffect.instance != null && AccessoryEffect.instance.TryPhoenixRevive())
+                return;
+
             OnDeath();
         }
     }

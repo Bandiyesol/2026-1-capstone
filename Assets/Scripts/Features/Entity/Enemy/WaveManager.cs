@@ -72,7 +72,14 @@ public class WaveManager : MonoBehaviour
         aliveEnemyCount = 0; // 이번 웨이브용 생존 카운트 리셋
 
         // 현재 진행 중인 스테이지 인덱스와 웨이브 인덱스를 기반으로 ScriptableObject 등에서 웨이브 데이터 인출
-        WaveData wave = stageManager.stageDatas[stageManager.stageIndex].waves[currentWave];
+        var stageData = stageManager.stageDatas[stageManager.stageIndex];
+        if (currentWave >= stageData.waves.Length)
+        {
+            Debug.LogWarning($"[WaveManager] currentWave({currentWave})가 waves 배열 범위({stageData.waves.Length}) 초과 — 웨이브 종료 처리");
+            NextWave();
+            yield break;
+        }
+        WaveData wave = stageData.waves[currentWave];
 
         // 🎯 [분기 1] 보스 웨이브인 경우
         if (wave.isBossWave)
