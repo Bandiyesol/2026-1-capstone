@@ -54,6 +54,8 @@ public abstract class Motion : MonoBehaviour
 	// 풀 반환 시 프리팹 원래 enabled 상태로 복구 (근접 무기 자식 스프라이트 등)
 	readonly Dictionary<SpriteRenderer, bool> defaultRendererStates = new Dictionary<SpriteRenderer, bool>();
 	readonly Dictionary<Collider2D, bool> defaultColliderStates = new Dictionary<Collider2D, bool>();
+	readonly Dictionary<BoxCollider2D, Vector2> defaultBoxColliderSizes = new Dictionary<BoxCollider2D, Vector2>();
+	readonly Dictionary<CircleCollider2D, float> defaultCircleColliderRadii = new Dictionary<CircleCollider2D, float>();
 	bool defaultVisualStatesCaptured;
 
 	// 폭발 룬 연출 중 재타격·조기 파괴 방지
@@ -79,6 +81,8 @@ public abstract class Motion : MonoBehaviour
 
 		// 외부에서 받은 룬 리스트를 깊은 복사(새 리스트 할당)하여 보관
 		allRunes = runes != null ? new List<RuneData>(runes) : new List<RuneData>();
+
+		RestoreDefaultColliderSizes();
 
 		// WeaponInstance에 정의된 무기 크기 스탯(size)을 실제 Transform Scale에 적용
 		transform.localScale = new Vector3(instance.size, instance.size, 1f);
@@ -535,6 +539,7 @@ public abstract class Motion : MonoBehaviour
 		hitCooldownUntil.Clear();
 
 		RestoreVisualsForPool();
+		RestoreDefaultColliderSizes();
 		ClearAttachedRuneEffects();
 	}
 
@@ -579,11 +584,36 @@ public abstract class Motion : MonoBehaviour
 		for (int i = 0; i < colliders.Length; i++)
 		{
 			Collider2D col = colliders[i];
-			if (col != null)
-				defaultColliderStates[col] = col.enabled;
+			if (col == null)
+				continue;
+
+			defaultColliderStates[col] = col.enabled;
+
+			if (col is BoxCollider2D box && !defaultBoxColliderSizes.ContainsKey(box))
+				defaultBoxColliderSizes[box] = box.size;
+			else if (col is CircleCollider2D circle && !defaultCircleColliderRadii.ContainsKey(circle))
+				defaultCircleColliderRadii[circle] = circle.radius;
 		}
 
 		defaultVisualStatesCaptured = true;
+	}
+
+	/// <summary>풀 재사용·Growth 등으로 바뀐 콜라이더 로컬 크기를 프리팹 기본값으로 되돌립니다.</summary>
+	public void RestoreDefaultColliderSizes()
+	{
+		CaptureDefaultVisualStates();
+
+		foreach (var pair in defaultBoxColliderSizes)
+		{
+			if (pair.Key != null)
+				pair.Key.size = pair.Value;
+		}
+
+		foreach (var pair in defaultCircleColliderRadii)
+		{
+			if (pair.Key != null)
+				pair.Key.radius = pair.Value;
+		}
 	}
 
 	void RestoreVisualsForPool()

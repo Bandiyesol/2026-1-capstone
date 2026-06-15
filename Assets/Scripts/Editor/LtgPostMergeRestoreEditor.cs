@@ -50,6 +50,7 @@ public static class LtgPostMergeRestoreEditor
 		RuneLoadoutHudSetupEditor.Apply(saveScene: false);
 		BossHealthHudSetupEditor.Apply(saveScene: false);
 		RuneIconAssigner.AssignAll();
+		ShopkeeperSetupEditor.TrySetupInActiveScene();
 		// 스타일 적용 후 카드 레이아웃·스프라이트 순서를 맞춥니다.
 		ChoiceSelectUILayoutSetup.ApplyAll(saveScene: false, showDialog: false);
 

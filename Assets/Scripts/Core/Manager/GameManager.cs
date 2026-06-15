@@ -229,6 +229,7 @@ public class GameManager : MonoBehaviour
 		FreezePlayerMovement();
 		PoolManager.Instance?.ReturnStageClearGimmicks();
 		PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
+		PoolManager.Instance?.ReturnActiveFieldDrops();
 
 		WaveManager wave = stage.waveManager != null
 			? stage.waveManager

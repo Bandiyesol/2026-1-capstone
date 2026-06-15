@@ -25,6 +25,7 @@ public class WaveManager : MonoBehaviour
     int preparedBossStageIndex = -1;
     int bossRollGeneration;
     bool bossPhaseCleared;
+    bool isTransitioningWave;
 
     /// <summary>스테이지 시작·보스 알리미와 동일한 보스 후보 중 하나를 미리 선택합니다.</summary>
     public int SelectedBossSpawnDataIndex { get; private set; } = -1;
@@ -38,6 +39,7 @@ public class WaveManager : MonoBehaviour
         isSpawning = false;
         aliveEnemyCount = 0;
         bossPhaseCleared = false;
+        isTransitioningWave = false;
 
         if (stageManager != null)
             PrepareBossForStage(stageManager.stageIndex);
@@ -53,6 +55,7 @@ public class WaveManager : MonoBehaviour
         isSpawning = false;
         aliveEnemyCount = 0;
         bossPhaseCleared = false;
+        isTransitioningWave = false;
     }
 
     public void PrepareBossForStage(int stageIndex, bool forceReroll = false)
@@ -172,6 +175,7 @@ public class WaveManager : MonoBehaviour
         SelectedBossSpawnDataIndex = -1;
         bossRollGeneration++;
         bossPhaseCleared = false;
+        isTransitioningWave = false;
     }
 
     public bool IsBossPhaseCleared => bossPhaseCleared;
@@ -181,6 +185,13 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     void StartWave()
     {
+        if (bossPhaseCleared || stageManager == null || stageManager.stageDatas == null)
+            return;
+
+        StageData stageData = stageManager.stageDatas[stageManager.stageIndex];
+        if (stageData?.waves == null || currentWave >= stageData.waves.Length)
+            return;
+
         StartCoroutine(SpawnWave());
     }
 
@@ -197,12 +208,9 @@ public class WaveManager : MonoBehaviour
 
         // 현재 진행 중인 스테이지 인덱스와 웨이브 인덱스를 기반으로 ScriptableObject 등에서 웨이브 데이터 인출
         var stageData = stageManager.stageDatas[stageManager.stageIndex];
-        if (currentWave >= stageData.waves.Length)
-        {
-            Debug.LogWarning($"[WaveManager] currentWave({currentWave})가 waves 배열 범위({stageData.waves.Length}) 초과 — 웨이브 종료 처리");
-            NextWave();
+        if (stageData.waves == null || currentWave >= stageData.waves.Length)
             yield break;
-        }
+
         WaveData wave = stageData.waves[currentWave];
 
         // 🎯 [분기 1] 보스 웨이브인 경우
@@ -231,10 +239,10 @@ public class WaveManager : MonoBehaviour
             yield return StartCoroutine(SpawnNormalWave(wave));
         }
 
-        isSpawning = false; // 모든 소환 프로세스가 안전하게 종료되었음을 마킹
+        isSpawning = false;
 
-        // 모든 소환 및 1프레임 안착 대기가 완전히 끝난 시점에만 최종적으로 적 수량을 체크하여 다음 단계 전환 결정
-        if (aliveEnemyCount <= 0)
+        // 보스 웨이브는 OnEnemyDead에서만 다음 단계로 넘깁니다.
+        if (!wave.isBossWave && aliveEnemyCount <= 0)
             NextWave();
     }
 
@@ -372,6 +380,7 @@ public class WaveManager : MonoBehaviour
             return;
 
         bossPhaseCleared = true;
+        isTransitioningWave = false;
         StopAllCoroutines();
         isSpawning = false;
         aliveEnemyCount = 0;
@@ -390,23 +399,26 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     void NextWave()
     {
-        if (bossPhaseCleared)
+        if (bossPhaseCleared || isTransitioningWave)
             return;
 
-        currentWave++; // 웨이브 카운트 전진
+        if (stageManager == null || stageManager.stageDatas == null)
+            return;
 
-        // 현재 진행 중인 스테이지의 전체 웨이브 정보 로드
         StageData stage = stageManager.stageDatas[stageManager.stageIndex];
+        if (stage.waves == null || currentWave >= stage.waves.Length)
+            return;
 
-        // 만약 현재 웨이브가 해당 스테이지가 보유한 총 웨이브 수에 도달하거나 넘어섰다면 전환 종료 (StageManager에서 클리어 처리)
+        isTransitioningWave = true;
+        currentWave++;
+
         if (currentWave >= stage.waves.Length)
         {
-            // 보스 소환 잔여 몬스터 정리 (포탈·상점 NPC 등 기믹은 유지)
             PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
+            isTransitioningWave = false;
             return;
         }
 
-        // 아직 잔여 웨이브가 남아있다면 설정된 딜레이(예: 1.5초) 후에 다음 웨이브를 개시하는 코루틴 실행
         StartCoroutine(StartWaveDelayed());
     }
 
@@ -416,6 +428,7 @@ public class WaveManager : MonoBehaviour
     IEnumerator StartWaveDelayed()
     {
         yield return new WaitForSeconds(nextWaveDelay);
+        isTransitioningWave = false;
         StartWave();
     }
 }
