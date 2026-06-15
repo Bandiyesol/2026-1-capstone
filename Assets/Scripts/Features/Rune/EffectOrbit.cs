@@ -22,7 +22,11 @@ public class EffectOrbit : RuneEffect, IActiveDriver
 
 		float range = RuneDataAccess.GetAffectedRange(data);
 		orbitRadius = Mathf.Max(0.8f, (range > 0f ? range : weapon.reach) * 0.15f * weapon.size);
-		angularSpeed = Mathf.Max(25f, RuneDataAccess.GetSpeedMultiplier(data) * (IsStationaryWeapon() ? 35f : 55f)) * Mathf.Deg2Rad;
+
+		if (!IsStationaryWeapon() && weapon.movespeed > 0.01f)
+			angularSpeed = weapon.movespeed / Mathf.Max(0.6f, orbitRadius);
+		else
+			angularSpeed = Mathf.Max(25f, RuneDataAccess.GetSpeedMultiplier(data) * 35f) * Mathf.Deg2Rad;
 	}
 
 	public void UpdateMovement()

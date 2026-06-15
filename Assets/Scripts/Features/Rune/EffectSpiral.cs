@@ -3,11 +3,18 @@ using UnityEngine;
 public class EffectSpiral : RuneEffect, IActiveDriver
 {
 	float elapsedtime;
-	float currentRadius;
+	float forwardDistance;
 	float currentAngle;
-	float radialSpeed;
+	float currentRadius;
+	float moveSpeed;
 	float angularSpeed;
-	Vector3 centerPoint;
+	float maxRadius;
+	float radiusGrowthRate;
+	float startAngle;
+	Vector3 origin;
+	Vector2 forward;
+	Vector2 perpendicular;
+	Vector3 prevPosition;
 
 	public override bool isFinished => elapsedtime >= RuneDataAccess.GetDuration(data);
 
@@ -16,31 +23,62 @@ public class EffectSpiral : RuneEffect, IActiveDriver
 		base.InitEffect(instance, motion, runeData);
 
 		elapsedtime = 0f;
-		centerPoint = transform.position;
-		currentAngle = transform.eulerAngles.z * Mathf.Deg2Rad;
-		currentRadius = 0.1f * weapon.size;
+		forwardDistance = 0f;
+		origin = transform.position;
+		prevPosition = origin;
+
+		float angleRad = transform.eulerAngles.z * Mathf.Deg2Rad;
+		forward = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)).normalized;
+		perpendicular = new Vector2(-forward.y, forward.x);
+		startAngle = angleRad;
+		currentAngle = startAngle;
+		currentRadius = 0.08f * weapon.size;
 
 		float range = RuneDataAccess.GetAffectedRange(data);
-		float radialMultiplier = range > 0f ? range : 1f;
-		radialSpeed = GetActiveMoveSpeed() * (IsStationaryWeapon() ? 0.12f : 0.25f) * radialMultiplier;
+		maxRadius = (range > 0f ? range : 1f) * weapon.size
+			* (IsStationaryWeapon() ? 0.35f : 0.25f);
 
 		float speedMultiplier = RuneDataAccess.GetSpeedMultiplier(data);
-		angularSpeed = Mathf.Max(1f, speedMultiplier * (IsStationaryWeapon() ? 0.8f : 1.5f));
+		float duration = Mathf.Max(0.1f, RuneDataAccess.GetDuration(data));
+
+		// 회전은 촘촘하게, 반지름은 duration 동안 천천히 maxRadius까지
+		angularSpeed = Mathf.Max(4f, speedMultiplier * (IsStationaryWeapon() ? 4f : 9f));
+		radiusGrowthRate = maxRadius / duration;
+
+		moveSpeed = GetActiveMoveSpeed();
 	}
 
 	public void UpdateMovement()
 	{
 		elapsedtime += Time.deltaTime;
 
-		currentRadius += radialSpeed * Time.deltaTime;
-		float safeRadius = Mathf.Max(currentRadius, 0.1f);
 		currentAngle += angularSpeed * Time.deltaTime;
+		currentRadius = Mathf.Min(maxRadius, 0.08f * weapon.size + radiusGrowthRate * elapsedtime);
 
-		float x = Mathf.Cos(currentAngle) * currentRadius;
-		float y = Mathf.Sin(currentAngle) * currentRadius;
-		transform.position = centerPoint + new Vector3(x, y, 0f);
+		float localAngle = currentAngle - startAngle;
 
-		float tangentAngle = (currentAngle + Mathf.PI * 0.5f) * Mathf.Rad2Deg;
-		transform.rotation = Quaternion.Euler(0f, 0f, tangentAngle);
+		if (IsStationaryWeapon())
+		{
+			float x = Mathf.Cos(localAngle) * currentRadius;
+			float y = Mathf.Sin(localAngle) * currentRadius;
+			transform.position = origin + new Vector3(x, y, 0f);
+		}
+		else
+		{
+			forwardDistance += moveSpeed * Time.deltaTime;
+			Vector2 center = (Vector2)origin + forward * forwardDistance;
+			Vector2 orbitOffset = forward * (Mathf.Cos(localAngle) * currentRadius)
+				+ perpendicular * (Mathf.Sin(localAngle) * currentRadius);
+			transform.position = center + orbitOffset;
+		}
+
+		Vector2 moveDir = (Vector2)transform.position - (Vector2)prevPosition;
+		if (moveDir.sqrMagnitude > 0.0001f)
+		{
+			float faceAngle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.Euler(0f, 0f, faceAngle);
+		}
+
+		prevPosition = transform.position;
 	}
 }

@@ -15,7 +15,10 @@ public class EffectGravity : RuneEffect, IStateEffect
 		elapsedtime = 0f;
 		duration = RuneDataAccess.GetDuration(data);
 		pullForce = RuneDataAccess.GetPullForce(data) * 2f;
-		pullRadius = RuneDataAccess.GetGravityRadius(data);
+
+		float baseRadius = RuneDataAccess.GetGravityRadius(data);
+		// 모션 프리팹 scale(weapon.size)에 비례해 중력 범위 확장
+		pullRadius = baseRadius * Mathf.Max(1f, weapon.size);
 	}
 
 	public void UpdateState()
@@ -24,10 +27,21 @@ public class EffectGravity : RuneEffect, IStateEffect
 			return;
 
 		elapsedtime += Time.deltaTime;
-		if (pullForce <= 0f || pullRadius <= 0f)
+	}
+
+	void FixedUpdate()
+	{
+		if (isFinished || parentMotion == null || parentMotion.instance == null)
 			return;
 
-		Vector2 center = transform.position;
+		if (pullForce <= 0f || pullRadius <= 0f || duration <= 0f)
+			return;
+
+		ApplyPullAt(transform.position);
+	}
+
+	void ApplyPullAt(Vector2 center)
+	{
 		Collider2D[] enemies = FindEnemyColliders(center, pullRadius);
 
 		foreach (Collider2D enemyCollider in enemies)

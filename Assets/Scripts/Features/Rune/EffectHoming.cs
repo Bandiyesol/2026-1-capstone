@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class EffectHoming : RuneEffect, IActiveDriver
 {
+	const float StationaryHomingMoveSpeed = 5f;
+
 	float elapsedtime;
 	float duration;
 	float searchRadius;
@@ -19,7 +21,7 @@ public class EffectHoming : RuneEffect, IActiveDriver
 		duration = RuneDataAccess.GetDuration(data);
 		searchRadius = Mathf.Max(2f, RuneDataAccess.GetAffectedRange(data));
 		turnSpeed = GetActiveTurnSpeed();
-		moveSpeed = GetActiveMoveSpeed() * 0.65f;
+		moveSpeed = IsStationaryWeapon() ? StationaryHomingMoveSpeed : GetActiveMoveSpeed();
 		target = FindClosestEnemy();
 	}
 

@@ -67,6 +67,13 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	public virtual void Initialize(WeaponInstance instance, List<RuneData> runes, float inheritedLifeTime = -1f)
 	{
+		ClearAttachedRuneEffects();
+
+		isDestroyRequested = false;
+		isFinalizing = false;
+		isExplosionRunning = false;
+		hitCooldownUntil.Clear();
+
 		this.instance = instance;
 
 		// 외부에서 받은 룬 리스트를 깊은 복사(새 리스트 할당)하여 보관
@@ -78,9 +85,6 @@ public abstract class Motion : MonoBehaviour
 		// 상속받은(외부에서 지정한) 수명이 있다면 적용하고, 없으면 각 무기별 기본 수명을 가져옴
 		if (inheritedLifeTime > 0f) life = inheritedLifeTime;
 		else life = GetDefaultTime();
-
-		// 초기화 완료 플래그 켜기 (이후 Update문 실행 가능)
-		isInitialLifeSet = true;
 
 		// 무기 콜라이더가 플레이어를 물리적으로 밀어내지 않도록 충돌 무시 설정
 		IgnorePlayerCollision();
@@ -94,6 +98,9 @@ public abstract class Motion : MonoBehaviour
 
 		// 장착된 첫 번째 액티브 룬을 바로 실행
 		ExecuteActiveRune();
+
+		// 초기화 완료 (룬 부착 후 Update 허용)
+		isInitialLifeSet = true;
 	}
 
 	/// <summary>
@@ -331,6 +338,7 @@ public abstract class Motion : MonoBehaviour
 
 		// 무기에 장착된 트리거 효과(충돌 시 발동) 룬 가져오기
 		var triggerEffects = GetComponents<RuneEffect>()
+			.Where(r => r != null)
 			.OfType<ITriggerEffect>()
 			.ToList();
 
@@ -494,19 +502,29 @@ public abstract class Motion : MonoBehaviour
 		isExplosionRunning = false;
 		instance = null;
 		allRunes = null;
-		persistentEffects.Clear();
-		currentActiveRune = null;
-		activeIndex = -1;
 		life = 0f;
 		hitCooldownUntil.Clear();
 
 		RestoreVisualsForPool();
+		ClearAttachedRuneEffects();
+	}
+
+	/// <summary>
+	/// 풀 재사용 시 Destroy() 지연으로 이전 룬 상태(elapsedtime, remainingBounces 등)가 남는 문제 방지.
+	/// </summary>
+	void ClearAttachedRuneEffects()
+	{
+		persistentEffects.Clear();
+		currentActiveRune = null;
+		activeIndex = -1;
 
 		RuneEffect[] effects = GetComponents<RuneEffect>();
 		for (int i = effects.Length - 1; i >= 0; i--)
 		{
-			if (effects[i] != null)
-				Destroy(effects[i]);
+			if (effects[i] == null)
+				continue;
+
+			DestroyImmediate(effects[i]);
 		}
 	}
 
@@ -606,7 +624,11 @@ public abstract class Motion : MonoBehaviour
 
 		// 아직 실행할 액티브 룬이 남아있다면 해당 룬 컴포넌트 부착 및 실행 대기
 		if (activeIndex < activeRunes.Count)
+		{
 			currentActiveRune = AddRuneComponent(activeRunes[activeIndex]);
+			if (currentActiveRune == null)
+				Debug.LogWarning($"[Motion] 액티브 룬 Effect 부착 실패: {activeRunes[activeIndex].runeType}");
+		}
 		else
 			currentActiveRune = null; // 모두 실행했다면 널 처리
 	}
@@ -647,7 +669,11 @@ public abstract class Motion : MonoBehaviour
 		var triggers = allRunes.Where(r => r != null && r.category == RuneCategory.Trigger);
 
 		foreach (var trigger in triggers)
-			AddRuneComponent(trigger);
+		{
+			RuneEffect effect = AddRuneComponent(trigger);
+			if (effect == null)
+				Debug.LogWarning($"[Motion] 트리거 룬 Effect 부착 실패: {trigger.runeType}");
+		}
 	}
 
 	/// <summary>

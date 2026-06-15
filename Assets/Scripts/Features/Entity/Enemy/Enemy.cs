@@ -39,7 +39,7 @@ public class Enemy : MonoBehaviour, IDamageable
     // ── 중력장(블랙홀 등) ───────────────────────────
     Vector2? gravityPullCenter;
     float gravityPullForce;
-    int gravityPullFrame = -1;
+    float gravityPullUntil;
 
     // 컴포넌트 캐싱 변수들
     Rigidbody2D rigid;
@@ -75,6 +75,9 @@ public class Enemy : MonoBehaviour, IDamageable
         isBurning     = false;
         isPoisoning   = false;
         isBleeding    = false;
+        gravityPullCenter = null;
+        gravityPullForce = 0f;
+        gravityPullUntil = 0f;
         coll.enabled = true;
         rigid.simulated = true;
         spriter.sortingOrder = 2; // 살아있을 때 레이어 순서 높임
@@ -115,7 +118,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (target == null) return;
 
-        if (gravityPullFrame != Time.frameCount)
+        if (Time.time > gravityPullUntil)
         {
             gravityPullCenter = null;
             gravityPullForce = 0f;
@@ -140,7 +143,8 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         gravityPullCenter = center;
         gravityPullForce = force;
-        gravityPullFrame = Time.frameCount;
+        // Update에서 갱신 → 다음 FixedUpdate까지 유지 (frameCount 동기화 버그 방지)
+        gravityPullUntil = Time.time + 0.2f;
     }
 
     void LateUpdate()

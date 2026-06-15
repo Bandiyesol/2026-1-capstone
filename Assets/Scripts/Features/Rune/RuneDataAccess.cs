@@ -14,6 +14,7 @@ public static class RuneDataAccess
 		ActiveRuneData a when a.duration > 0f => a.duration,
 		GravityRuneData g when g.duration > 0f => g.duration,
 		{ category: RuneCategory.Active } => DefaultActiveDuration,
+		{ runeType: RuneType.Gravity } => 3f,
 		_ => 0f
 	};
 
@@ -109,8 +110,9 @@ public static class RuneDataAccess
 
 	public static float GetGravityRadius(RuneData data) => data switch
 	{
-		{ runeType: RuneType.Gravity, valueA: > 0f } => Mathf.Max(3f, data.valueA),
-		{ runeType: RuneType.Gravity } => 3f,
+		GravityRuneData g when g.pullRadius > 0f => g.pullRadius,
+		{ runeType: RuneType.Gravity, valueA: > 0f } => Mathf.Max(6f, data.valueA),
+		{ runeType: RuneType.Gravity } => 6f,
 		_ => 0f
 	};
 

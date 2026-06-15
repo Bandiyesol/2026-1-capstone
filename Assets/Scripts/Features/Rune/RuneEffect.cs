@@ -41,6 +41,9 @@ public abstract class RuneEffect : MonoBehaviour
 		if (currentCooltime > 0f) currentCooltime -= Time.deltaTime;
 	}
 
+	/// <summary>근접·오브 등 제자리 무기 — 액티브 룬 기본 전진 속도</summary>
+	const float DefaultStationaryActiveMoveSpeed = 3f;
+
 	/// <summary>애니메이션 근접 등 제자리 무기 여부</summary>
 	protected bool IsStationaryWeapon()
 	{
@@ -50,14 +53,18 @@ public abstract class RuneEffect : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 액티브 룬 이동 속도. 투사체는 기존 movespeed 유지, 제자리 무기는 룬이 이동 속도를 부여.
+	/// 액티브 룬 전진 속도.
+	/// 투사체(movespeed &gt; 0)는 무기 movespeed 그대로, 제자리 무기는 DefaultStationaryActiveMoveSpeed.
 	/// </summary>
 	protected float GetActiveMoveSpeed()
 	{
-		if (IsStationaryWeapon())
-			return Mathf.Max(1f, RuneDataAccess.GetAffectedRange(data) * 0.22f);
+		if (weapon == null)
+			return DefaultStationaryActiveMoveSpeed;
 
-		return Mathf.Max(0.35f, weapon.movespeed * 0.85f);
+		if (IsStationaryWeapon() || weapon.movespeed <= 0.01f)
+			return DefaultStationaryActiveMoveSpeed;
+
+		return weapon.movespeed;
 	}
 
 	protected float GetActiveTurnSpeed()

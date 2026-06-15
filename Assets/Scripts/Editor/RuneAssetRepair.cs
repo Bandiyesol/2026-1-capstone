@@ -503,6 +503,7 @@ public static class RuneAssetRepair
 			case GravityRuneData gravity:
 				gravity.duration = 3f;
 				gravity.pullForce = 5f;
+				if (gravity.pullRadius <= 0f) gravity.pullRadius = 6f;
 				break;
 
 			case GrowthRuneData growth:
