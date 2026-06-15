@@ -24,6 +24,46 @@ public class AccessoryEffect : MonoBehaviour
     // MovingDamage
     Vector3 lastPosition;
 
+    // ElectricOnHit (번개 깃든 암령)
+    [Header("[ ElectricOnHit — 번개 깃든 암령 ]")]
+    GameObject electricPrefab;
+    [Tooltip("전기 피해 배율 (공격력 ×)")] public float electricDamageRatio  = 0.3f;
+    [Tooltip("전기 범위")]                  public float electricRadius       = 4f;
+    [Tooltip("감전 지속 시간(초)")]         public float electricStunDuration = 0.5f;
+    [Tooltip("이펙트 크기")]               public float electricScale         = 3f;
+    [Tooltip("이펙트 지속 시간")]          public float electricEffectTime    = 0.3f;
+
+    // ElementStack (금지된 마법서)
+    [Header("[ ElementStack — 금지된 마법서 ]")]
+    GameObject magicExplosionPrefab;
+    [Tooltip("발동 확률 (0.25 = 25%)")] public float magicExplosionChance  = 0.25f;
+    [Tooltip("폭발 피해")]              public float magicExplosionDamage  = 80f;
+    [Tooltip("폭발 범위")]              public float magicExplosionRadius  = 4f;
+    [Tooltip("이펙트 크기")]            public float magicExplosionScale   = 5f;
+    [Tooltip("이펙트 지속 시간")]       public float magicExplosionTime    = 0.6f;
+
+    // DimensionBoots (차원 여행자의 게이트)
+    [Header("[ DimensionBoots — 차원 여행자의 게이트 ]")]
+    GameObject footprintPrefab;
+    [Tooltip("발자국 지속 시간(초)")]    public float footprintLifetime    = 2f;
+    [Tooltip("발자국 소환 간격(초)")]    public float footprintInterval    = 0.2f;
+    [Tooltip("이동 중 회피율 보너스")]   public float footprintEvasionBonus = 0.3f;
+    [Tooltip("발자국 크기")]             public float footprintScale       = 6f;
+    float footprintTimer = 0f;
+    bool  isMovingBonus  = false;
+    float lastDimensionSpeedBonus = 0f;
+
+    // DragonHeart (용의 심장)
+    [Header("[ DragonHeart — 용의 심장 ]")]
+    GameObject dragonHeartPrefab;
+    GameObject dragonHeartInstance;
+    [Tooltip("프리팹 크기")]               public float dragonHeartScale     = 6f;
+    [Tooltip("화상 틱 피해 (200% 효율)")] public float dragonBurnDmg        = 10f;
+    [Tooltip("화상 틱 간격")]             public float dragonBurnInterval    = 0.5f;
+    [Tooltip("화상 지속 시간")]           public float dragonBurnDuration    = 3f;
+    [Tooltip("빙결 지속 시간 (200% 효율)")] public float dragonFreezeDuration = 1f;
+    [Tooltip("경직 지속 시간 (200% 효율)")] public float dragonStunDuration   = 0.5f;
+
     // CalamitySeed (재앙의 씨앗)
     [Header("[ CalamitySeed — 재앙의 씨앗 ]")]
     GameObject seedEffectPrefab;
@@ -352,6 +392,22 @@ public class AccessoryEffect : MonoBehaviour
         if (bossArrowPrefab == null)
             Debug.LogWarning("[AccessoryEffect] Effects/BossArrowEffect 프리팹을 찾을 수 없습니다.");
 
+        electricPrefab = Resources.Load<GameObject>("Effects/ElectricEffect");
+        if (electricPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/ElectricEffect 프리팹을 찾을 수 없습니다.");
+
+        magicExplosionPrefab = Resources.Load<GameObject>("Effects/MagicExplosionEffect");
+        if (magicExplosionPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/MagicExplosionEffect 프리팹을 찾을 수 없습니다.");
+
+        footprintPrefab = Resources.Load<GameObject>("Effects/FootprintEffect");
+        if (footprintPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/FootprintEffect 프리팹을 찾을 수 없습니다.");
+
+        dragonHeartPrefab = Resources.Load<GameObject>("Effects/DragonHeartEffect");
+        if (dragonHeartPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/DragonHeartEffect 프리팹을 찾을 수 없습니다.");
+
         seedEffectPrefab = Resources.Load<GameObject>("Effects/SeedEffect");
         if (seedEffectPrefab == null)
             Debug.LogWarning("[AccessoryEffect] Effects/SeedEffect 프리팹을 찾을 수 없습니다.");
@@ -488,6 +544,30 @@ public class AccessoryEffect : MonoBehaviour
                 }
                 break;
 
+            case AccessoryEffectType.ElectricOnHit:
+                // NotifyEnemyHit에서 처리
+                // 번개 속성 데미지 +15% 즉시 적용
+                if (!owned.Contains(AccessoryEffectType.ElectricOnHit) && PlayerStats.Instance != null)
+                    PlayerStats.Instance.AddMulti(StatType.AttackPower, 0.15f);
+                break;
+
+            case AccessoryEffectType.ElementStack:
+                // NotifyEnemyHit에서 처리
+                break;
+
+            case AccessoryEffectType.DragonHeart:
+                if (!owned.Contains(AccessoryEffectType.DragonHeart))
+                {
+                    if (dragonHeartPrefab != null && PlayerStats.Instance != null)
+                    {
+                        dragonHeartInstance = Instantiate(dragonHeartPrefab, Vector3.zero,
+                                                          Quaternion.identity, PlayerStats.Instance.transform);
+                        dragonHeartInstance.transform.localPosition = Vector3.zero;
+                        dragonHeartInstance.transform.localScale    = Vector3.one * dragonHeartScale;
+                    }
+                }
+                break;
+
             case AccessoryEffectType.InfiniteMana:
                 if (!owned.Contains(AccessoryEffectType.InfiniteMana))
                 {
@@ -581,6 +661,9 @@ public class AccessoryEffect : MonoBehaviour
         t == AccessoryEffectType.InfiniteMana     ||
         t == AccessoryEffectType.BloodContract    ||
         t == AccessoryEffectType.DimensionBoots   ||
+        t == AccessoryEffectType.ElectricOnHit       ||
+        t == AccessoryEffectType.ElementStack        ||
+        t == AccessoryEffectType.DragonHeart       ||
         t == AccessoryEffectType.CalamitySeed    ||
         t == AccessoryEffectType.BurnOnAttack    ||
         t == AccessoryEffectType.PoisonOnAttack  ||
@@ -765,6 +848,49 @@ public class AccessoryEffect : MonoBehaviour
                 enemy.KillInstantly();
                 return;
             }
+        }
+
+        // 번개 깃든 암령 — 적중마다 감전 + 주변 30% 전기 피해
+        if (Has(AccessoryEffectType.ElectricOnHit) && enemy != null && enemy.IsLive)
+        {
+            // 감전 (빙결 재활용)
+            enemy.ApplyFreeze(electricStunDuration);
+
+            // 주변 적에게 전기 피해
+            float elecDmg = PlayerStats.Instance != null
+                ? PlayerStats.Instance.AttackPower * electricDamageRatio
+                : electricDamageRatio * 10f;
+
+            foreach (Enemy e in FindEnemiesAround(enemy.transform.position, electricRadius))
+            {
+                e.TakeDamage(elecDmg);
+                // 이펙트
+                if (electricPrefab != null)
+                    StartCoroutine(SpawnEffectRoutine(electricPrefab,
+                        e.transform.position, electricEffectTime, electricScale));
+            }
+        }
+
+        // 금지된 마법서 — 25% 확률 마법 폭발
+        if (Has(AccessoryEffectType.ElementStack) && enemy != null && enemy.IsLive)
+        {
+            if (Random.value < magicExplosionChance)
+            {
+                Vector3 pos = enemy.transform.position;
+                if (magicExplosionPrefab != null)
+                    StartCoroutine(SpawnEffectRoutine(magicExplosionPrefab, pos, magicExplosionTime, magicExplosionScale));
+                foreach (Enemy e in FindEnemiesAround(pos, magicExplosionRadius))
+                    e.TakeDamage(magicExplosionDamage);
+                Debug.Log("[AccessoryEffect] 금지된 마법서 — 마법 폭발!");
+            }
+        }
+
+        // 용의 심장 — 화상 + 빙결 + 경직 동시 부여 (200% 효율)
+        if (Has(AccessoryEffectType.DragonHeart) && enemy != null && enemy.IsLive)
+        {
+            enemy.ApplyBurn(dragonBurnDmg, dragonBurnInterval, dragonBurnDuration);
+            enemy.ApplyFreeze(dragonFreezeDuration);
+            StartCoroutine(DragonStunRoutine(enemy));
         }
 
         // 재앙의 씨앗 — 적중 시 씨앗 심기 (3초 후 최대체력 5% 피해)
@@ -957,16 +1083,47 @@ public class AccessoryEffect : MonoBehaviour
 
 
 
-        // 차원 여행자의 장화 — 이속 비례 공격력 (1초마다 갱신)
+        // 차원 여행자의 게이트 — 이속 50% 만큼 공격력 증가 + 이동 중 회피율 +30% + 발자국
         if (Has(AccessoryEffectType.DimensionBoots) && PlayerStats.Instance != null)
         {
-            float newBonus = (PlayerStats.Instance.MovementSpeed - 1f) * 0.5f;
+            // 이속 50% 만큼 공격력 동적 계산
+            float newBonus = PlayerStats.Instance.MovementSpeed * 0.5f;
             newBonus = Mathf.Max(0f, newBonus);
-            if (!Mathf.Approximately(newBonus, lastMoveSpeedBonus))
+            if (!Mathf.Approximately(newBonus, lastDimensionSpeedBonus))
             {
-                PlayerStats.Instance.AddMulti(StatType.AttackPower, -lastMoveSpeedBonus);
+                PlayerStats.Instance.AddMulti(StatType.AttackPower, -lastDimensionSpeedBonus);
                 PlayerStats.Instance.AddMulti(StatType.AttackPower,  newBonus);
-                lastMoveSpeedBonus = newBonus;
+                lastDimensionSpeedBonus = newBonus;
+            }
+
+            // 이동 감지
+            Vector3 curPos = PlayerStats.Instance.transform.position;
+            float moved = Vector3.Distance(curPos, lastPosition);
+            bool isMoving = moved > 0.01f;
+
+            // 이동 중 회피율 +30%
+            if (isMoving && !isMovingBonus)
+            {
+                PlayerStats.Instance.AddMulti(StatType.Evasion, footprintEvasionBonus);
+                isMovingBonus = true;
+            }
+            else if (!isMoving && isMovingBonus)
+            {
+                PlayerStats.Instance.AddMulti(StatType.Evasion, -footprintEvasionBonus);
+                isMovingBonus = false;
+            }
+
+            // 발자국 소환
+            if (isMoving && footprintPrefab != null)
+            {
+                footprintTimer += Time.deltaTime;
+                if (footprintTimer >= footprintInterval)
+                {
+                    footprintTimer = 0f;
+                    GameObject fp = Instantiate(footprintPrefab, curPos, Quaternion.identity);
+                    fp.transform.localScale = Vector3.one * footprintScale;
+                    Destroy(fp, footprintLifetime);
+                }
             }
         }
 
@@ -1260,6 +1417,13 @@ public class AccessoryEffect : MonoBehaviour
     }
 
     /// <summary>재앙의 씨앗 — 2초 후 폭발, 몹 처치 시 주변 전이</summary>
+    IEnumerator DragonStunRoutine(Enemy enemy)
+    {
+        yield return new WaitForSeconds(0.1f);
+        if (enemy != null && enemy.IsLive)
+            enemy.ApplyFreeze(dragonStunDuration);
+    }
+
     IEnumerator CalamitySeedRoutine(Enemy enemy)
     {
         // 씨앗 프리팹 — 적 머리 위에 소환
@@ -1470,7 +1634,23 @@ public class AccessoryEffect : MonoBehaviour
     {
         // Awake에서 못 불렸을 경우 재시도
         if (minervaStackPrefab == null)
-            seedEffectPrefab = Resources.Load<GameObject>("Effects/SeedEffect");
+            electricPrefab = Resources.Load<GameObject>("Effects/ElectricEffect");
+        if (electricPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/ElectricEffect 프리팹을 찾을 수 없습니다.");
+
+        magicExplosionPrefab = Resources.Load<GameObject>("Effects/MagicExplosionEffect");
+        if (magicExplosionPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/MagicExplosionEffect 프리팹을 찾을 수 없습니다.");
+
+        footprintPrefab = Resources.Load<GameObject>("Effects/FootprintEffect");
+        if (footprintPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/FootprintEffect 프리팹을 찾을 수 없습니다.");
+
+        dragonHeartPrefab = Resources.Load<GameObject>("Effects/DragonHeartEffect");
+        if (dragonHeartPrefab == null)
+            Debug.LogWarning("[AccessoryEffect] Effects/DragonHeartEffect 프리팹을 찾을 수 없습니다.");
+
+        seedEffectPrefab = Resources.Load<GameObject>("Effects/SeedEffect");
         if (seedEffectPrefab == null)
             Debug.LogWarning("[AccessoryEffect] Effects/SeedEffect 프리팹을 찾을 수 없습니다.");
         seedExplosionPrefab = Resources.Load<GameObject>("Effects/SeedExplosionEffect");
