@@ -40,6 +40,9 @@ public class WeaponBalance
 	public float[] reachRange;
 	public float[] spawntimeRange;
 	public float[] cooltimeRange;
+	/// <summary> 무기 공격 속도 배율 (높을수록 빠름). cooltime ÷ (playerAS × attackspeed) </summary>
 	public float[] attackspeedRange;
+	/// <summary> Orb 전용: 틱 데미지 기본 간격(초). tickInterval ÷ (playerAS × attackspeed) </summary>
+	public float[] tickIntervalRange;
 	public float[] movespeedRange;
 }

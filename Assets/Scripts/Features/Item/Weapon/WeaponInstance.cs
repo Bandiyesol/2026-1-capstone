@@ -11,12 +11,17 @@ public class WeaponInstance
 {
 	const float MeleeSpawnOffset = 0.7f;
 	const float ProjectileSpreadDegrees = 12f;
+	const float ReachFromRangeBonusRatio = 0.65f;
+	const float SizeFromRangeBonusRatio = 0.4f;
 
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
 
-	// 무기가 룬 효과 등에 의해 분열된 상태인지 나타내는 플래그
+	// 무기가 룬 효과 등에 의해 분열된 상태인지 나타내는 플래그 (밸런스: 분열 가능 여부)
 	public bool isSplited;
+
+	// Split 룬으로 생성된 자식 투사체인지 (재분열 방지)
+	public bool isSplitChild;
 
 	// 부활(재사용) 여부를 나타내는 플래그
 	public bool isRevived;
@@ -28,7 +33,8 @@ public class WeaponInstance
 	public float reach;       // 사거리 (활의 소멸 거리, 오브의 생성 범위 등)
 	public float spawntime;   // 필드 지속 시간
 	public float cooltime;    // 공격 재사용 대기 시간
-	public float attackspeed; // 공격 속도 (오브 틱 데미지 주기 등)
+	public float attackspeed; // 무기 공격 속도 배율 (높을수록 빠름)
+	public float tickInterval; // Orb 전용: 틱 데미지 기본 간격(초)
 	public float movespeed;   // 투사체 날아가는 속도
 
 	// 다음 공격까지 남은 시간을 재는 내부 타이머
@@ -53,6 +59,9 @@ public class WeaponInstance
 		spawntime = UnityEngine.Random.Range(balance.spawntimeRange[0], balance.spawntimeRange[1]);
 		cooltime = UnityEngine.Random.Range(balance.cooltimeRange[0], balance.cooltimeRange[1]);
 		attackspeed = UnityEngine.Random.Range(balance.attackspeedRange[0], balance.attackspeedRange[1]);
+		tickInterval = balance.tickIntervalRange != null && balance.tickIntervalRange.Length >= 2
+			? UnityEngine.Random.Range(balance.tickIntervalRange[0], balance.tickIntervalRange[1])
+			: 0f;
 		movespeed = UnityEngine.Random.Range(balance.movespeedRange[0], balance.movespeedRange[1]);
 	}
 
@@ -63,6 +72,7 @@ public class WeaponInstance
 	{
 		info = other.info;
 		isSplited = other.isSplited;
+		isSplitChild = other.isSplitChild;
 		isRevived = other.isRevived;
 		damage = other.damage;
 		weight = other.weight;
@@ -71,6 +81,7 @@ public class WeaponInstance
 		spawntime = other.spawntime;
 		cooltime = other.cooltime;
 		attackspeed = other.attackspeed;
+		tickInterval = other.tickInterval;
 		movespeed = other.movespeed;
 	}
 
@@ -81,21 +92,28 @@ public class WeaponInstance
 	{
 		timer += dlt;
 
-		// [PlayerStats 연동] AttackSpeed는 쿨타임 배율 (기본 1.0, 낮을수록 빠름)
-		float effectiveCooltime = cooltime * ResolveAttackSpeedMultiplier();
+		float effectiveCooltime = cooltime / ResolveEffectiveAttackSpeed();
 
 		if (timer >= effectiveCooltime)
 		{
 			Attack(playerPos);
-			// 누적된 초과분을 보존하여 다음 공격 타이밍 오차를 최소화
 			timer -= effectiveCooltime;
 		}
 	}
 
-	static float ResolveAttackSpeedMultiplier()
+	/// <summary>플레이어 AttackSpeed × 무기 attackspeed 배율 (높을수록 빠름).</summary>
+	public float ResolveEffectiveAttackSpeed()
 	{
 		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
-		return stats != null ? stats.AttackSpeed : 1f;
+		float playerMultiplier = stats != null ? stats.AttackSpeed : 1f;
+		return playerMultiplier * Mathf.Max(0.01f, attackspeed);
+	}
+
+	/// <summary>Orb 틱 간격(초). tickInterval ÷ effectiveAS.</summary>
+	public float ResolveEffectiveTickInterval()
+	{
+		float baseInterval = tickInterval > 0f ? tickInterval : 1f;
+		return Mathf.Max(0.05f, baseInterval / ResolveEffectiveAttackSpeed());
 	}
 
 	/// <summary>
@@ -117,6 +135,24 @@ public class WeaponInstance
 		{
 			ResolveSpawnTransform(playerPos.position, aimDirection, i, projectileCount, out Vector3 spawnPos, out Quaternion spawnRotation);
 			SpawnMotion(prefab, spawnPos, spawnRotation, activeRunes);
+
+			// [악세사리] 랜턴 — 10% 확률로 투사체 복제 (같은 위치/방향에 추가 소환)
+			if (AccessoryEffect.instance != null &&
+			    AccessoryEffect.instance.Has(AccessoryEffectType.DuplicateBullet) &&
+			    UnityEngine.Random.value < AccessoryEffect.instance.duplicateBulletChance)
+			{
+				SpawnMotion(prefab, spawnPos, spawnRotation, activeRunes);
+			}
+
+			// [악세사리] 그림자 가면 — 25% 확률로 분신 위치에서 동일 투사체 소환
+			if (AccessoryEffect.instance != null &&
+			    AccessoryEffect.instance.Has(AccessoryEffectType.ShadowClone) &&
+			    AccessoryEffect.instance.shadowCloneInstance != null &&
+			    UnityEngine.Random.value < AccessoryEffect.instance.shadowCloneAttackChance)
+			{
+				Vector3 clonePos = AccessoryEffect.instance.shadowCloneInstance.transform.position;
+				SpawnMotion(prefab, clonePos, spawnRotation, activeRunes);
+			}
 		}
 	}
 
@@ -187,12 +223,11 @@ public class WeaponInstance
 	{
 		Motion motion = null;
 		if (PoolManager.Instance != null)
-			motion = PoolManager.Instance.SpawnMotion(info.motionId, spawnPos, spawnRotation, activateImmediately: false);
+			motion = PoolManager.Instance.SpawnMotion(info.motionId, spawnPos, spawnRotation);
 
 		if (motion == null)
 		{
 			GameObject motionObject = UnityEngine.Object.Instantiate(prefab, spawnPos, spawnRotation);
-			motionObject.SetActive(false);
 			motion = motionObject.GetComponent<Motion>();
 		}
 
@@ -208,7 +243,6 @@ public class WeaponInstance
 		ApplyPlayerStats(cloneInstance);
 
 		motion.Initialize(cloneInstance, activeRunes);
-		motion.gameObject.SetActive(true);
 	}
 
 	/// <summary>
@@ -226,26 +260,52 @@ public class WeaponInstance
 		// 투사체 속도 배율 (기본 1.0)
 		clone.movespeed *= stats.ProjectileSpeed;
 
-		// 무기 타입별 사거리 배율 적용
+		// 무기 타입별 사거리·크기 배율 적용 (상한 없이 완만한 비율로 누적)
 		switch (info.type)
 		{
-			// 근접 계열 → MeleeRange
 			case "Sword":
 			case "Hammer":
 			case "Sickle":
 			case "Grimore":
 			case "Orb":
-				clone.reach *= stats.MeleeRange;
+				ApplyRangeScaling(clone, stats.MeleeRange);
 				break;
 
-			// 원거리 계열 → ProjectileRange
 			case "Bow":
 			case "Gun":
 			case "Whip":
 			case "Boomerang":
 			case "Staff":
-				clone.reach *= stats.ProjectileRange;
+				ApplyRangeScaling(clone, stats.ProjectileRange);
 				break;
 		}
+	}
+
+	static void ApplyRangeScaling(WeaponInstance clone, float rangeStat)
+	{
+		float reachMultiplier = ResolveReachMultiplier(rangeStat);
+		float sizeMultiplier = ResolveSizeMultiplier(rangeStat);
+
+		clone.reach *= reachMultiplier;
+		clone.size *= sizeMultiplier;
+	}
+
+	static float ResolveReachMultiplier(float rangeStat)
+	{
+		return SoftenedRangeMultiplier(rangeStat, ReachFromRangeBonusRatio);
+	}
+
+	static float ResolveSizeMultiplier(float rangeStat)
+	{
+		return SoftenedRangeMultiplier(rangeStat, SizeFromRangeBonusRatio);
+	}
+
+	/// <summary>스탯 1.0 기준, 초과·감소분에만 비율을 곱해 완만하게 반영합니다.</summary>
+	static float SoftenedRangeMultiplier(float rangeStat, float bonusRatio)
+	{
+		if (rangeStat <= 0f)
+			return 0.25f;
+
+		return 1f + (rangeStat - 1f) * bonusRatio;
 	}
 }

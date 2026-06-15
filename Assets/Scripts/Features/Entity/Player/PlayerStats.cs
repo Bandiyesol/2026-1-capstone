@@ -205,6 +205,7 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP.Final;
         isInvincible = false;
         invincibleTimer = 0f;
+        SyncGameManagerHealth();
     }
 
     /// <summary>메인 메뉴 복귀 시 체력 등 런타임 스탯을 기본값으로 되돌립니다.</summary>
@@ -341,7 +342,11 @@ public class PlayerStats : MonoBehaviour
     public float CalculateReceivedDamage(float rawDamage, PlayerDamageKind kind = PlayerDamageKind.PerHit)
     {
         if (UnityEngine.Random.value < Evasion)
+        {
+            // [악세사리 훅] 투명 망토 — 회피 성공 시 은신
+            AccessoryEffect.instance?.NotifyEvasionSuccess();
             return 0f;
+        }
 
         float afterDefense = kind switch
         {
@@ -394,6 +399,11 @@ public class PlayerStats : MonoBehaviour
             return;
 
         float finalDamage = CalculateReceivedDamage(rawDamage, kind);
+
+        // [악세사리 훅] 단단한 껍질 등 — 받을 피해 수정/무효화
+        if (AccessoryEffect.instance != null)
+            finalDamage = AccessoryEffect.instance.ModifyIncomingDamage(finalDamage);
+
         if (finalDamage <= 0f)
             return;
 
@@ -401,12 +411,69 @@ public class PlayerStats : MonoBehaviour
         if (applyIFrames)
             ActivateInvincibility();
 
+        // [악세사리 훅] 바늘 뭉치·빨간 리본·얼음 조각 — 피격 후 효과
+        AccessoryEffect.instance?.NotifyPlayerDamaged(finalDamage);
+
         NotifyChange();
+
+        if (currentHP > 0f)
+            GameAudio.PlayPlayerHit();
 
         if (currentHP <= 0f)
         {
+            // [악세사리 훅] 부활의 씨앗 — 사망 직전 부활 시도
+            if (AccessoryEffect.instance != null && AccessoryEffect.instance.TryRevive())
+                return;
+
+            // [악세사리 훅] 불사조의 망토 — 풀체력 부활 (게임 내 1회)
+            if (AccessoryEffect.instance != null && AccessoryEffect.instance.TryPhoenixRevive())
+                return;
+
             OnDeath();
         }
+    }
+
+    /// <summary>모든 플레이어 피해의 단일 진입점. UI·사망 판정은 PlayerStats 기준으로 통일.</summary>
+    public static void ApplyDamage(float rawDamage, bool applyIFrames = true, PlayerDamageKind kind = PlayerDamageKind.PerHit)
+    {
+        if (Instance != null)
+        {
+            Instance.TakeDamage(rawDamage, applyIFrames, kind);
+            return;
+        }
+
+        if (GameManager.instance == null)
+            return;
+
+        GameManager.instance.Health = Mathf.Max(0f, GameManager.instance.Health - rawDamage);
+        if (GameManager.instance.Health <= 0f)
+        {
+            Player fallbackPlayer = UnityEngine.Object.FindFirstObjectByType<Player>();
+            if (fallbackPlayer != null)
+                fallbackPlayer.PlayerDead();
+            else
+                GameManager.instance.GameOver();
+        }
+    }
+
+    /// <summary>즉시 사망 (낙사 등). PlayerStats·GameManager 체력을 함께 0으로 맞춥니다.</summary>
+    public static void Kill()
+    {
+        if (Instance != null)
+        {
+            Instance.SetCurrentHPDirect(0f);
+            return;
+        }
+
+        if (GameManager.instance != null)
+            GameManager.instance.Health = 0f;
+    }
+
+    /// <summary>[악세사리] 외부에서 일정 시간 무적을 부여합니다. (신비한 약병 등)</summary>
+    public void GrantInvincibility(float duration)
+    {
+        isInvincible = true;
+        invincibleTimer = Mathf.Max(invincibleTimer, duration);
     }
 
     public void SetCurrentHPDirect(float value)
@@ -443,10 +510,15 @@ public class PlayerStats : MonoBehaviour
 
     private void OnDeath()
     {
-        // GameManager나 Player.cs에서 사망 처리를 위임받아 사용
         Debug.Log("[PlayerStats] 플레이어 사망");
-        // GameManager는 소문자 instance 싱글톤 사용
-        GameManager.instance?.GameOver();
+
+        if (player == null)
+            player = FindFirstObjectByType<Player>();
+
+        if (player != null)
+            player.PlayerDead();
+        else
+            GameManager.instance?.GameOver();
     }
 
     // ═════════════════════════════════════════
@@ -514,7 +586,20 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    private void NotifyChange() => OnStatsChanged?.Invoke();
+    private void NotifyChange()
+    {
+        SyncGameManagerHealth();
+        OnStatsChanged?.Invoke();
+    }
+
+    void SyncGameManagerHealth()
+    {
+        if (GameManager.instance == null)
+            return;
+
+        GameManager.instance.Health = currentHP;
+        GameManager.instance.maxHealth = MaxHP;
+    }
 
     // ═════════════════════════════════════════
     //  디버그 (에디터 전용)

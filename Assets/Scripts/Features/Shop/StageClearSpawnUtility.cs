@@ -7,13 +7,14 @@ public static class StageClearSpawnUtility
 
 	public static void SpawnPortalAndShopkeeper(Vector3 position, int portalGimmickIndex, Vector2? shopkeeperOffset = null)
 	{
-		if (PoolManager.Instance == null)
+		if (BossStageClearUtility.ResolvePool() == null)
 		{
 			Debug.LogWarning("[StageClearSpawn] PoolManager를 찾지 못했습니다.");
 			return;
 		}
 
-		GameObject portal = PoolManager.Instance.GetGimmick(portalGimmickIndex);
+		int resolvedPortalIndex = ResolvePortalGimmickIndex(portalGimmickIndex);
+		GameObject portal = BossStageClearUtility.ResolvePool().GetGimmick(resolvedPortalIndex);
 		if (portal != null)
 		{
 			portal.transform.position = position;
@@ -21,17 +22,22 @@ public static class StageClearSpawnUtility
 		else
 		{
 			Debug.LogWarning(
-				$"[StageClearSpawn] Stage Portal 기믹을 가져오지 못했습니다 (index={portalGimmickIndex}).");
+				$"[StageClearSpawn] Stage Portal 기믹을 가져오지 못했습니다 (index={resolvedPortalIndex}).");
 		}
 
-		int shopkeeperIndex = PoolManager.Instance.FindShopkeeperGimmickIndex();
+		int shopkeeperIndex = BossStageClearUtility.ResolvePool().FindShopkeeperGimmickIndex();
 		if (shopkeeperIndex < 0)
+		{
+			Debug.LogWarning(
+				"[StageClearSpawn] ShopkeeperNpc가 PoolManager.gimmickPrefabs에 없습니다. " +
+				"Unity 메뉴 Tools → Game → Setup Shopkeeper NPC를 실행하세요.");
 			return;
+		}
 
 		if (!StageClearSpawnSettings.TryRollShopkeeperSpawn())
 			return;
 
-		GameObject shopkeeper = PoolManager.Instance.GetGimmick(shopkeeperIndex);
+		GameObject shopkeeper = BossStageClearUtility.ResolvePool().GetGimmick(shopkeeperIndex);
 		if (shopkeeper == null)
 		{
 			Debug.LogWarning("[StageClearSpawn] ShopkeeperNpc 기믹을 가져오지 못했습니다.");
@@ -43,6 +49,22 @@ public static class StageClearSpawnUtility
 
 		if (GameManager.instance?.player != null)
 			shopkeeper.transform.localScale = GameManager.instance.player.transform.localScale;
+	}
+
+	static int ResolvePortalGimmickIndex(int portalGimmickIndex)
+	{
+		PoolManager pool = BossStageClearUtility.ResolvePool();
+		if (pool == null)
+			return portalGimmickIndex;
+
+		if (pool.IsStagePortalGimmickIndex(portalGimmickIndex))
+			return portalGimmickIndex;
+
+		int autoIndex = pool.FindStagePortalGimmickIndex();
+		if (autoIndex >= 0)
+			return autoIndex;
+
+		return portalGimmickIndex;
 	}
 
 	static Vector2 ResolveShopkeeperOffset(GameObject portal, GameObject shopkeeper)

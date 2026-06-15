@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
         ResolveDropSettings();
         RewardSystemBootstrap.EnsureRewardSystem();
         WireGameResultButton();
+        RuneLoadoutHudRuntimeSetup.Ensure();
     }
 
     void ResolveDropSettings()
@@ -104,8 +105,7 @@ public class GameManager : MonoBehaviour
         if (button == null)
             return;
 
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnGameResultContinueToRecord);
+        UiClickSfxUtility.Rewire(button, OnGameResultContinueToRecord);
 
         TextMeshProUGUI label = retry.GetComponentInChildren<TextMeshProUGUI>(true);
         if (label != null)
@@ -203,13 +203,12 @@ public class GameManager : MonoBehaviour
 
 	public void GameStart()
 	{
+		defeatHandled = false;
 		GameSessionReset.ResetAll(this);
-		Health = maxHealth;
+		SyncHealthFromPlayerStats();
+		PlayBgmForCurrentStage();
 
-		StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
-		int stageIdx = stage != null ? stage.stageIndex : 0;
-		SyncBossBriefingPrefabs();
-		BossBriefingRuntime.ApplyStage(stageIdx, bossBriefDatabase, bossPortraitPrefabs);
+		RefreshBossBriefingForCurrentStage(rerollBoss: true);
 
 		ShowBossAlarmThen(() =>
 		{
@@ -218,10 +217,195 @@ public class GameManager : MonoBehaviour
 		});
 	}
 
+	/// <summary>마법진 진입 — 스테이지 기록 → 다음 스테이지 → 보스 알리미 → 룬(2·3스테이지) 또는 순서만(4+) → 웨이브.</summary>
+	public void AdvanceStageViaPortal()
+	{
+		StageManager stage = StageManager.instance;
+		if (stage == null)
+			return;
+
+		DismissBlockingRewardOverlays();
+		isLive = false;
+		FreezePlayerMovement();
+		PoolManager.Instance?.ReturnStageClearGimmicks();
+		PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
+		PoolManager.Instance?.ReturnActiveFieldDrops();
+
+		WaveManager wave = stage.waveManager != null
+			? stage.waveManager
+			: FindFirstObjectByType<WaveManager>(FindObjectsInactive.Include);
+		wave?.AbortStageTransition();
+
+		int clearedStageIndex = stage.stageIndex;
+		if (GameRunSessionTracker.IsActive)
+			GameRunSessionTracker.CommitStage(clearedStageIndex, stageCleared: true);
+
+		bool isFinalStageClear = clearedStageIndex >= stage.TotalStages - 1;
+		if (isFinalStageClear)
+			GameAudio.PlayStageClear();
+
+		bool moved = stage.NextStage();
+		if (!moved)
+			return;
+
+		PlayBgmForCurrentStage();
+
+		ShopUI shop = FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);
+		if (shop != null)
+			shop.Close();
+
+		if (GameRunSessionTracker.IsActive)
+			GameRunSessionTracker.OnStageAdvanced(stage.stageIndex);
+
+		ShowBossAlarmForStageTransition(() =>
+		{
+			ContinueAfterStagePortal(stage.stageIndex);
+		});
+	}
+
+	void ContinueAfterStagePortal(int stageIndex)
+	{
+		if (ShouldOfferRunePickAfterPortal(stageIndex))
+		{
+			ShowRunePickThenOrder(StartCurrentStageWaves);
+			return;
+		}
+
+		ShowRuneOrderOnly(StartCurrentStageWaves);
+	}
+
+	/// <summary>스테이지 2·3 진입 시에만 추가 룬 1개 (시작 시 1개 + 최대 3슬롯).</summary>
+	public static bool ShouldOfferRunePickAfterPortal(int stageIndex)
+	{
+		if (RuneManager.instance != null && RuneManager.instance.IsFull)
+			return false;
+
+		return stageIndex >= 1 && stageIndex <= 2;
+	}
+
+	void ShowRunePickThenOrder(System.Action onComplete)
+	{
+		if (uiRuneSelect == null)
+			uiRuneSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+
+		if (uiRuneSelect == null)
+		{
+			ResumeThen(onComplete);
+			return;
+		}
+
+		uiRuneSelect.ShowForStageTransition(onComplete);
+	}
+
+	void ShowRuneOrderOnly(System.Action onComplete)
+	{
+		if (uiRuneSelect == null)
+			uiRuneSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
+
+		if (uiRuneSelect == null
+		    || RuneManager.instance == null
+		    || RuneManager.instance.GetFilledSlotCount() <= 0)
+		{
+			ResumeThen(onComplete);
+			return;
+		}
+
+		uiRuneSelect.ShowOrderOnlyForStageTransition(onComplete);
+	}
+
+	void ResumeThen(System.Action onComplete)
+	{
+		ResumeGameplayFromOverlay();
+		onComplete?.Invoke();
+	}
+
+	void StartCurrentStageWaves()
+	{
+		ResumeGameplayFromOverlay();
+		PlayBgmForCurrentStage();
+
+		WaveManager wave = FindFirstObjectByType<WaveManager>(FindObjectsInactive.Include);
+		if (wave != null)
+			wave.StartStage();
+	}
+
+	static void PlayBgmForCurrentStage()
+	{
+		StageManager stage = StageManager.instance;
+		if (stage == null)
+			return;
+
+		GameAudioSettings.Instance?.PlayStageBgm(stage.stageIndex);
+	}
+
+	static void PlayMainMenuBgm()
+	{
+		GameAudio.PlayMainMenu();
+	}
+
+	/// <summary>상자·무기 보상·룬 선택 등 오버레이가 열려 있으면 포털 진입을 막습니다.</summary>
+	public bool CanUseStagePortal()
+	{
+		RewardSelectUI reward = RewardSelectUI.GetOrFind();
+		if (reward != null && reward.IsPanelOpen)
+			return false;
+
+		if (uiWeaponSelect != null && uiWeaponSelect.IsBlockingFromChest)
+			return false;
+
+		if (uiRuneSelect != null && uiRuneSelect.IsPanelOpen)
+			return false;
+
+		RuneLoadoutViewUI runeLoadout = FindFirstObjectByType<RuneLoadoutViewUI>(FindObjectsInactive.Include);
+		if (runeLoadout != null && runeLoadout.IsOpen)
+			return false;
+
+		return true;
+	}
+
+	void DismissBlockingRewardOverlays()
+	{
+		RewardSelectUI reward = RewardSelectUI.GetOrFind();
+		if (reward != null && reward.IsPanelOpen)
+			reward.ForceCloseWithoutResume();
+
+		if (uiWeaponSelect != null && uiWeaponSelect.IsBlockingFromChest)
+			uiWeaponSelect.ForceCloseChestWithoutResume();
+	}
+
+	void EnsureGameplayBgm()
+	{
+		ResolveMainMenuReferences();
+		if (mainMenuRoot != null && mainMenuRoot.activeSelf)
+			return;
+
+		ShopUI shop = FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);
+		if (shop != null && shop.IsPanelOpen)
+			return;
+
+		StageManager stage = StageManager.instance;
+		if (stage == null)
+			return;
+
+		GameAudio.EnsureStageBgm(stage.stageIndex);
+	}
+
+	public void SyncHealthFromPlayerStats()
+	{
+		if (PlayerStats.Instance == null)
+		{
+			Health = maxHealth;
+			return;
+		}
+
+		Health = PlayerStats.Instance.CurrentHP;
+		maxHealth = PlayerStats.Instance.MaxHP;
+	}
+
 	/// <summary>스테이지 전환 후 보스 알리미 → 웨이브 시작 등 후속 동작.</summary>
 	public void ShowBossAlarmForStageTransition(System.Action onContinue)
 	{
-		RefreshBossBriefingForCurrentStage();
+		RefreshBossBriefingForCurrentStage(rerollBoss: true);
 		ShowBossAlarmThen(() =>
 		{
 			RefreshBossBriefingHudTip();
@@ -273,7 +457,7 @@ public class GameManager : MonoBehaviour
         {
             uiRuneSelect.gameObject.SetActive(true);
             uiRuneSelect.transform.SetAsLastSibling();
-            uiRuneSelect.Show();
+            uiRuneSelect.ShowForGameStart();
             return;
         }
 
@@ -282,7 +466,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>스테이지 전환 후 HUD 보스 툴팁이 다음 보스를 가리키도록 갱신합니다.</summary>
-    public void RefreshBossBriefingForCurrentStage()
+    public void RefreshBossBriefingForCurrentStage(bool rerollBoss = false)
     {
         SyncBossBriefingPrefabs();
 
@@ -290,7 +474,43 @@ public class GameManager : MonoBehaviour
         if (stage == null)
             return;
 
-        BossBriefingRuntime.ApplyStage(stage.stageIndex, bossBriefDatabase, bossPortraitPrefabs);
+        WaveManager wave = FindFirstObjectByType<WaveManager>(FindObjectsInactive.Include);
+        if (wave != null)
+        {
+            if (rerollBoss)
+                wave.RerollBossForStage(stage.stageIndex);
+            else
+                wave.PrepareBossForStage(stage.stageIndex);
+        }
+
+        int bossSpawnIndex = wave != null ? wave.SelectedBossSpawnDataIndex : -1;
+        ApplyBossBriefing(stage.stageIndex, bossSpawnIndex, wave?.spawner);
+    }
+
+    /// <summary>보스가 실제로 스폰된 뒤 알리미·HUD가 해당 보스 정보를 표시하도록 갱신합니다.</summary>
+    public void RefreshBossBriefingForBossSpawn(int bossSpawnDataIndex)
+    {
+        SyncBossBriefingPrefabs();
+
+        StageManager stage = FindFirstObjectByType<StageManager>(FindObjectsInactive.Include);
+        if (stage == null)
+            return;
+
+        WaveManager wave = FindFirstObjectByType<WaveManager>(FindObjectsInactive.Include);
+        ApplyBossBriefing(stage.stageIndex, bossSpawnDataIndex, wave?.spawner);
+    }
+
+    void ApplyBossBriefing(int stageIndex, int bossSpawnDataIndex, Spawner spawner)
+    {
+        if (spawner == null)
+            spawner = FindFirstObjectByType<Spawner>(FindObjectsInactive.Include);
+
+        BossBriefingRuntime.ApplyFromBossSelection(
+            stageIndex,
+            spawner,
+            bossSpawnDataIndex,
+            bossBriefDatabase,
+            bossPortraitPrefabs);
         RefreshBossBriefingHudTip();
     }
 
@@ -301,8 +521,15 @@ public class GameManager : MonoBehaviour
             tip.RefreshVisibility();
     }
 
+    bool defeatHandled;
+
     public void GameOver()
     {
+        if (defeatHandled)
+            return;
+
+        defeatHandled = true;
+        GameAudio.PlayDeath();
         StartCoroutine(GameOverRoutine());
     }
 
@@ -389,6 +616,8 @@ public class GameManager : MonoBehaviour
 
         GameRunRecord record = GameRunSnapshotBuilder.Build(cleared);
         GameRunRecordStore.Save(record);
+        await GameRunLeaderboard.SubmitClearAsync(record);
+        await GameRunLeaderboard.RefreshGlobalAsync();
         RefreshMainMenuLeaderboard();
 
         GameRecordUI ui = GameRecordUIBootstrap.Ensure();
@@ -434,6 +663,13 @@ public class GameManager : MonoBehaviour
         }, singleRunOnly: true);
     }
 
+    public static async System.Threading.Tasks.Task RefreshMainMenuLeaderboardAsync()
+    {
+        await GameRunLeaderboard.RefreshGlobalAsync();
+        MainMenuLeaderboardView view = Object.FindFirstObjectByType<MainMenuLeaderboardView>(FindObjectsInactive.Include);
+        view?.Refresh();
+    }
+
     public static void RefreshMainMenuLeaderboard()
     {
         MainMenuLeaderboardView view = Object.FindFirstObjectByType<MainMenuLeaderboardView>(FindObjectsInactive.Include);
@@ -444,6 +680,8 @@ public class GameManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         GameSessionReset.ResetAll(this);
+
+        defeatHandled = false;
 
         ResolveMainMenuReferences();
 
@@ -464,6 +702,7 @@ public class GameManager : MonoBehaviour
         RefreshBossBriefingHudTip();
 
         CloseOverlayPanels();
+        DismissBlockingRewardOverlays();
 
         EndingStoryUI endingStory = FindFirstObjectByType<EndingStoryUI>(FindObjectsInactive.Include);
         endingStory?.ForceClose();
@@ -472,6 +711,7 @@ public class GameManager : MonoBehaviour
         if (mainMenuRoot != null)
             mainMenuRoot.SetActive(true);
 
+        PlayMainMenuBgm();
         RefreshMainMenuLeaderboard();
     }
 
@@ -506,10 +746,14 @@ public class GameManager : MonoBehaviour
         if (shop != null)
             shop.Close();
 
-        SettingsUI settings = FindFirstObjectByType<SettingsUI>(FindObjectsInactive.Include);
-        if (settings != null)
-            settings.Close();
-    }
+		SettingsUI settings = FindFirstObjectByType<SettingsUI>(FindObjectsInactive.Include);
+		if (settings != null)
+			settings.Close();
+
+		RuneLoadoutViewUI runeLoadout = FindFirstObjectByType<RuneLoadoutViewUI>(FindObjectsInactive.Include);
+		if (runeLoadout != null)
+			runeLoadout.Close();
+	}
 
     void Update()
     {
@@ -564,6 +808,7 @@ public class GameManager : MonoBehaviour
         isLive = true;
         Time.timeScale = 1f;
         ShowGameplayHud();
+        EnsureGameplayBgm();
     }
 
     /// <summary>룬 선택 후 첫 플레이 진입 — 기록 추적·웨이브 시작.</summary>
@@ -572,6 +817,7 @@ public class GameManager : MonoBehaviour
         isLive = true;
         Time.timeScale = 1f;
         ShowGameplayHud();
+        PlayBgmForCurrentStage();
 
         if (!GameRunSessionTracker.IsActive)
             GameRunSessionTracker.BeginRun();

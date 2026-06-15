@@ -15,14 +15,14 @@ MonoBehaviour:
   runeName: Blink
   category: 4
   runeType: 14
-  runeIcon: {fileID: 0}
-  runeDescription: "\uBB34\uAE30\uAC00 \uC8FC\uAE30\uC801\uC73C\uB85C \uC804\uBC29 \uC77C\uC815 \uAC70\uB9AC\uB97C \uC21C\uAC04\uC774\uB3D9\uD569\uB2C8\uB2E4. [\uB85C\uC9C1]"
-  runeDesc: "[\uC21C\uAC04\uC774\uB3D9 \uAC70\uB9AC] distance \uAC12\n[\uBC18\uBCF5 \uC8FC\uAE30] interval \uCD08\n[\uB3D9\uC791] \uBE14\uB9C1\uD06C \uC2DC \uAC04\uACA9 \uB3D9\uC548 \uBB34\uC801 \uAD00\uD1B5"
+  runeIcon: {fileID: 8392801653997051193, guid: d038381143df7d645b8d4ff6ccc4a820, type: 3}
+  runeDescription: "\uBB34\uAE30\uAC00 \uC8FC\uAE30\uC801\uC73C\uB85C \uC804\uBC29
+    \uC77C\uC815 \uAC70\uB9AC\uB97C \uC21C\uAC04\uC774\uB3D9\uD569\uB2C8\uB2E4. [\uB85C\uC9C1]"
+  runeDesc: "[\uC21C\uAC04\uC774\uB3D9 \uAC70\uB9AC] distance \uAC12\n[\uBC18\uBCF5
+    \uC8FC\uAE30] interval \uCD08\n[\uB3D9\uC791] \uBE14\uB9C1\uD06C \uC2DC \uAC04\uACA9
+    \uB3D9\uC548 \uBB34\uC801 \uAD00\uD1B5"
   isDestroyed: 0
   power: 0
-  cooldownPenalty: 0
-  manaCost: 0
-  incompatibleWith: 
   valueA: 1
   valueB: 1
   interval: 0.8

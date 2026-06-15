@@ -185,6 +185,9 @@ public class LavaEarthDragon : BossBase
 
     void TrySummon()
     {
+        if (BossSummonGuard.IsBlocked())
+            return;
+
         // 이동 중만 소환
         if (!canMove)
             return;

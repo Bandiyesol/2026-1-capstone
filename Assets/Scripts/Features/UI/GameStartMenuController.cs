@@ -26,6 +26,7 @@ public class GameStartMenuController : MonoBehaviour
 	async System.Threading.Tasks.Task RefreshLeaderboardWhenMenuOpensAsync()
 	{
 		await UserAccountDisplay.RefreshAsync();
+		await GameRunLeaderboard.RefreshGlobalAsync();
 
 		MainMenuLeaderboardView leaderboard = MainMenuLeaderboardBootstrap.Ensure(transform);
 		if (leaderboard == null)
@@ -50,8 +51,7 @@ public class GameStartMenuController : MonoBehaviour
 		if (startButton != null)
 		{
 			// Inspector 에 연결된 GameStart() 직접 호출을 스토리 플로우로 교체합니다.
-			startButton.onClick.RemoveAllListeners();
-			startButton.onClick.AddListener(OnStartClicked);
+			UiClickSfxUtility.Rewire(startButton, OnStartClicked);
 		}
 
 		if (settingsButton != null)

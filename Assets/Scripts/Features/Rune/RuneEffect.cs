@@ -41,6 +41,40 @@ public abstract class RuneEffect : MonoBehaviour
 		if (currentCooltime > 0f) currentCooltime -= Time.deltaTime;
 	}
 
+	/// <summary>근접·오브 등 제자리 무기 — 액티브 룬 기본 전진 속도</summary>
+	const float DefaultStationaryActiveMoveSpeed = 5f;
+
+	/// <summary>애니메이션 근접 등 제자리 무기 여부</summary>
+	protected bool IsStationaryWeapon()
+	{
+		if (weapon?.info == null) return false;
+
+		return weapon.info.type is "Sword" or "Hammer" or "Sickle" or "Whip" or "Orb";
+	}
+
+	/// <summary>
+	/// 액티브 룬 전진 속도.
+	/// 투사체(movespeed &gt; 0)는 무기 movespeed 그대로, 제자리 무기는 DefaultStationaryActiveMoveSpeed.
+	/// </summary>
+	protected float GetActiveMoveSpeed()
+	{
+		if (weapon == null)
+			return DefaultStationaryActiveMoveSpeed;
+
+		if (IsStationaryWeapon() || weapon.movespeed <= 0.01f)
+			return DefaultStationaryActiveMoveSpeed;
+
+		return weapon.movespeed;
+	}
+
+	protected float GetActiveTurnSpeed()
+	{
+		if (IsStationaryWeapon())
+			return Mathf.Max(120f, RuneDataAccess.GetSpeedMultiplier(data) * 90f);
+
+		return Mathf.Max(180f, RuneDataAccess.GetSpeedMultiplier(data) * 140f);
+	}
+
 	protected static bool TryGetDamageable(Collider2D collider, out IDamageable damageable)
 	{
 		damageable = null;

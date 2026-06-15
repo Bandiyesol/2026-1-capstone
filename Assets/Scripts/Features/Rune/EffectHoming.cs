@@ -6,6 +6,7 @@ public class EffectHoming : RuneEffect, IActiveDriver
 	float duration;
 	float searchRadius;
 	float turnSpeed;
+	float moveSpeed;
 	Transform target;
 
 	public override bool isFinished => elapsedtime >= duration;
@@ -16,13 +17,21 @@ public class EffectHoming : RuneEffect, IActiveDriver
 
 		elapsedtime = 0f;
 		duration = RuneDataAccess.GetDuration(data);
-		searchRadius = Mathf.Max(1f, RuneDataAccess.GetAffectedRange(data));
-		turnSpeed = Mathf.Max(120f, RuneDataAccess.GetSpeedMultiplier(data) * 180f);
+		searchRadius = Mathf.Max(2f, RuneDataAccess.GetAffectedRange(data));
+		turnSpeed = GetActiveTurnSpeed();
+		moveSpeed = GetActiveMoveSpeed();
 		target = FindClosestEnemy();
 	}
 
 	public void UpdateMovement()
 	{
+		EffectRicochet ricochet = GetComponent<EffectRicochet>();
+		if (ricochet != null && ricochet.PreferStraightTravel)
+		{
+			transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+			return;
+		}
+
 		elapsedtime += Time.deltaTime;
 
 		if (target == null)
@@ -36,7 +45,7 @@ public class EffectHoming : RuneEffect, IActiveDriver
 			transform.rotation = Quaternion.Euler(0f, 0f, angle);
 		}
 
-		transform.Translate(Vector3.right * weapon.movespeed * Time.deltaTime);
+		transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
 	}
 
 	Transform FindClosestEnemy()

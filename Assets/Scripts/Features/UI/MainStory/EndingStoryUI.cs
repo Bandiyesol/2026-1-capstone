@@ -249,8 +249,7 @@ public class EndingStoryUI : MonoBehaviour
 		if (skipButton == null)
 			return;
 
-		skipButton.onClick.RemoveAllListeners();
-		skipButton.onClick.AddListener(Skip);
+		UiClickSfxUtility.Rewire(skipButton, Skip);
 	}
 
 	static Transform FindDeep(Transform root, string childName)

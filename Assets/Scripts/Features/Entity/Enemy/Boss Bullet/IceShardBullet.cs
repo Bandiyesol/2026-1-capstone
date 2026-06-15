@@ -27,14 +27,7 @@ public class IceShardBullet : BossBullet
             if (player != null)
             {
                 // [방어 시스템 연동] 다이렉트 체력 차감 대신 방어력/회피율 스탯 적용
-                if (PlayerStats.Instance != null)
-                {
-                    PlayerStats.Instance.TakeDamage(damage);
-                }
-                else
-                {
-                    GameManager.instance.Health -= damage; // 폴백
-                }
+                PlayerStats.ApplyDamage(damage);
 
                 // 빙결 슬로우 적용 (Player.cs의 코루틴으로 안전하게 전달됨)
                 player.ApplyIceSlow(slowMultiplier, slowDuration);

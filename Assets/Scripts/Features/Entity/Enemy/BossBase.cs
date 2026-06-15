@@ -161,32 +161,32 @@ public class BossBase : MonoBehaviour, IDamageable
 
         waveManager?.OnEnemyDead();
 
+        // [악세사리 훅] 신기한 화살 — 보스 사망 알림
+        AccessoryEffect.instance?.NotifyBossDead();
+
         rigid.linearVelocity = Vector2.zero;
         canMove = false;
 
         if (spriter != null) spriter.enabled = false;
         if (col != null) col.enabled = false;
 
-        // 풀 매니저를 사용하는 코루틴 실행
-        StartCoroutine(SpawnPortalRoutine());
+        // WaveManager가 스테이지 종료 시 보스를 먼저 비활성화하므로, 코루틴은 GameManager에서 실행
+        Vector3 spawnPosition = transform.position;
+        MonoBehaviour coroutineHost = GameManager.instance != null ? GameManager.instance : this;
+        coroutineHost.StartCoroutine(SpawnPortalRoutine(spawnPosition));
     }
 
-    // [수정] 대기 후 PoolManager에서 마법진을 활성화하는 코루틴
-    private IEnumerator SpawnPortalRoutine()
+    private IEnumerator SpawnPortalRoutine(Vector3 spawnPosition)
     {
         yield return new WaitForSeconds(spawnDelay);
 
         if (PoolManager.Instance != null)
-        {
-            StageClearSpawnUtility.SpawnPortalAndShopkeeper(transform.position, portalGimmickIndex);
-        }
+            StageClearSpawnUtility.SpawnPortalAndShopkeeper(spawnPosition, portalGimmickIndex);
         else
-        {
             Debug.LogWarning("PoolManager 인스턴스를 찾을 수 없습니다.");
-        }
 
-        // 보스 오브젝트 비활성화 (풀로 반환 가능한 상태가 됨)
-        gameObject.SetActive(false);
+        if (gameObject.activeSelf)
+            gameObject.SetActive(false);
     }
 
     // 보스가 무적상태일 때 공격을 받았을 때

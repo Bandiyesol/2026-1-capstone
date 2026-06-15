@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c4e2a1f9b3d5e647a0c8f1d2e3b4a5c, type: 3}
+  m_Name: BgmCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::BgmCatalog
+  mainMenuClip: {fileID: 8300000, guid: fc3d15dee5156f64b85fdf9fb8360b4a, type: 3}
+  mainMenuVolumeScale: 2.1479294
+  stageClips:
+  - {fileID: 8300000, guid: cf3f09ac0635a874d8ec8d939b20545f, type: 3}
+  - {fileID: 8300000, guid: 707c594576d86a249bd172cf4a6aa20e, type: 3}
+  - {fileID: 8300000, guid: 21da5084b4c8b994d87125bab9b6d5a3, type: 3}
+  - {fileID: 8300000, guid: 712a34561237ab748a2fd8f2d689cd8d, type: 3}
+  - {fileID: 8300000, guid: a87c379251ec16a4d9d1cbcca13e79c7, type: 3}
+  - {fileID: 8300000, guid: 924d21cd11612734c9a007a8bd4869b1, type: 3}
+  - {fileID: 8300000, guid: b08420bfedc5bd5478d9fd73a8a01453, type: 3}
+  stageVolumeScales:
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  stage1VolumeTrim: 0.62
+  shopClip: {fileID: 8300000, guid: 8d721771d57fb5f4fa154ce27b12928e, type: 3}
+  shopVolumeScale: 0.407984
+  stageClearClip: {fileID: 8300000, guid: 1b9e149c5397e474ebcfe559e70b901a, type: 3}
+  stageClearVolumeScale: 0.5616723
+  deathClip: {fileID: 8300000, guid: 01bc857abb36ed3488a617eb352682c6, type: 3}
+  deathVolumeScale: 1.0269245

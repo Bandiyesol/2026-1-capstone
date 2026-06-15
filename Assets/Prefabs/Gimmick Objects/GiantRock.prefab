@@ -369,11 +369,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GiantRock
   lifeTime: 0
-  maxHealth: 200
-  health: 200
+  maxHealth: 3000
+  health: 3000
   warningTime: 1
-  playerDamage: 25
-  pushDistance: 1.2
+  fallDamage: 80
   warningCircle: {fileID: 2746385713242864413}
   rock: {fileID: 3239919429545392852}
   damageColl: {fileID: 7832219279406544215}

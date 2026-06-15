@@ -31,6 +31,10 @@ public static class RuneCategoryDisplay
 		if (rune.runeIcon != null)
 			return rune.runeIcon;
 
+		Sprite fromCatalog = RuneIconLookup.GetByType(rune.runeType);
+		if (fromCatalog != null)
+			return fromCatalog;
+
 		return Resources.Load<Sprite>($"Sprites/RuneCategories/{rune.category}");
 	}
 
@@ -51,7 +55,8 @@ public static class RuneCategoryDisplay
 
 		Sprite sprite = GetIcon(rune);
 		image.sprite = sprite;
-		image.enabled = true;
+		image.enabled = sprite != null;
+		image.preserveAspect = true;
 		image.color = sprite != null ? Color.white : GetTint(rune.category);
 	}
 }

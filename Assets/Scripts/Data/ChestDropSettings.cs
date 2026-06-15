@@ -18,7 +18,7 @@ public class ChestDropSettings : ScriptableObject
     [Min(0f)] public float uniqueWeight = 8f;
     [Min(0f)] public float legendaryWeight = 2f;
 
-    [Header("상자 등급별 보상 종류 가중치 (무기 / 악세서리 / 성물)")]
+    [Header("상자 등급별 보상 종류 가중치 (무기 / 악세서리)")]
     public ChestRewardWeight normalChestReward = ChestRewardWeight.Normal;
     public ChestRewardWeight rareChestReward = ChestRewardWeight.Rare;
     public ChestRewardWeight uniqueChestReward = ChestRewardWeight.Unique;

@@ -119,6 +119,7 @@ public class InventoryUI : MonoBehaviour
 
 		isOpen = true;
 		panel.SetActive(true);
+		GameAudio.PlayPanelOpen();
 		Refresh();
 		PauseGameIfLive();
 	}

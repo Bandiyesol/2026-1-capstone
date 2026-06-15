@@ -73,11 +73,8 @@ public class VoidPitGimmick : BiomeGimmick
             player.spriter.enabled = false;
         }
 
-        // 체력 제거 및 즉시 사망 파이프라인 가동 (기존 기믹 유지)
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.Health = 0f;
-        }
+        // 체력 제거 및 즉시 사망 (PlayerStats·HP 바·사망 판정 통일)
+        PlayerStats.Kill();
     }
 
     // 충돌 켜기

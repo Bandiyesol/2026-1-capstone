@@ -28,7 +28,7 @@ const MOVES = [
     go: 315315527,
     guid: GUIDS.RewardRollService,
     className: "RewardRollService",
-    extra: "  allAccessories: []\r\n  allRelics: []\r\n",
+    extra: "  allAccessories: []\r\n",
   },
   {
     oldId: 880000004,

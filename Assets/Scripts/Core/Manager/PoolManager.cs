@@ -40,7 +40,41 @@ public class PoolManager : MonoBehaviour
         coinPools = CreatePools(coinPrefabs != null ? coinPrefabs.Length : 0);
         chestPools = CreatePools(chestPrefabs != null ? chestPrefabs.Length : 0);
 
+        EnsureShopkeeperGimmickPrefab();
         InitializeMotionPools();
+    }
+
+    void EnsureShopkeeperGimmickPrefab()
+    {
+        if (FindShopkeeperGimmickIndex() >= 0)
+            return;
+
+        GameObject prefab = Resources.Load<GameObject>("Prefabs/Gimmick/ShopkeeperNpc");
+        if (prefab == null)
+            return;
+
+        RegisterGimmickPrefab(prefab);
+        Debug.Log("[PoolManager] ShopkeeperNpc를 Resources에서 gimmickPrefabs에 자동 등록했습니다.");
+    }
+
+    public void RegisterGimmickPrefab(GameObject prefab)
+    {
+        if (prefab == null || gimmickPrefabs == null)
+            return;
+
+        for (int i = 0; i < gimmickPrefabs.Length; i++)
+        {
+            if (gimmickPrefabs[i] == prefab)
+                return;
+        }
+
+        int oldLength = gimmickPrefabs.Length;
+        var expanded = new GameObject[oldLength + 1];
+        for (int i = 0; i < oldLength; i++)
+            expanded[i] = gimmickPrefabs[i];
+        expanded[oldLength] = prefab;
+        gimmickPrefabs = expanded;
+        EnsurePoolCapacity(ref gimmickPools, gimmickPrefabs);
     }
 
     void InitializeMotionPools()
@@ -101,6 +135,15 @@ public class PoolManager : MonoBehaviour
         int resolved = ResolveGimmickIndex(index);
         if (resolved < 0) return null;
         return GetFromPool(gimmickPrefabs, gimmickPools, resolved, "Gimmick");
+    }
+
+    public bool IsStagePortalGimmickIndex(int index)
+    {
+        if (gimmickPrefabs == null || index < 0 || index >= gimmickPrefabs.Length)
+            return false;
+
+        GameObject prefab = gimmickPrefabs[index];
+        return prefab != null && prefab.GetComponent<StagePortal>() != null;
     }
 
     /// <summary>Stage Portal 프리팹이 gimmickPrefabs에 있으면 해당 인덱스를 반환합니다.</summary>
@@ -309,6 +352,41 @@ public class PoolManager : MonoBehaviour
         ReturnAllActiveInPools(coinPools);
         ReturnAllActiveInPools(chestPools);
         ReturnAllActiveMotions();
+    }
+
+    public void ReturnStageClearGimmicks()
+    {
+        if (gimmickPools == null)
+            return;
+
+        foreach (List<GameObject> pool in gimmickPools)
+        {
+            if (pool == null)
+                continue;
+
+            foreach (GameObject item in pool)
+            {
+                if (item == null || !item.activeSelf)
+                    continue;
+
+                if (item.GetComponent<StagePortal>() != null || item.GetComponent<ShopkeeperNpc>() != null)
+                    item.SetActive(false);
+            }
+        }
+    }
+
+    public void ReturnActiveEnemiesAndBosses()
+    {
+        ReturnAllActiveInPools(enemyPools);
+        ReturnAllActiveInPools(bossPools);
+        ReturnAllActiveInPools(bossBulletPools);
+    }
+
+    /// <summary>스테이지 전환 시 바닥에 남은 코인·상자 등 필드 드랍을 풀로 되돌립니다.</summary>
+    public void ReturnActiveFieldDrops()
+    {
+        ReturnAllActiveInPools(coinPools);
+        ReturnAllActiveInPools(chestPools);
     }
 
     // 하나의 풀 배열 내부에 켜져 있는 모든 오브젝트를 끄는 내부 메서드

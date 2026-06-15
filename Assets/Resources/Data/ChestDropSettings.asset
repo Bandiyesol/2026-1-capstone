@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d1c43a6945dfcb46bb5a69ffc007698, type: 3}
   m_Name: ChestDropSettings
   m_EditorClassIdentifier: Assembly-CSharp::ChestDropSettings
-  enemyDropChance: 0.08
+  enemyDropChance: 0.05
   bossDropChance: 0.25
   normalWeight: 70
   rareWeight: 20
@@ -20,20 +20,16 @@ MonoBehaviour:
   legendaryWeight: 2
   normalChestReward:
     weapon: 50
-    accessory: 45
-    relic: 5
+    accessory: 50
   rareChestReward:
     weapon: 45
-    accessory: 50
-    relic: 5
+    accessory: 55
   uniqueChestReward:
     weapon: 40
-    accessory: 55
-    relic: 5
+    accessory: 60
   legendaryChestReward:
     weapon: 35
-    accessory: 55
-    relic: 10
+    accessory: 65
   normalItemGrade:
     common: 85
     rare: 12

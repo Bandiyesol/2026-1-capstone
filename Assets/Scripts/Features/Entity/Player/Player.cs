@@ -86,12 +86,14 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        // [매 프레임 체력 검사] 실시간 최신 스탯 시스템 HP 체크 -> 0 이하 시 사망 처리
-        if (PlayerStats.Instance != null && PlayerStats.Instance.CurrentHP <= 0f)
-            PlayerDead();
+        if (PlayerStats.Instance != null)
+        {
+            if (PlayerStats.Instance.CurrentHP <= 0f)
+                PlayerDead();
+            return;
+        }
 
-        // [구 버전 매니저 호환성 검사] 구형 게임 매니저 체력 체크 -> 0 이하 시 사망 처리
-        else if (GameManager.instance != null && GameManager.instance.Health <= 0f)
+        if (GameManager.instance != null && GameManager.instance.Health <= 0f)
             PlayerDead();
     }
 
@@ -214,11 +216,10 @@ public class Player : MonoBehaviour
         if (damage <= 0f)
             return;
 
-        // 프레임에 독립적인 도트 데미지 연산을 위해 Time.deltaTime을 곱해 체력 감산
-        if (PlayerStats.Instance != null)
-            PlayerStats.Instance.TakeDamage(damage * Time.deltaTime);
-        else
-            GameManager.instance.Health -= damage * Time.deltaTime;
+        PlayerStats.ApplyDamage(
+            damage * Time.deltaTime,
+            applyIFrames: false,
+            PlayerDamageKind.PerSecondFrame);
     }
 
     /// <summary>
@@ -232,13 +233,7 @@ public class Player : MonoBehaviour
 
         BossBullet bullet = collision.gameObject.GetComponent<BossBullet>();
         if (bullet != null)
-        {
-            // 연사/단발 타격이므로 델타타임 없이 투사체 고유 데미지 통째로 피해 적용
-            if (PlayerStats.Instance != null)
-                PlayerStats.Instance.TakeDamage(bullet.damage);
-            else
-                GameManager.instance.Health -= bullet.damage;
-        }
+            PlayerStats.ApplyDamage(bullet.damage);
 
         // 충돌한 보스 탄막은 제 역할을 다했으므로 오브젝트 풀 반환(비활성화)
         collision.gameObject.SetActive(false);
@@ -331,6 +326,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ApplyIceSlow(float slowMultiplier, float duration)
     {
+		// [신의 방패] 상태이상 면역
+		if (AccessoryEffect.instance != null && AccessoryEffect.instance.IsStatusImmune) return;
+
         // 불타는 중(화상)에 얼음 공격을 받으면 감속이 걸리지 않고 서로 비겨서 화상만 치유됨
         if (isBurning)
         {
@@ -369,6 +367,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ApplyBurn(float duration, float tickDamage, float tickInterval, float blinkSpeed)
     {
+		// [신의 방패] 상태이상 면역
+		if (AccessoryEffect.instance != null && AccessoryEffect.instance.IsStatusImmune) return;
+
         // 얼어있는 중(빙결)에 불 공격을 받으면 대미지 사이클 없이 서로 비겨서 빙결만 해제됨
         if (isFrozen)
         {
@@ -402,7 +403,7 @@ public class Player : MonoBehaviour
             // 틱 타이머가 만료되는 순간마다 플레이어의 실시간 헬스 수치를 직접 차감 및 타이머 복구
             if (tickTimer <= 0f)
             {
-                GameManager.instance.Health -= tickDamage;
+                PlayerStats.ApplyDamage(tickDamage, applyIFrames: false);
                 tickTimer = tickInterval;
             }
 
@@ -456,6 +457,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ApplyKnockback(Vector2 direction, float force)
     {
+		// [신의 방패] 상태이상 면역
+		if (AccessoryEffect.instance != null && AccessoryEffect.instance.IsStatusImmune) return;
+
         if (rigid != null)
         {
             // 넉백 방향 왜곡을 막기 위해 현재 관성으로 흐르던 기존 속도를 즉각 순간 소거
@@ -508,6 +512,8 @@ public class Player : MonoBehaviour
         {
             anim.ResetTrigger("Dead");
             anim.SetFloat("Speed", 0f);
+            // Dead 상태는 복귀 전환이 없어 Stand로 강제 재생해야 일어납니다.
+            AnimatorUtil.PlayStateOrDefault(anim, "Stand");
         }
     }
 }

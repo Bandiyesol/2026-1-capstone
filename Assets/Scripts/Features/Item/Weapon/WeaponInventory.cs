@@ -36,6 +36,10 @@ public class WeaponInventory : MonoBehaviour
 
 		weapons.Add(instance);
 		OnInventoryChanged?.Invoke();
+
+		// [미네르바의 지혜] 무기 획득 시 스택 증가
+		AccessoryEffect.instance?.NotifyItemAcquired();
+
 		return true;
 	}
 

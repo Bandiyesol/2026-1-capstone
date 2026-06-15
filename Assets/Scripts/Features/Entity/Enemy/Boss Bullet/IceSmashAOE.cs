@@ -148,7 +148,7 @@ public class IceSmashAOE : BossBullet
             player.ApplyIceSlow(slowMultiplier, slowDuration);
 
             // 데미지 적용
-            GameManager.instance.Health -= damage;
+            PlayerStats.ApplyDamage(damage);
 
             // 중복 방지
             DisablePlayerCollision();

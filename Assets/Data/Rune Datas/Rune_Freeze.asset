@@ -15,14 +15,14 @@ MonoBehaviour:
   runeName: Freeze
   category: 1
   runeType: 8
-  runeIcon: {fileID: 0}
-  runeDescription: "\uC801 \uBA85\uC911 \uC2DC \uC8FC\uBCC0 \uC801\uC744 \uC77C\uC2DC\uC801\uC73C\uB85C \uBE59\uACB0\uD558\uC5EC \uC774\uB3D9\uC744 \uBD88\uAC00\uB2A5\uD558\uAC8C \uD569\uB2C8\uB2E4. [\uD2B8\uB9AC\uAC70]"
-  runeDesc: "[\uBE59\uACB0 \uBC18\uACBD] freezeRadius \uAC12\n[\uBE59\uACB0 \uC9C0\uC18D] freezeDuration \uCD08\n[\uBC1C\uB3D9 \uC8FC\uAE30] interval \uCD08"
+  runeIcon: {fileID: 3333249099388223432, guid: 79cfb9a70635a824bbe6574fb0dd702f, type: 3}
+  runeDescription: "\uC801 \uBA85\uC911 \uC2DC \uC8FC\uBCC0 \uC801\uC744 \uC77C\uC2DC\uC801\uC73C\uB85C
+    \uBE59\uACB0\uD558\uC5EC \uC774\uB3D9\uC744 \uBD88\uAC00\uB2A5\uD558\uAC8C \uD569\uB2C8\uB2E4.
+    [\uD2B8\uB9AC\uAC70]"
+  runeDesc: "[\uBE59\uACB0 \uBC18\uACBD] freezeRadius \uAC12\n[\uBE59\uACB0 \uC9C0\uC18D]
+    freezeDuration \uCD08\n[\uBC1C\uB3D9 \uC8FC\uAE30] interval \uCD08"
   isDestroyed: 0
   power: 0
-  cooldownPenalty: 0
-  manaCost: 0
-  incompatibleWith: 
   valueA: 1
   valueB: 1
   freezeRadius: 3.5

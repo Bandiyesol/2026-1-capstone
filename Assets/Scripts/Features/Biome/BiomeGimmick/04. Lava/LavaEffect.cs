@@ -47,8 +47,10 @@ public class LavaEffect : BiomeEffect
         // 용암 위에 있는 동안
         if (onLava)
         {
-            // 방어 무시 지속 피해
-            GameManager.instance.Health -= lavaDamagePerSecond * Time.deltaTime;
+            PlayerStats.ApplyDamage(
+                lavaDamagePerSecond * Time.deltaTime,
+                applyIFrames: false,
+                PlayerDamageKind.PerSecondFrame);
         }
 
         // 방금 용암에서 벗어났다면

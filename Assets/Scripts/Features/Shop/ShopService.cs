@@ -141,6 +141,13 @@ public static class ShopService
 			return false;
 		}
 
+		// [PotionEffect 연동] 구매한 물약을 PotionEffect 대기 목록에 등록
+		// 포탈 통과 시 자동 적용됨
+		if (listing.potion != null)
+			PotionEffect.instance?.Use(listing.potion);
+		else if (System.Enum.TryParse<PotionType>(potionId, out PotionType parsedType))
+			PotionEffect.instance?.Use(parsedType);
+
 		listing.soldOut = true;
 		message = $"{displayName} 구매 완료!";
 		return true;

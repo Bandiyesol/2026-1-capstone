@@ -47,6 +47,9 @@ public class AccessoryManager : MonoBehaviour
         if (data.effectType != AccessoryEffectType.None)
             AccessoryEffect.instance?.Activate(data.effectType, data);
 
+        // [미네르바의 지혜] 악세사리 획득 시 스택 증가
+        AccessoryEffect.instance?.NotifyItemAcquired();
+
         Debug.Log($"[AccessoryManager] 악세사리 획득: {data.displayName} ({data.grade})");
     }
 }
