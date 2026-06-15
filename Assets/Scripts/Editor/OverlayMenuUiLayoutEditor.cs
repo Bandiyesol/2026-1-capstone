@@ -32,6 +32,9 @@ public static class OverlayMenuUiLayoutEditor
 	};
 
 	static readonly Vector2 ButtonSize = new(340f, 96f);
+	static readonly Vector2 SettingFooterButtonSize = new(280f, 96f);
+	static readonly float SettingFooterButtonY = 200f;
+	static readonly float SettingFooterButtonSpacing = 380f;
 	static readonly Vector2 AuthButtonSize = new(340f, 96f);
 	static readonly Vector2 AuthWideButtonSize = new(400f, 96f);
 	static readonly Vector2 InputSize = new(500f, 64f);
@@ -71,6 +74,7 @@ public static class OverlayMenuUiLayoutEditor
 		PolishInputs(roots, panelSprite);
 		EnlargeButtons(roots);
 		ApplyPanelLayoutOverrides();
+		StripSettingRowDecorations();
 		FixSettingSliders();
 		StyleSettingDropdowns();
 		FixLoadoutStartLabel();
@@ -92,9 +96,7 @@ public static class OverlayMenuUiLayoutEditor
 
 	static void PolishInputs(HashSet<Transform> roots, Sprite panelSprite)
 	{
-		Sprite inputPanel = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_02.png", "Gold Btn C_02_center")
-		              ?? LoadSprite($"{Vol6Root}/Panels/Panels_03.png", "Panels_03_0")
-		              ?? panelSprite;
+		Sprite inputPanel = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_02.png", "Gold Btn C_02_center");
 
 		foreach (TMP_InputField input in Object.FindObjectsByType<TMP_InputField>(FindObjectsInactive.Include, FindObjectsSortMode.None))
 		{
@@ -115,6 +117,7 @@ public static class OverlayMenuUiLayoutEditor
 				bg.sprite = inputPanel;
 				bg.type = Image.Type.Sliced;
 				bg.color = AuthInputBackgroundColor;
+				bg.preserveAspect = false;
 				EditorUtility.SetDirty(bg);
 			}
 
@@ -143,7 +146,7 @@ public static class OverlayMenuUiLayoutEditor
 				EditorUtility.SetDirty(viewport);
 			}
 
-			Report.Add($"{GetPath(input.transform)} → 입력창 Panels_03 {InputSize.x}x{InputSize.y}");
+			Report.Add($"{GetPath(input.transform)} → 입력창 Gold Btn C_02_center {InputSize.x}x{InputSize.y}");
 		}
 	}
 
@@ -167,6 +170,9 @@ public static class OverlayMenuUiLayoutEditor
 				continue;
 
 			if (button.name.Contains("Close"))
+				continue;
+
+			if (OverlayMenuUiLayoutEditor.IsLoadoutCardButton(button.name))
 				continue;
 
 			if (!button.TryGetComponent(out RectTransform rect))
@@ -219,20 +225,19 @@ public static class OverlayMenuUiLayoutEditor
 		// 설정
 		SetRect("SettingPanel/ScreenModeDropdown", new Vector2(100f, 200f), DropdownSize);
 		SetRect("SettingPanel/ResolutionDropdown", new Vector2(100f, 100f), DropdownSize);
-		SetRect("SettingPanel/MainMenuButton", new Vector2(-360f, 180f), ButtonSize);
-		SetRect("SettingPanel/QuitButton", new Vector2(0f, 180f), ButtonSize);
-		SetRect("SettingPanel/DeleteAccountButton", new Vector2(360f, 180f), ButtonSize);
+		SetRect("SettingPanel/MainMenuButton", new Vector2(-SettingFooterButtonSpacing, SettingFooterButtonY), SettingFooterButtonSize);
+		SetRect("SettingPanel/QuitButton", new Vector2(0f, SettingFooterButtonY), SettingFooterButtonSize);
+		SetRect("SettingPanel/DeleteAccountButton", new Vector2(SettingFooterButtonSpacing, SettingFooterButtonY), SettingFooterButtonSize);
+
+		SetOverlayActionButtonRect("MainStoryPanel/SkipButton");
+		SetOverlayActionButtonRect("EndingStoryPanel/SkipButton");
+		SetOverlayActionButtonRect("BossAlarmPanel/BossAlarmContinueButton");
+		SetRect("LoadoutPanel/StartButton", new Vector2(0f, 149f), ButtonSize);
 
 		// 회원 탈퇴 확인
 		SetRect("SettingPanel/BoxPanel/DeleteAccountPanel/DeleteAccountPasswordInput", new Vector2(0f, 100f), InputSize);
 		SetRect("SettingPanel/BoxPanel/DeleteAccountPanel/DeleteAccountConfirmButton", new Vector2(-190f, -100f), ButtonSize);
 		SetRect("SettingPanel/BoxPanel/DeleteAccountPanel/DeleteAccountCancelButton", new Vector2(190f, -100f), ButtonSize);
-
-		// 메인 스토리 / 엔딩 / 보스 알리미 / 룬 순서
-		SetRect("MainStoryPanel/SkipButton", new Vector2(-220f, 120f), ButtonSize);
-		SetRect("EndingStoryPanel/SkipButton", new Vector2(-220f, 120f), ButtonSize);
-		SetRect("BossAlarmPanel/BossAlarmContinueButton", new Vector2(-220f, 120f), ButtonSize);
-		SetRect("LoadoutPanel/StartButton", new Vector2(0f, 149f), ButtonSize);
 
 		// 플레이 기록
 		FixGameRecordPanelLayout();
@@ -266,8 +271,14 @@ public static class OverlayMenuUiLayoutEditor
 		if (buttonName == "SendResetEmailButton")
 			return AuthWideButtonSize;
 
-		if (IsOverlayMenuButtonName(buttonName))
-			return ButtonSize;
+		if (buttonName is "LoginButton" or "GoSignUpButton" or "ForgotPasswordButton" or "QuitButton"
+			or "SignUpButton" or "BackToLoginButton" or "ForgotBackToLoginButton"
+			or "MainMenuButton" or "DeleteAccountButton" or "DeleteAccountConfirmButton"
+			or "DeleteAccountCancelButton" or "StartButton" or "SkipButton" or "BossAlarmContinueButton"
+			or "ConfirmButton")
+			return buttonName is "MainMenuButton" or "QuitButton" or "DeleteAccountButton"
+				? SettingFooterButtonSize
+				: ButtonSize;
 
 		return current;
 	}
@@ -278,6 +289,9 @@ public static class OverlayMenuUiLayoutEditor
 			or "MainMenuButton" or "DeleteAccountButton" or "DeleteAccountConfirmButton"
 			or "DeleteAccountCancelButton" or "StartButton" or "SkipButton" or "BossAlarmContinueButton"
 			or "ConfirmButton";
+
+	public static bool IsLoadoutCardButton(string buttonName) =>
+		buttonName is "Btn0" or "Btn1" or "Btn2";
 
 	static void ApplyAuthButtonLabelPadding()
 	{
@@ -324,7 +338,9 @@ public static class OverlayMenuUiLayoutEditor
 
 	static void FixSettingSliders()
 	{
-		Sprite panelSprite = LoadSprite($"{Vol6Root}/Panels/Panels_06.png", "Panels_06_0");
+		Sprite fillSprite = LoadSprite($"{Vol6Root}/Resources Bars/Bars and clusters/Green Bar.png", "Green Bar_0");
+		Sprite handleSprite = LoadSprite($"{Vol6Root}/Slide bars/Handle 1.png", "Handle 1_0");
+		Sprite trackSprite = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_01.png", "Gold Btn C_01_0");
 
 		foreach (Slider slider in Object.FindObjectsByType<Slider>(FindObjectsInactive.Include, FindObjectsSortMode.None))
 		{
@@ -334,32 +350,120 @@ public static class OverlayMenuUiLayoutEditor
 			if (!IsUnderPanel(slider.transform, "SettingPanel"))
 				continue;
 
-			Transform background = slider.transform.Find("Background");
-			if (background != null && background.TryGetComponent(out Image track) && panelSprite != null)
+			if (slider.TryGetComponent(out RectTransform sliderRect))
 			{
-				track.sprite = panelSprite;
-				track.type = Image.Type.Sliced;
-				track.color = SliderTrackColor;
-				EditorUtility.SetDirty(track);
-				Report.Add($"{GetPath(background)} → 슬라이더 트랙 (은색 캡 제거)");
+				Vector2 size = sliderRect.sizeDelta;
+				sliderRect.sizeDelta = new Vector2(size.x, 64f);
+				EditorUtility.SetDirty(sliderRect);
 			}
 
-			if (slider.fillRect != null && slider.fillRect.TryGetComponent(out Image fill))
+			Transform background = slider.transform.Find("Background");
+			if (background != null)
 			{
-				fill.type = Image.Type.Filled;
-				fill.fillMethod = Image.FillMethod.Horizontal;
-				fill.fillOrigin = (int)Image.OriginHorizontal.Left;
+				if (background is RectTransform bgRect)
+				{
+					bgRect.anchorMin = new Vector2(0f, 0.18f);
+					bgRect.anchorMax = new Vector2(1f, 0.82f);
+					bgRect.offsetMin = Vector2.zero;
+					bgRect.offsetMax = Vector2.zero;
+					EditorUtility.SetDirty(bgRect);
+				}
+
+				if (background.TryGetComponent(out Image track))
+				{
+					track.sprite = trackSprite;
+					track.type = Image.Type.Simple;
+					track.color = Color.white;
+					track.preserveAspect = false;
+					EditorUtility.SetDirty(track);
+					Report.Add($"{GetPath(background)} → 슬라이더 트랙(Gold Btn C_01)");
+				}
+			}
+
+			Transform fillArea = slider.transform.Find("Fill Area");
+			if (fillArea is RectTransform fillAreaRect)
+			{
+				fillAreaRect.anchorMin = new Vector2(0.065f, 0.28f);
+				fillAreaRect.anchorMax = new Vector2(0.93f, 0.72f);
+				fillAreaRect.offsetMin = Vector2.zero;
+				fillAreaRect.offsetMax = Vector2.zero;
+				EditorUtility.SetDirty(fillAreaRect);
+			}
+
+			Transform handleArea = slider.transform.Find("Handle Slide Area");
+			if (handleArea is RectTransform handleAreaRect)
+			{
+				handleAreaRect.anchorMin = new Vector2(0.07f, 0f);
+				handleAreaRect.anchorMax = new Vector2(0.93f, 1f);
+				handleAreaRect.offsetMin = new Vector2(6f, 0f);
+				handleAreaRect.offsetMax = new Vector2(-6f, 0f);
+				EditorUtility.SetDirty(handleAreaRect);
+			}
+
+			if (slider.fillRect != null)
+			{
+				slider.fillRect.anchorMin = new Vector2(0f, 0f);
+				slider.fillRect.anchorMax = new Vector2(0f, 1f);
+				slider.fillRect.pivot = new Vector2(0f, 0.5f);
+				slider.fillRect.anchoredPosition = Vector2.zero;
+				slider.fillRect.sizeDelta = Vector2.zero;
+				EditorUtility.SetDirty(slider.fillRect);
+			}
+
+			if (slider.fillRect != null && slider.fillRect.TryGetComponent(out Image fill) && fillSprite != null)
+			{
+				fill.sprite = fillSprite;
+				fill.type = Image.Type.Simple;
+				fill.preserveAspect = false;
+				fill.color = Color.white;
 				EditorUtility.SetDirty(fill);
-				Report.Add($"{GetPath(fill.transform)} → 가로 Fill");
+			}
+
+			if (slider.handleRect != null)
+			{
+				slider.handleRect.sizeDelta = new Vector2(20f, 0f);
+				slider.handleRect.pivot = new Vector2(0.5f, 0.5f);
+				EditorUtility.SetDirty(slider.handleRect);
+			}
+
+			if (slider.handleRect != null && slider.handleRect.TryGetComponent(out Image handle) && handleSprite != null)
+			{
+				handle.sprite = handleSprite;
+				handle.type = Image.Type.Simple;
+				handle.color = Color.white;
+				handle.preserveAspect = false;
+				EditorUtility.SetDirty(handle);
 			}
 		}
 	}
 
+	static void StripSettingRowDecorations()
+	{
+		string[] rowNames = { "ScreenModeRow", "ResolutionRow", "BgmRow", "SfxRow" };
+
+		foreach (string rowName in rowNames)
+		{
+			Transform row = FindByPath($"SettingPanel/BoxPanel/{rowName}") ?? FindByPath($"SettingPanel/{rowName}");
+			if (row == null)
+				continue;
+
+			if (row.TryGetComponent(out Image rowImage))
+			{
+				rowImage.sprite = null;
+				rowImage.color = new Color(0f, 0f, 0f, 0f);
+				rowImage.raycastTarget = false;
+				EditorUtility.SetDirty(rowImage);
+			}
+		}
+
+		Report.Add("SettingPanel 행 배경 장식 제거");
+	}
+
 	static void StyleSettingDropdowns()
 	{
-		Sprite panelSprite = LoadSprite($"{Vol6Root}/Panels/Panels_06.png", "Panels_06_0");
+		Sprite builtinField = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
 		Sprite arrowSprite = LoadSprite($"{Vol6Root}/Slide bars/Handle 1.png", "Handle 1_0");
-		if (panelSprite == null)
+		if (builtinField == null)
 			return;
 
 		foreach (TMP_Dropdown dropdown in Object.FindObjectsByType<TMP_Dropdown>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -375,7 +479,7 @@ public static class OverlayMenuUiLayoutEditor
 
 			if (dropdown.TryGetComponent(out Image rootImage))
 			{
-				rootImage.sprite = panelSprite;
+				rootImage.sprite = builtinField;
 				rootImage.type = Image.Type.Sliced;
 				rootImage.color = InputBackgroundColor;
 				EditorUtility.SetDirty(rootImage);
@@ -405,19 +509,19 @@ public static class OverlayMenuUiLayoutEditor
 				EditorUtility.SetDirty(dropdown.captionText);
 			}
 
-			foreach (Image image in dropdown.GetComponentsInChildren<Image>(true))
+			Transform template = dropdown.transform.Find("Template");
+			if (template != null)
 			{
-				if (image.transform == dropdown.transform || image.transform == arrow)
-					continue;
+				foreach (Image image in template.GetComponentsInChildren<Image>(true))
+				{
+					if (image.transform.name is "Arrow")
+						continue;
 
-				if (image.name is "Arrow")
-					continue;
-
-				image.sprite = panelSprite;
-				image.type = Image.Type.Sliced;
-				image.color = InputBackgroundColor;
-				EditorUtility.SetDirty(image);
-				Report.Add($"{GetPath(image.transform)} → 드롭다운 Panels_06");
+					image.sprite = builtinField;
+					image.type = Image.Type.Sliced;
+					image.color = InputBackgroundColor;
+					EditorUtility.SetDirty(image);
+				}
 			}
 
 			foreach (TMP_Text label in dropdown.GetComponentsInChildren<TMP_Text>(true))
@@ -427,8 +531,23 @@ public static class OverlayMenuUiLayoutEditor
 				EditorUtility.SetDirty(label);
 			}
 
-			Report.Add($"{GetPath(dropdown.transform)} → 드롭다운 전체 {DropdownSize.x}x{DropdownSize.y}");
+			Report.Add($"{GetPath(dropdown.transform)} → 설정 드롭다운(기본 패널 + 다이아 화살표)");
 		}
+	}
+
+	static void SetOverlayActionButtonRect(string hierarchyPath)
+	{
+		Transform target = FindByPath(hierarchyPath);
+		if (target == null || !target.TryGetComponent(out RectTransform rect))
+			return;
+
+		rect.anchorMin = new Vector2(1f, 0f);
+		rect.anchorMax = new Vector2(1f, 0f);
+		rect.pivot = new Vector2(0.5f, 0.5f);
+		rect.anchoredPosition = new Vector2(-220f, 120f);
+		rect.sizeDelta = ButtonSize;
+		EditorUtility.SetDirty(rect);
+		Report.Add($"{hierarchyPath} → 우하단 확인/스킵 버튼 {ButtonSize.x}x{ButtonSize.y}");
 	}
 
 	static void FixLoadoutStartLabel()

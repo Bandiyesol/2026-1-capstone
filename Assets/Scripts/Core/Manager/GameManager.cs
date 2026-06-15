@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
         ResolveDropSettings();
         RewardSystemBootstrap.EnsureRewardSystem();
         WireGameResultButton();
+        RuneLoadoutHudRuntimeSetup.Ensure();
     }
 
     void ResolveDropSettings()

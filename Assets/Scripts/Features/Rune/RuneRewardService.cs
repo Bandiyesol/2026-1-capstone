@@ -99,13 +99,7 @@ public static class RuneRewardService
 		if (rune == null)
 			return string.Empty;
 
-		if (!string.IsNullOrWhiteSpace(rune.runeDesc))
-			return rune.runeDesc.Trim();
-
-		if (!string.IsNullOrWhiteSpace(rune.runeDescription))
-			return rune.runeDescription.Trim();
-
-		return RuneDescriptionDefaults.GetBrief(rune.runeType);
+		return RuneDescriptionDefaults.GetDescription(rune);
 	}
 }
 

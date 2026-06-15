@@ -69,6 +69,9 @@ public static class RuneLoadoutHudSetupEditor
 			EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 		}
 
+		UiBareElementStylingEditor.StyleLoadoutCardButtons();
+		ChoiceSelectUILayoutSetup.ApplyAll(saveScene: false, showDialog: false);
+
 		return true;
 	}
 

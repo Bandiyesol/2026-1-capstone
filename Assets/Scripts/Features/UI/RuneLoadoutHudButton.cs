@@ -13,6 +13,12 @@ public class RuneLoadoutHudButton : MonoBehaviour
 		ApplyHudIcon();
 	}
 
+	public void ConfigureIcon(Sprite icon)
+	{
+		hudIcon = icon;
+		ApplyHudIcon();
+	}
+
 	void ApplyHudIcon()
 	{
 		if (hudIcon == null)

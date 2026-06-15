@@ -118,8 +118,11 @@ public class RuneLoadoutViewUI : MonoBehaviour
 
 	void AutoBindReferences()
 	{
-		if (panel == null)
-			panel = gameObject;
+		if (panel == null || panel == gameObject)
+		{
+			Transform childPanel = transform.Find("LoadoutPanel");
+			panel = childPanel != null ? childPanel.gameObject : gameObject;
+		}
 
 		Transform box = OverlayPanelUILayout.FindBoxPanel(panel.transform);
 		if (box == null)

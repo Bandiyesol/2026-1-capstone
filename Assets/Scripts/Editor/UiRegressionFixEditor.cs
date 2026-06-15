@@ -91,21 +91,64 @@ public static class UiRegressionFixEditor
 
 	static void FixSkipButtons()
 	{
-		foreach (Button button in Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		string[] paths =
 		{
-			if (button.name != "SkipButton")
-				continue;
+			"MainStoryPanel/SkipButton",
+			"EndingStoryPanel/SkipButton",
+		};
 
-			if (!button.TryGetComponent(out RectTransform rect))
+		foreach (string path in paths)
+		{
+			Transform button = FindByPath(path);
+			if (button == null || !button.TryGetComponent(out RectTransform rect))
 				continue;
 
 			rect.anchorMin = new Vector2(1f, 0f);
 			rect.anchorMax = new Vector2(1f, 0f);
 			rect.pivot = new Vector2(0.5f, 0.5f);
-			rect.anchoredPosition = new Vector2(-200f, 110f);
-			rect.sizeDelta = new Vector2(240f, 72f);
+			rect.anchoredPosition = new Vector2(-220f, 120f);
+			rect.sizeDelta = new Vector2(340f, 96f);
 			EditorUtility.SetDirty(rect);
+
+			foreach (TMP_Text label in button.GetComponentsInChildren<TMP_Text>(true))
+			{
+				label.fontSize = Mathf.Max(label.fontSize, 28f);
+				label.enableAutoSizing = false;
+				EditorUtility.SetDirty(label);
+			}
 		}
+	}
+
+	static Transform FindByPath(string hierarchyPath)
+	{
+		string[] parts = hierarchyPath.Split('/');
+		foreach (GameObject root in SceneManager.GetActiveScene().GetRootGameObjects())
+		{
+			if (root.name != parts[0])
+				continue;
+
+			Transform current = root.transform;
+			for (int i = 1; i < parts.Length && current != null; i++)
+				current = current.Find(parts[i]);
+
+			if (current != null)
+				return current;
+		}
+
+		foreach (Transform transform in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		{
+			if (transform.name != parts[0])
+				continue;
+
+			Transform current = transform;
+			for (int i = 1; i < parts.Length && current != null; i++)
+				current = current.Find(parts[i]);
+
+			if (current != null)
+				return current;
+		}
+
+		return null;
 	}
 
 	static Transform FindChildByName(string objectName)

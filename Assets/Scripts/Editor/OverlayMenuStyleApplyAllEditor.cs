@@ -37,7 +37,7 @@ public static class OverlayMenuStyleApplyAllEditor
 		EditorApplication.Exit(0);
 	}
 
-	static void ApplyAllInternal()
+	public static void ApplyAllInternal()
 	{
 		UiBareElementStylingEditor.ApplyFromBatch();
 		OverlayMenuUiLayoutEditor.ApplyInternal(showDialog: false);

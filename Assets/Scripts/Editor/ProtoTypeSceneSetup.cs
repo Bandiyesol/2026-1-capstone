@@ -40,6 +40,8 @@ public static class ProtoTypeSceneSetup
 		BossHealthHudSetupEditor.Apply(saveScene: false);
 		BossStageConfigurationEditor.ApplyConfiguration();
 		ShopkeeperSetupEditor.TrySetupInActiveScene();
+		OverlayMenuStyleApplyAllEditor.ApplyAllInternal();
+		RuneIconAssigner.AssignAll();
 
 		EditorSceneManager.MarkSceneDirty(scene);
 		EditorSceneManager.SaveScene(scene);

@@ -106,6 +106,8 @@ public static class UiBareElementStylingEditor
 
 		"LoadoutPanel",
 
+		"GameRecordPanel",
+
 	};
 
 
@@ -131,6 +133,8 @@ public static class UiBareElementStylingEditor
 	static Sprite GoldPressed;
 
 	static Sprite GoldC02;
+	static Sprite GoldC01;
+	static Sprite GoldC02Center;
 
 	static Sprite SilverIdle;
 
@@ -148,6 +152,8 @@ public static class UiBareElementStylingEditor
 	static Sprite HealthFill;
 
 	static Sprite SettingsFill;
+
+	static Sprite ChoiceCardSprite;
 
 	static Sprite PortraitFrame;
 
@@ -211,6 +217,8 @@ public static class UiBareElementStylingEditor
 		UiRegressionFixEditor.RevertRankingRowButtons();
 
 		StyleMenuLikeButtonsAndInputs();
+
+		StyleLoadoutCardButtons();
 
 		StyleMenuStylePanelWidgets();
 
@@ -389,6 +397,8 @@ public static class UiBareElementStylingEditor
 		GoldPressed = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn A_02.png", "Gold Btn A_02_0");
 
 		GoldC02 = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_02.png", "Gold Btn C_02_0");
+		GoldC02Center = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_02.png", "Gold Btn C_02_center");
+		GoldC01 = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_01.png", "Gold Btn C_01_0");
 
 		SilverIdle = LoadSprite($"{Vol6Root}/Buttons/Silver Buttons/Silver Btn A_01.png", "Silver Btn A_01_0");
 
@@ -396,8 +406,7 @@ public static class UiBareElementStylingEditor
 
 		PanelInput = LoadSprite($"{Vol6Root}/Panels/Panels_06.png", "Panels_06_0");
 
-		PanelInputField = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_02.png", "Gold Btn C_02_center")
-		               ?? LoadSprite($"{Vol6Root}/Panels/Panels_03.png", "Panels_03_0");
+		PanelInputField = LoadSprite($"{Vol6Root}/Buttons/Gold Buttons/Gold Btn C_02.png", "Gold Btn C_02_center");
 
 		SliderTrack = LoadSprite($"{Vol6Root}/Slide bars/Horizontal Slidebar_01.png", "Horizontal Slidebar_01_0");
 
@@ -408,6 +417,8 @@ public static class UiBareElementStylingEditor
 		HealthFill = LoadSprite($"{Vol6Root}/Resources Bars/Bars and clusters/Red Bar.png", "Red Bar_0");
 
 		SettingsFill = LoadSprite($"{Vol6Root}/Resources Bars/Bars and clusters/Green Bar.png", "Green Bar_0");
+
+		ChoiceCardSprite = LoadSprite($"{Vol6Root}/Cards/Deck A/Cards-Deck-A_08.png", "Cards-Deck-A_08_0");
 
 		PortraitFrame = LoadSprite($"{Vol6Root}/Medallions/Medallions Bases/Medallions-base_01.png", "Medallions-base_01_0");
 
@@ -568,6 +579,12 @@ public static class UiBareElementStylingEditor
 
 
 
+			if (IsLoadoutCardButton(button.name))
+
+				continue;
+
+
+
 			Image image = button.GetComponent<Image>();
 
 			if (image == null)
@@ -576,7 +593,7 @@ public static class UiBareElementStylingEditor
 
 
 
-			ApplySprite(image, GoldC02, Image.Type.Simple, Color.white, GetPath(button.transform), "Gold Btn C_02.png (메인 메뉴 스타일)");
+			ApplyMenuButtonSprite(image, GetPath(button.transform));
 
 		}
 
@@ -602,15 +619,177 @@ public static class UiBareElementStylingEditor
 
 			if (bg != null && PanelInputField != null)
 
-				ApplySprite(bg, PanelInputField, Image.Type.Sliced, AuthInputBackgroundColor, $"{GetPath(input.transform)} (입력창 배경)", "Panels_03.png");
+				ApplySprite(bg, PanelInputField, Image.Type.Sliced, AuthInputBackgroundColor, $"{GetPath(input.transform)} (입력창 배경)", "Gold Btn C_02_center.png");
 
 
 
 			if (input.targetGraphic is Image target && PanelInputField != null)
 
-				ApplySprite(target, PanelInputField, Image.Type.Sliced, AuthInputBackgroundColor, $"{GetPath(input.transform)} (입력창 Target)", "Panels_03.png");
+				ApplySprite(target, PanelInputField, Image.Type.Sliced, AuthInputBackgroundColor, $"{GetPath(input.transform)} (입력창 Target)", "Gold Btn C_02_center.png");
 
 		}
+
+	}
+
+
+
+	public static void StyleLoadoutCardButtons()
+
+	{
+
+		if (PortraitFrame == null)
+
+			LoadSprites();
+
+		Sprite cardSprite = ResolveChoiceCardSprite();
+
+		if (cardSprite == null)
+
+			return;
+
+
+
+		foreach (Button button in Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+
+		{
+
+			if (!IsLoadoutCardButton(button.name))
+
+				continue;
+
+
+
+			if (!IsUnderLoadoutPanel(button.transform))
+
+				continue;
+
+
+
+			Image image = button.GetComponent<Image>();
+
+			if (image == null)
+
+				continue;
+
+
+
+			ApplySprite(image, cardSprite, Image.Type.Simple, Color.white, GetPath(button.transform),
+
+				"Cards-Deck-A_08.png (무기 선택 카드)");
+
+			image.preserveAspect = false;
+
+			EditorUtility.SetDirty(image);
+
+			SpriteState state = button.spriteState;
+
+			state.highlightedSprite = null;
+
+			state.pressedSprite = null;
+
+			state.selectedSprite = null;
+
+			state.disabledSprite = null;
+
+			button.spriteState = state;
+
+			EditorUtility.SetDirty(button);
+
+		}
+
+	}
+
+
+
+	static bool IsLoadoutCardButton(string buttonName) =>
+
+		buttonName is "Btn0" or "Btn1" or "Btn2";
+
+
+
+	static bool IsUnderLoadoutPanel(Transform transform)
+
+	{
+
+		while (transform != null)
+
+		{
+
+			if (transform.name is "LoadoutPanel" or "RuneLoadoutViewPanel")
+
+				return true;
+
+			transform = transform.parent;
+
+		}
+
+
+
+		return false;
+
+	}
+
+
+
+	static Sprite ResolveChoiceCardSprite()
+
+	{
+
+		if (ChoiceCardSprite != null)
+
+			return ChoiceCardSprite;
+
+
+
+		foreach (Button button in Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+
+		{
+
+			if (button.name != "Btn0")
+
+				continue;
+
+
+
+			if (!IsUnderPanel(button.transform, "WeaponSelectUI") && button.GetComponentInParent<WeaponSelectUI>() == null)
+
+				continue;
+
+
+
+			if (button.TryGetComponent(out Image image) && image.sprite != null)
+
+				return image.sprite;
+
+		}
+
+
+
+		return null;
+
+	}
+
+
+
+	static bool IsUnderPanel(Transform transform, string panelName)
+
+	{
+
+		while (transform != null)
+
+		{
+
+			if (transform.name == panelName)
+
+				return true;
+
+			transform = transform.parent;
+
+		}
+
+
+
+		return false;
 
 	}
 
@@ -1041,9 +1220,15 @@ public static class UiBareElementStylingEditor
 
 				{
 
-					ApplySprite(image, PanelInput, Image.Type.Sliced, new Color(0.32f, 0.26f, 0.20f, 0.85f), path,
+					LoadSprites();
 
-						"Panels_06.png");
+					ApplySprite(image, GoldC01, Image.Type.Simple, Color.white, path,
+
+						"Gold Btn C_01.png (슬라이더 트랙)");
+
+					image.preserveAspect = false;
+
+					return true;
 
 				}
 
@@ -1102,6 +1287,32 @@ public static class UiBareElementStylingEditor
 		if (name is "Background" or "Item Background" or "Viewport" or "Template" or "Item Checkmark")
 
 		{
+
+			if (inSettingPanel)
+
+			{
+
+				Sprite builtin = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
+
+				if (builtin != null)
+
+				{
+
+					image.sprite = builtin;
+
+					image.type = Image.Type.Sliced;
+
+					image.color = MenuInputBackgroundColor;
+
+					EditorUtility.SetDirty(image);
+
+					return true;
+
+				}
+
+			}
+
+
 
 			ApplySprite(image, PanelInput, Image.Type.Sliced, dropdownColor, path, "Panels_06.png");
 
@@ -1203,6 +1414,17 @@ public static class UiBareElementStylingEditor
 
 	}
 
+
+
+	static void ApplyMenuButtonSprite(Image image, string targetPath)
+	{
+		if (image == null)
+			return;
+
+		ApplySprite(image, GoldC02, Image.Type.Simple, Color.white, targetPath, "Gold Btn C_02.png (메인 메뉴 스타일)");
+		image.preserveAspect = true;
+		EditorUtility.SetDirty(image);
+	}
 
 
 	static void ApplySprite(Image image, Sprite sprite, Image.Type type, Color color, string targetPath, string sourceFile)
