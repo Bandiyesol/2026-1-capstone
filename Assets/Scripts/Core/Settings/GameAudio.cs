@@ -3,9 +3,25 @@ using UnityEngine;
 /// <summary>런타임 효과음·짧은 BGM 재생 진입점.</summary>
 public static class GameAudio
 {
-	public static void Play(SfxId id)
+	public static void Play(SfxId id, float volumeMultiplier = 1f)
 	{
-		GameAudioSettings.Instance?.PlaySfx(id);
+		GameAudioSettings.Instance?.PlaySfx(id, volumeMultiplier);
+	}
+
+	public static void PlayLoop(SfxId id)
+	{
+		GameAudioSettings.Instance?.PlaySfxLoop(id);
+	}
+
+	public static void StopLoop(SfxId id)
+	{
+		GameAudioSettings.Instance?.StopSfxLoop(id);
+	}
+
+	public static void PlayTogether(SfxId first, SfxId second)
+	{
+		Play(first);
+		Play(second);
 	}
 
 	public static void PlayWeapon(string weaponType)
@@ -45,5 +61,7 @@ public static class GameAudio
 
 	public static void PlayPanelOpen() => Play(SfxId.PanelOpen);
 	public static void PlayUiClick() => Play(SfxId.UiClick);
+	public static void PlayUiTextInput() => Play(SfxId.UiTextInput);
+	public static void PlayPortalTravel() => Play(SfxId.PortalTravel);
 	public static void PlayPurchase() => Play(SfxId.ItemPurchaseReward);
 }
