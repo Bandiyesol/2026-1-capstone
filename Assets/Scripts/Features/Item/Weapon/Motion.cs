@@ -313,6 +313,9 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void UpdateMovement()
 	{
+		if (TryApplyRicochetStraightMovement())
+			return;
+
 		// 잘못 등록된 액티브 룬이 이동 드라이버가 아니면 다음 액티브 룬으로 넘깁니다.
 		while (currentActiveRune != null && !(currentActiveRune is IActiveDriver))
 			ExecuteActiveRune();
@@ -328,6 +331,31 @@ public abstract class Motion : MonoBehaviour
 			if (driver.isFinished)
 				ExecuteActiveRune();
 		}
+	}
+
+	/// <summary>
+	/// 도탄 직후 Homing·스태프 유도와 겹치지 않도록 반사 방향 직진만 적용합니다.
+	/// </summary>
+	protected bool RicochetStraightMovementActive
+	{
+		get
+		{
+			EffectRicochet ricochet = GetComponent<EffectRicochet>();
+			return ricochet != null && ricochet.PreferStraightTravel;
+		}
+	}
+
+	protected bool TryApplyRicochetStraightMovement()
+	{
+		if (instance == null)
+			return false;
+
+		EffectRicochet ricochet = GetComponent<EffectRicochet>();
+		if (ricochet == null || !ricochet.PreferStraightTravel)
+			return false;
+
+		transform.Translate(Vector3.right * instance.movespeed * Time.deltaTime);
+		return true;
 	}
 
 	/// <summary>
@@ -360,15 +388,24 @@ public abstract class Motion : MonoBehaviour
 			// 룬이 존재하고 쿨타임이 다 차서 발동 준비가 되었다면
 			if (rune != null && rune.isReady)
 			{
+				bool runeExecuted;
+				if (effect is EffectRicochet ricochet)
+					runeExecuted = ricochet.TryReflect(collision);
+				else
+				{
+					effect.OnReflect(collision);
+					runeExecuted = true;
+				}
+
+				if (!runeExecuted)
+					continue;
+
 				// 룬 효과가 포함된 최종 데미지 계산
 				float calculatedDamage =
 					DamageCalculator.CalculateBaseDamage(instance, rune.data);
 
 				// 대상에게 데미지 적용
 				ApplyCalculatedDamage(collision, calculatedDamage);
-
-				// 룬의 특수 반사/추가 타격 효과 등 실행
-				effect.OnReflect(collision);
 
 				// 발동했으므로 룬 쿨타임 초기화
 				rune.ResetCooltime();
