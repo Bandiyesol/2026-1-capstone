@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -43,6 +43,9 @@ public abstract class Motion : MonoBehaviour
 	// 파괴가 여러 번 호출되어 에러가 발생하는 것을 막기 위한 중복 방지 플래그
 	private bool isDestroyRequested = false;
 
+	// 자식 클래스에서 파괴 여부를 확인할 수 있는 프로퍼티 (파괴 후 instance 접근 방지)
+	protected bool IsDestroyed => isDestroyRequested || instance == null;
+
 	/// <summary>
 	/// 무기가 생성될 때 최초로 호출되어 스탯과 룬을 세팅합니다.
 	/// </summary>
@@ -51,7 +54,7 @@ public abstract class Motion : MonoBehaviour
 		this.instance = instance;
 
 		// 외부에서 받은 룬 리스트를 깊은 복사(새 리스트 할당)하여 보관
-		allRunes = new List<RuneData>(runes);
+		allRunes = runes != null ? new List<RuneData>(runes) : new List<RuneData>();
 
 		// WeaponInstance에 정의된 무기 크기 스탯(size)을 실제 Transform Scale에 적용
 		transform.localScale = new Vector3(instance.size, instance.size, 1f);
@@ -62,6 +65,9 @@ public abstract class Motion : MonoBehaviour
 
 		// 초기화 완료 플래그 켜기 (이후 Update문 실행 가능)
 		isInitialLifeSet = true;
+
+		// 무기 콜라이더가 플레이어를 물리적으로 밀어내지 않도록 충돌 무시 설정
+		IgnorePlayerCollision();
 
 		// 자식 클래스(검, 활 등)에서 정의한 시작 시점 특수 처리 실행
 		OnStartMotion();
@@ -87,7 +93,12 @@ public abstract class Motion : MonoBehaviour
 
 		// 생존 시간이 0 이하가 되면 무기 고유 로직에 의한 파괴 요청
 		if (life <= 0f)
+		{
 			RequestDestroy(DestroyReason.WeaponLogic);
+
+			// 파괴가 실제로 진행되어 풀로 반환됐다면 (instance = null) 이후 로직 즉시 중단
+			if (IsDestroyed) return;
+		}
 
 		// 투사체 이동 처리 (활 등에서 오버라이드 됨)
 		UpdateMovement();
@@ -115,7 +126,12 @@ public abstract class Motion : MonoBehaviour
 	/// 유니티 기본 2D 물리 충돌 감지 (Trigger 설정 필요)
 	/// </summary>
 	protected virtual void OnTriggerEnter2D(Collider2D collision)
-		=> HandleCollision(collision);
+	{
+		if (!isInitialLifeSet || IsDestroyed)
+			return;
+
+		HandleCollision(collision);
+	}
 
 	// 타격 후 투사체가 관통할지 파괴될지 결정하는 가상 메서드 (기본은 관통/파괴 안됨)
 	protected virtual bool ShouldDestroyOnHit() => false;
@@ -144,7 +160,7 @@ public abstract class Motion : MonoBehaviour
 	// 외부에서 이 무기에 달린 룬 데이터들을 복사해서 가져갈 때 사용
 	public List<RuneData> GetRunes()
 	{
-		return new List<RuneData>(allRunes);
+		return allRunes != null ? new List<RuneData>(allRunes) : new List<RuneData>();
 	}
 
 	/// <summary>
@@ -152,6 +168,10 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void UpdateMovement()
 	{
+		// 잘못 등록된 액티브 룬이 이동 드라이버가 아니면 다음 액티브 룬으로 넘깁니다.
+		while (currentActiveRune != null && !(currentActiveRune is IActiveDriver))
+			ExecuteActiveRune();
+
 		// 현재 액티브 룬이 있고, 그 룬이 이동(Driver)을 제어하는 인터페이스를 가졌다면
 		if (currentActiveRune != null &&
 			currentActiveRune is IActiveDriver driver)
@@ -170,6 +190,9 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void HandleCollision(Collider2D collision)
 	{
+		if (!isInitialLifeSet || IsDestroyed || instance == null)
+			return;
+
 		// 무기에 장착된 트리거 효과(충돌 시 발동) 룬 가져오기
 		var triggerEffects = GetComponents<RuneEffect>()
 			.OfType<ITriggerEffect>()
@@ -229,7 +252,9 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void ApplyCalculatedDamage(Collider2D collision, float finalDamage)
 	{
-		var damageable = collision.GetComponent<IDamageable>();
+		var damageable = collision.GetComponent<IDamageable>()
+			?? collision.GetComponentInParent<IDamageable>()
+			?? collision.GetComponentInChildren<IDamageable>();
 
 		// 데미지를 받을 수 있는 대상이라면 피격 처리
 		if (damageable != null)
@@ -241,8 +266,9 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	public void RequestDestroy(DestroyReason reason)
 	{
-		// 이미 파괴 진행 중이면 무시
-		if (isDestroyRequested) return;
+		// 이미 파괴 진행 중이거나 초기화되지 않았으면 무시
+		if (isDestroyRequested || !isInitialLifeSet)
+			return;
 
 		// 무기 수명이 다했더라도, 액티브 룬 효과(예: 화려한 이펙트 공격 중)가 아직 안 끝났다면 파괴 보류
 		if (currentActiveRune != null &&
@@ -270,8 +296,9 @@ public abstract class Motion : MonoBehaviour
 	private void FinalizeMotion()
 	{
 		// 파괴될 때 발동하는 Final 카테고리 룬 찾기 (예: 폭발, 분열 등)
-		RuneData finalRune =
-			allRunes.FirstOrDefault(r => r.category == RuneCategory.Final);
+		RuneData finalRune = allRunes != null
+			? allRunes.FirstOrDefault(r => r != null && r.category == RuneCategory.Final)
+			: null;
 
 		if (finalRune != null)
 		{
@@ -316,6 +343,29 @@ public abstract class Motion : MonoBehaviour
 	}
 
 	/// <summary>
+	/// 무기 프리팹의 물리 콜라이더가 플레이어 콜라이더와 충돌하지 않도록 설정합니다.
+	/// 애니메이션 근접 무기가 플레이어 몸에 겹쳐 생성될 때 밀려나는 문제를 방지합니다.
+	/// </summary>
+	private void IgnorePlayerCollision()
+	{
+		if (PlayerStats.Instance == null) return;
+
+		// PlayerStats와 같은 오브젝트(혹은 자식)에서 플레이어 콜라이더들을 탐색
+		Collider2D[] playerCols = PlayerStats.Instance.GetComponentsInChildren<Collider2D>(true);
+		Collider2D[] myCols = GetComponentsInChildren<Collider2D>(true);
+
+		foreach (Collider2D pc in playerCols)
+		{
+			if (pc == null) continue;
+			foreach (Collider2D mc in myCols)
+			{
+				if (mc == null) continue;
+				Physics2D.IgnoreCollision(mc, pc, true);
+			}
+		}
+	}
+
+	/// <summary>
 	/// 다음 순서의 액티브 룬(직접 행동하는 룬)을 세팅하고 실행합니다.
 	/// </summary>
 	private void ExecuteActiveRune()
@@ -331,8 +381,14 @@ public abstract class Motion : MonoBehaviour
 		activeIndex++;
 
 		// 액티브 룬만 추려내기
+		if (allRunes == null)
+		{
+			currentActiveRune = null;
+			return;
+		}
+
 		var activeRunes =
-			allRunes.Where(r => r.category == RuneCategory.Active).ToList();
+			allRunes.Where(r => r != null && r.category == RuneCategory.Active).ToList();
 
 		// 아직 실행할 액티브 룬이 남아있다면 해당 룬 컴포넌트 부착 및 실행 대기
 		if (activeIndex < activeRunes.Count)
@@ -346,10 +402,14 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	private void SetupPersistentRunes()
 	{
+		if (allRunes == null)
+			return;
+
 		var persistents =
 			allRunes.Where(r =>
+				r != null && (
 				r.category == RuneCategory.State ||
-				r.category == RuneCategory.Logic);
+				r.category == RuneCategory.Logic));
 
 		foreach (var runeData in persistents)
 		{
@@ -367,7 +427,10 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	private void SetTriggerRunes()
 	{
-		var triggers = allRunes.Where(r => r.category == RuneCategory.Trigger);
+		if (allRunes == null)
+			return;
+
+		var triggers = allRunes.Where(r => r != null && r.category == RuneCategory.Trigger);
 
 		foreach (var trigger in triggers)
 			AddRuneComponent(trigger);

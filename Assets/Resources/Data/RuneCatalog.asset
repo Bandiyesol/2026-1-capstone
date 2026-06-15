@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RuneCatalog
   runes:
   - {fileID: 11400000, guid: 60f69df1510638f44a55bee0766edd31, type: 2}
-  - {fileID: 11400000, guid: a674820843b202445b7a0d1477d26939, type: 2}
   - {fileID: 11400000, guid: 3916b59a6be5b014facc6f19b59fc8b9, type: 2}
   - {fileID: 11400000, guid: ed8f895918d2b03458022a57ef136aa5, type: 2}
   - {fileID: 11400000, guid: 0df963f03e7355745ad4a6583d95d649, type: 2}

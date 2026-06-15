@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// 활/화살과 같은 직선 투사체 계열 무기의 움직임과 파괴 로직을 담당하는 클래스
@@ -33,6 +33,9 @@ public class MotionBow : Motion
 	{
 		// 부모(Motion)의 수명 감소 및 룬 업데이트 로직 먼저 실행
 		base.Update();
+		// base.Update()에서 수명 종료로 파괴됐다면 instance가 null이므로 즉시 중단
+		if (IsDestroyed) return;
+
 
 		// 시작 지점부터 현재 위치까지의 거리가 무기 스탯의 사거리(reach)를 넘었다면
 		if (Vector2.Distance(startPos, transform.position) > instance.reach)

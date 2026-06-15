@@ -30,20 +30,29 @@ public class EffectGravity : RuneEffect, IStateEffect
 		if (pullForce <= 0f || pullRadius <= 0f)
 			return;
 
-		Collider2D[] enemies = Physics2D.OverlapCircleAll(
-			transform.position,
-			pullRadius,
-			LayerMask.GetMask("Enemy")
-		);
+		Collider2D[] enemies = FindEnemyColliders(transform.position, pullRadius);
 
 		foreach (Collider2D enemyCollider in enemies)
 		{
-			Rigidbody2D enemyBody = enemyCollider.attachedRigidbody;
-			if (enemyBody == null) continue;
+			if (!TryGetDamageable(enemyCollider, out _)) continue;
 
-			Vector2 direction = ((Vector2)transform.position - enemyBody.position).normalized;
-			Vector2 nextPosition = enemyBody.position + direction * pullForce * Time.deltaTime;
-			enemyBody.MovePosition(nextPosition);
+			Rigidbody2D enemyBody = enemyCollider.attachedRigidbody;
+			Vector2 currentPosition = enemyBody != null
+				? enemyBody.position
+				: (Vector2)enemyCollider.transform.position;
+
+			Vector2 direction = ((Vector2)transform.position - currentPosition).normalized;
+			Vector2 nextPosition = currentPosition + direction * pullForce * Time.deltaTime;
+
+			if (enemyBody != null)
+			{
+				enemyBody.linearVelocity = Vector2.zero;
+				enemyBody.MovePosition(nextPosition);
+			}
+			else
+			{
+				enemyCollider.transform.position = nextPosition;
+			}
 		}
 	}
 }
