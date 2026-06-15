@@ -165,11 +165,13 @@ public class CaveRex : BossBase
     // 피격 이벤트 수신 오버라이드 (핵심 방어 기믹)
     public override void TakeDamage(float damage)
     {
-        // 생존 중인 부하 소환수가 단 1마리라도 있다면 보스는 피해를 받지 않음 (무적 판정)
         if (HasAliveSummons())
+        {
+            StartCoroutine(FlashInvincible(new Color(0.6f, 0.5f, 0.4f))); // 바위색
             return;
+        }
 
-        base.TakeDamage(damage); // 부하가 전멸했을 때만 부모의 실 데미지 및 사망 연산 실행
+        base.TakeDamage(damage);
     }
 
     // 보스 사망 처리 오버라이드
