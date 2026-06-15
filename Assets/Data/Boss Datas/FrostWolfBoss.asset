@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324b913c2f1cb564781b9a00dd2fc114, type: 3}
   m_Name: FrostWolfBoss
   m_EditorClassIdentifier: Assembly-CSharp::BossData
-  maxHealth: 600
+  maxHealth: 20000
   moveSpeed: 6.5
   attackDamage: 45
   damageReduction: 0.55
