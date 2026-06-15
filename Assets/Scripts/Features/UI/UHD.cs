@@ -53,9 +53,17 @@ public class UHD : MonoBehaviour
             case InfoType.Health:
                 if (mySlider != null)
                 {
-                    float curHealth = GameManager.instance.Health;
-                    float maxHealth = GameManager.instance.maxHealth;
-                    mySlider.value = curHealth / maxHealth;
+                    // PlayerStats 우선 참조, 없으면 GameManager 폴백
+                    if (PlayerStats.Instance != null)
+                    {
+                        mySlider.value = PlayerStats.Instance.CurrentHP / PlayerStats.Instance.MaxHP;
+                    }
+                    else
+                    {
+                        float curHealth = GameManager.instance.Health;
+                        float maxHealth = GameManager.instance.maxHealth;
+                        mySlider.value = maxHealth > 0f ? curHealth / maxHealth : 0f;
+                    }
                 }
                 break;
             case InfoType.Kill:

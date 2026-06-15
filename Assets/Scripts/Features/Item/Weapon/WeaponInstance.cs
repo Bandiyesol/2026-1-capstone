@@ -117,6 +117,24 @@ public class WeaponInstance
 		{
 			ResolveSpawnTransform(playerPos.position, aimDirection, i, projectileCount, out Vector3 spawnPos, out Quaternion spawnRotation);
 			SpawnMotion(prefab, spawnPos, spawnRotation, activeRunes);
+
+			// [악세사리] 랜턴 — 10% 확률로 투사체 복제 (같은 위치/방향에 추가 소환)
+			if (AccessoryEffect.instance != null &&
+			    AccessoryEffect.instance.Has(AccessoryEffectType.DuplicateBullet) &&
+			    UnityEngine.Random.value < AccessoryEffect.instance.duplicateBulletChance)
+			{
+				SpawnMotion(prefab, spawnPos, spawnRotation, activeRunes);
+			}
+
+			// [악세사리] 그림자 가면 — 25% 확률로 분신 위치에서 동일 투사체 소환
+			if (AccessoryEffect.instance != null &&
+			    AccessoryEffect.instance.Has(AccessoryEffectType.ShadowClone) &&
+			    AccessoryEffect.instance.shadowCloneInstance != null &&
+			    UnityEngine.Random.value < AccessoryEffect.instance.shadowCloneAttackChance)
+			{
+				Vector3 clonePos = AccessoryEffect.instance.shadowCloneInstance.transform.position;
+				SpawnMotion(prefab, clonePos, spawnRotation, activeRunes);
+			}
 		}
 	}
 
@@ -213,10 +231,6 @@ public class WeaponInstance
 
 	/// <summary>
 	/// 악세사리 등으로 변한 PlayerStats를 무기 복제본에 배율로 적용합니다.
-	/// - ProjectileSpeed → 투사체 속도(movespeed)
-	/// - ProjectileRange → 원거리 무기 사거리(reach)
-	/// - MeleeRange      → 근접 무기 범위(reach)
-	/// ※ AttackPower / 치명타는 Motion → DamageCalculator에서 이미 반영됨
 	/// </summary>
 	void ApplyPlayerStats(WeaponInstance clone)
 	{

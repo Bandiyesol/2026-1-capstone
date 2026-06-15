@@ -341,7 +341,11 @@ public class PlayerStats : MonoBehaviour
     public float CalculateReceivedDamage(float rawDamage, PlayerDamageKind kind = PlayerDamageKind.PerHit)
     {
         if (UnityEngine.Random.value < Evasion)
+        {
+            // [악세사리 훅] 투명 망토 — 회피 성공 시 은신
+            AccessoryEffect.instance?.NotifyEvasionSuccess();
             return 0f;
+        }
 
         float afterDefense = kind switch
         {
@@ -394,6 +398,11 @@ public class PlayerStats : MonoBehaviour
             return;
 
         float finalDamage = CalculateReceivedDamage(rawDamage, kind);
+
+        // [악세사리 훅] 단단한 껍질 등 — 받을 피해 수정/무효화
+        if (AccessoryEffect.instance != null)
+            finalDamage = AccessoryEffect.instance.ModifyIncomingDamage(finalDamage);
+
         if (finalDamage <= 0f)
             return;
 
@@ -401,12 +410,30 @@ public class PlayerStats : MonoBehaviour
         if (applyIFrames)
             ActivateInvincibility();
 
+        // [악세사리 훅] 바늘 뭉치·빨간 리본·얼음 조각 — 피격 후 효과
+        AccessoryEffect.instance?.NotifyPlayerDamaged(finalDamage);
+
         NotifyChange();
 
         if (currentHP <= 0f)
         {
+            // [악세사리 훅] 부활의 씨앗 — 사망 직전 부활 시도
+            if (AccessoryEffect.instance != null && AccessoryEffect.instance.TryRevive())
+                return;
+
+            // [악세사리 훅] 불사조의 망토 — 풀체력 부활 (게임 내 1회)
+            if (AccessoryEffect.instance != null && AccessoryEffect.instance.TryPhoenixRevive())
+                return;
+
             OnDeath();
         }
+    }
+
+    /// <summary>[악세사리] 외부에서 일정 시간 무적을 부여합니다. (신비한 약병 등)</summary>
+    public void GrantInvincibility(float duration)
+    {
+        isInvincible = true;
+        invincibleTimer = Mathf.Max(invincibleTimer, duration);
     }
 
     public void SetCurrentHPDirect(float value)

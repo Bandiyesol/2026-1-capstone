@@ -331,6 +331,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ApplyIceSlow(float slowMultiplier, float duration)
     {
+		// [신의 방패] 상태이상 면역
+		if (AccessoryEffect.instance != null && AccessoryEffect.instance.IsStatusImmune) return;
+
         // 불타는 중(화상)에 얼음 공격을 받으면 감속이 걸리지 않고 서로 비겨서 화상만 치유됨
         if (isBurning)
         {
@@ -369,6 +372,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ApplyBurn(float duration, float tickDamage, float tickInterval, float blinkSpeed)
     {
+		// [신의 방패] 상태이상 면역
+		if (AccessoryEffect.instance != null && AccessoryEffect.instance.IsStatusImmune) return;
+
         // 얼어있는 중(빙결)에 불 공격을 받으면 대미지 사이클 없이 서로 비겨서 빙결만 해제됨
         if (isFrozen)
         {
@@ -456,6 +462,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ApplyKnockback(Vector2 direction, float force)
     {
+		// [신의 방패] 상태이상 면역
+		if (AccessoryEffect.instance != null && AccessoryEffect.instance.IsStatusImmune) return;
+
         if (rigid != null)
         {
             // 넉백 방향 왜곡을 막기 위해 현재 관성으로 흐르던 기존 속도를 즉각 순간 소거

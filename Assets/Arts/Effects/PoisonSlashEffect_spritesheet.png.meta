@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: bbe284b13ea4bc6458ce86d8d19a4d0a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6585381619321984252
+    second: PoisonSlashEffect_spritesheet_0
+  - first:
+      213: -106383003604623907
+    second: PoisonSlashEffect_spritesheet_1
+  - first:
+      213: 1439829105717053607
+    second: PoisonSlashEffect_spritesheet_2
+  - first:
+      213: 800298075771048432
+    second: PoisonSlashEffect_spritesheet_3
+  - first:
+      213: -7183696241734040620
+    second: PoisonSlashEffect_spritesheet_4
+  - first:
+      213: -2883474553870432501
+    second: PoisonSlashEffect_spritesheet_5
+  - first:
+      213: 6670789324154465951
+    second: PoisonSlashEffect_spritesheet_6
+  - first:
+      213: 5046250301313703444
+    second: PoisonSlashEffect_spritesheet_7
+  - first:
+      213: 3971378567348858309
+    second: PoisonSlashEffect_spritesheet_8
+  - first:
+      213: 3503989180942414682
+    second: PoisonSlashEffect_spritesheet_9
+  - first:
+      213: -7166614524133078316
+    second: PoisonSlashEffect_spritesheet_10
+  - first:
+      213: 2187590503623491775
+    second: PoisonSlashEffect_spritesheet_11
+  - first:
+      213: 5756398730259867865
+    second: PoisonSlashEffect_spritesheet_12
+  - first:
+      213: 1917160249328640046
+    second: PoisonSlashEffect_spritesheet_13
+  - first:
+      213: 3485448210988132694
+    second: PoisonSlashEffect_spritesheet_14
+  - first:
+      213: 1013511775217178636
+    second: PoisonSlashEffect_spritesheet_15
+  - first:
+      213: -3242532010479840952
+    second: PoisonSlashEffect_spritesheet_16
+  - first:
+      213: -5702959770015207294
+    second: PoisonSlashEffect_spritesheet_17
+  - first:
+      213: 7937410888818262029
+    second: PoisonSlashEffect_spritesheet_18
+  - first:
+      213: 1447985424484850297
+    second: PoisonSlashEffect_spritesheet_19
+  - first:
+      213: 5887685584780486272
+    second: PoisonSlashEffect_spritesheet_20
+  - first:
+      213: -2577493405249056939
+    second: PoisonSlashEffect_spritesheet_21
+  - first:
+      213: -2566187116915633876
+    second: PoisonSlashEffect_spritesheet_22
+  - first:
+      213: 80927454136660006
+    second: PoisonSlashEffect_spritesheet_23
+  - first:
+      213: -2910752422337108370
+    second: PoisonSlashEffect_spritesheet_24
+  - first:
+      213: -727478950694412354
+    second: PoisonSlashEffect_spritesheet_25
+  - first:
+      213: 7482797381658858356
+    second: PoisonSlashEffect_spritesheet_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_0
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 230
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40b2dedde460c94a0800000000000000
+      internalID: -6585381619321984252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_1
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 200
+        width: 36
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dddd10cc83d068ef0800000000000000
+      internalID: -106383003604623907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_2
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 193
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a8888f61fc4bf310800000000000000
+      internalID: 1439829105717053607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_3
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 195
+        width: 39
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f113c81cda3b1b00800000000000000
+      internalID: 800298075771048432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_4
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 214
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d3422934526e4c90800000000000000
+      internalID: -7183696241734040620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_5
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 166
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b07cca9ab27dbf7d0800000000000000
+      internalID: -2883474553870432501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_6
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 174
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9ee1b50c87639c50800000000000000
+      internalID: 6670789324154465951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_7
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 168
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41ed281b9e1e70640800000000000000
+      internalID: 5046250301313703444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_8
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 174
+        width: 23
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cdad6704cb2d1730800000000000000
+      internalID: 3971378567348858309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_9
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 144
+        width: 39
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5372ea589ba0a030800000000000000
+      internalID: 3503989180942414682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_10
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 176
+        width: 24
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4da84e68f021b8c90800000000000000
+      internalID: -7166614524133078316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_11
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 102
+        width: 48
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb00f7209f1eb5e10800000000000000
+      internalID: 2187590503623491775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_12
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 156
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d826ae7526d2ef40800000000000000
+      internalID: 5756398730259867865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_13
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 105
+        width: 43
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e20abb6d61f1b9a10800000000000000
+      internalID: 1917160249328640046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_14
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 160
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 659e7f26eacce5030800000000000000
+      internalID: 3485448210988132694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_15
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 160
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c08de79f697b01e00800000000000000
+      internalID: 1013511775217178636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_16
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 165
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 841148ee0563003d0800000000000000
+      internalID: -3242532010479840952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_17
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 127
+        width: 38
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28076e30e440bd0b0800000000000000
+      internalID: -5702959770015207294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_18
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 166
+        width: 19
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0084503629572e60800000000000000
+      internalID: 7937410888818262029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_19
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 64
+        width: 24
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97adc526217481410800000000000000
+      internalID: 1447985424484850297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_20
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 90
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 086670658d245b150800000000000000
+      internalID: 5887685584780486272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_21
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 28
+        width: 14
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55fc7317767ea3cd0800000000000000
+      internalID: -2577493405249056939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_22
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 90
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c215f05d962136cd0800000000000000
+      internalID: -2566187116915633876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_23
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 33
+        width: 12
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 620746c37138f1100800000000000000
+      internalID: 80927454136660006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_24
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 90
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e662d7df71eea97d0800000000000000
+      internalID: -2910752422337108370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_25
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 89
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebf194aafb977e5f0800000000000000
+      internalID: -727478950694412354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PoisonSlashEffect_spritesheet_26
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 28
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 473dff3b29c38d760800000000000000
+      internalID: 7482797381658858356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PoisonSlashEffect_spritesheet_0: -6585381619321984252
+      PoisonSlashEffect_spritesheet_1: -106383003604623907
+      PoisonSlashEffect_spritesheet_10: -7166614524133078316
+      PoisonSlashEffect_spritesheet_11: 2187590503623491775
+      PoisonSlashEffect_spritesheet_12: 5756398730259867865
+      PoisonSlashEffect_spritesheet_13: 1917160249328640046
+      PoisonSlashEffect_spritesheet_14: 3485448210988132694
+      PoisonSlashEffect_spritesheet_15: 1013511775217178636
+      PoisonSlashEffect_spritesheet_16: -3242532010479840952
+      PoisonSlashEffect_spritesheet_17: -5702959770015207294
+      PoisonSlashEffect_spritesheet_18: 7937410888818262029
+      PoisonSlashEffect_spritesheet_19: 1447985424484850297
+      PoisonSlashEffect_spritesheet_2: 1439829105717053607
+      PoisonSlashEffect_spritesheet_20: 5887685584780486272
+      PoisonSlashEffect_spritesheet_21: -2577493405249056939
+      PoisonSlashEffect_spritesheet_22: -2566187116915633876
+      PoisonSlashEffect_spritesheet_23: 80927454136660006
+      PoisonSlashEffect_spritesheet_24: -2910752422337108370
+      PoisonSlashEffect_spritesheet_25: -727478950694412354
+      PoisonSlashEffect_spritesheet_26: 7482797381658858356
+      PoisonSlashEffect_spritesheet_3: 800298075771048432
+      PoisonSlashEffect_spritesheet_4: -7183696241734040620
+      PoisonSlashEffect_spritesheet_5: -2883474553870432501
+      PoisonSlashEffect_spritesheet_6: 6670789324154465951
+      PoisonSlashEffect_spritesheet_7: 5046250301313703444
+      PoisonSlashEffect_spritesheet_8: 3971378567348858309
+      PoisonSlashEffect_spritesheet_9: 3503989180942414682
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
