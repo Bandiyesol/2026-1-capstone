@@ -42,7 +42,7 @@ public abstract class RuneEffect : MonoBehaviour
 	}
 
 	/// <summary>근접·오브 등 제자리 무기 — 액티브 룬 기본 전진 속도</summary>
-	const float DefaultStationaryActiveMoveSpeed = 3f;
+	const float DefaultStationaryActiveMoveSpeed = 5f;
 
 	/// <summary>애니메이션 근접 등 제자리 무기 여부</summary>
 	protected bool IsStationaryWeapon()

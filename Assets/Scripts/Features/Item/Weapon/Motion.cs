@@ -44,6 +44,7 @@ public abstract class Motion : MonoBehaviour
 	// 파괴가 여러 번 호출되어 에러가 발생하는 것을 막기 위한 중복 방지 플래그
 	private bool isDestroyRequested = false;
 	private bool isFinalizing = false;
+	private bool poolReleaseScheduled = false;
 
 	// 동일 적에 대한 연속 타격 간격 (근접 OnTriggerStay 대응)
 	readonly Dictionary<int, float> hitCooldownUntil = new Dictionary<int, float>();
@@ -454,7 +455,7 @@ public abstract class Motion : MonoBehaviour
 		if (HasFinalRune())
 			StartCoroutine(FinalizeMotionAfterDelay());
 		else
-			ReleaseMotionToPool();
+			ScheduleReleaseMotionToPool();
 	}
 
 	bool HasFinalRune()
@@ -491,6 +492,27 @@ public abstract class Motion : MonoBehaviour
 			final.OnFinalExecute();
 	}
 
+	void ScheduleReleaseMotionToPool()
+	{
+		if (poolReleaseScheduled)
+			return;
+
+		poolReleaseScheduled = true;
+		StartCoroutine(ReleaseMotionToPoolDeferred());
+	}
+
+	IEnumerator ReleaseMotionToPoolDeferred()
+	{
+		// OnTriggerEnter2D 등 물리 콜백 중 DestroyImmediate 불가 → 다음 프레임에 풀 반환
+		yield return null;
+
+		poolReleaseScheduled = false;
+		if (!isDestroyRequested)
+			yield break;
+
+		ReleaseMotionToPool();
+	}
+
 	void ReleaseMotionToPool()
 	{
 		if (PoolManager.Instance != null)
@@ -504,6 +526,7 @@ public abstract class Motion : MonoBehaviour
 	{
 		isDestroyRequested = false;
 		isFinalizing = false;
+		poolReleaseScheduled = false;
 		isInitialLifeSet = false;
 		isExplosionRunning = false;
 		instance = null;
@@ -530,7 +553,10 @@ public abstract class Motion : MonoBehaviour
 			if (effects[i] == null)
 				continue;
 
-			DestroyImmediate(effects[i]);
+			if (Application.isPlaying)
+				Destroy(effects[i]);
+			else
+				DestroyImmediate(effects[i]);
 		}
 	}
 

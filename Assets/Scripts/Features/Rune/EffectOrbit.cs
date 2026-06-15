@@ -26,7 +26,7 @@ public class EffectOrbit : RuneEffect, IActiveDriver
 		if (!IsStationaryWeapon() && weapon.movespeed > 0.01f)
 			angularSpeed = weapon.movespeed / Mathf.Max(0.6f, orbitRadius);
 		else
-			angularSpeed = Mathf.Max(25f, RuneDataAccess.GetSpeedMultiplier(data) * 35f) * Mathf.Deg2Rad;
+			angularSpeed = GetActiveMoveSpeed() / Mathf.Max(0.6f, orbitRadius);
 	}
 
 	public void UpdateMovement()
