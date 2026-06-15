@@ -301,7 +301,12 @@ MonoBehaviour:
   shardChance: 0.005
   shardCount: 32
   enragedSpeedMultiplier: 3.5
-  summonEnemyIndexes: 2a0000002b0000002c0000002d0000002e000000
+  summonEnemyIndexes:
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
   summonInterval: 0.75
   summonRadius: 4
 --- !u!114 &-1917441331024495194

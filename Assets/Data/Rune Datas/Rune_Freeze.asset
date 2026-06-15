@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Freeze
   category: 1
   runeType: 8
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 3333249099388223432, guid: 79cfb9a70635a824bbe6574fb0dd702f, type: 3}
+  runeDescription: 충돌 지점 주변 적을 일시 정지시킵니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

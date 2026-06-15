@@ -25,16 +25,9 @@ public class PoisonField : BiomeGimmick
             return;
 
         // [방어 시스템 연동] 캐릭터의 방어력 및 피해 감소율을 적용하여 틱 데미지 주입
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.Instance.TakeDamage(
-                damagePerSecond * Time.deltaTime,
-                applyIFrames: false,
-                PlayerDamageKind.PerSecondFrame);
-        }
-        else if (GameManager.instance != null)
-        {
-            GameManager.instance.Health -= damagePerSecond * Time.deltaTime;
-        }
+        PlayerStats.ApplyDamage(
+            damagePerSecond * Time.deltaTime,
+            applyIFrames: false,
+            PlayerDamageKind.PerSecondFrame);
     }
 }

@@ -58,6 +58,8 @@ public class RuneSelectUI : MonoBehaviour
     bool choiceUiBuilt;
     TextMeshProUGUI runtimeLoadoutTitle;
 
+    public bool IsPanelOpen => gameObject.activeSelf;
+
     void Awake()
     {
         koreanFont = TmpKoreanFontUtility.ResolveNeoDgmFont(null);
@@ -117,8 +119,7 @@ public class RuneSelectUI : MonoBehaviour
         if (button.onClick.GetPersistentEventCount() > 0)
             button = ReplaceButtonComponent(button);
 
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(action);
+        UiClickSfxUtility.Rewire(button, action);
         return button;
     }
 
@@ -451,21 +452,45 @@ public class RuneSelectUI : MonoBehaviour
             beginSession: true,
             onConfirmed: null,
             pickTitle: $"룬 선택 ({Mathf.Min(owned + 1, RuneValidator.MaxSlots)}/{RuneValidator.MaxSlots})",
-            loadoutTitle: "내 룬");
+            loadoutTitle: "룬 순서 선택",
+            startInLoadout: false);
     }
 
-    public void ShowBetweenWaves(Action onConfirmed)
+    public void ShowForStageTransition(Action onConfirmed)
     {
         int owned = RuneManager.instance != null ? RuneManager.instance.GetFilledSlotCount() : 0;
-        bool full = owned >= RuneValidator.MaxSlots;
+        if (owned >= RuneValidator.MaxSlots)
+        {
+            ShowOrderOnlyForStageTransition(onConfirmed);
+            return;
+        }
+
         OpenPanel(
             beginSession: false,
             onConfirmed: onConfirmed,
             pickTitle: $"룬 선택 ({owned + 1}/{RuneValidator.MaxSlots})",
-            loadoutTitle: full ? "룬 순서 변경" : "내 룬");
+            loadoutTitle: "룬 순서 선택",
+            startInLoadout: false);
     }
 
-    void OpenPanel(bool beginSession, Action onConfirmed, string pickTitle, string loadoutTitle)
+    /// <summary>스테이지 전환 — 새 룬 없이 순서만 변경 (4스테이지 이후 등).</summary>
+    public void ShowOrderOnlyForStageTransition(Action onConfirmed)
+    {
+        OpenPanel(
+            beginSession: false,
+            onConfirmed: onConfirmed,
+            pickTitle: string.Empty,
+            loadoutTitle: "룬 순서 선택",
+            startInLoadout: true);
+    }
+
+    [System.Obsolete("웨이브 사이 룬 선택은 사용하지 않습니다.")]
+    public void ShowBetweenWaves(Action onConfirmed)
+    {
+        onConfirmed?.Invoke();
+    }
+
+    void OpenPanel(bool beginSession, Action onConfirmed, string pickTitle, string loadoutTitle, bool startInLoadout = false)
     {
         EnsureUiStructure();
         EnsureAllRunesLoaded();
@@ -475,7 +500,7 @@ public class RuneSelectUI : MonoBehaviour
         beginSessionOnConfirm = beginSession;
         selectedSlotIndex = -1;
         pickedThisRound = false;
-        reorderOnlyMode = !beginSession && RuneManager.instance != null && RuneManager.instance.IsFull;
+        reorderOnlyMode = startInLoadout;
 
         gameObject.SetActive(true);
         ApplyKoreanFont();
@@ -483,7 +508,7 @@ public class RuneSelectUI : MonoBehaviour
         pendingPickTitle = pickTitle;
         pendingLoadoutTitle = loadoutTitle;
 
-        if (reorderOnlyMode)
+        if (startInLoadout)
             EnterLoadoutPhase();
         else
             EnterPickPhase();
@@ -506,15 +531,14 @@ public class RuneSelectUI : MonoBehaviour
         if (titleLabel != null)
             titleLabel.text = pendingPickTitle;
 
-        if (useAutoLayout)
-            ApplyAutoLayout();
+        ApplyChoicePanelLayout();
     }
 
-    void ApplyAutoLayout()
+    void ApplyChoicePanelLayout()
     {
         if (choicePanelRoot != null)
             ChoiceSelectUILayout.Apply(choicePanelRoot.transform);
-        else
+        else if (useAutoLayout)
             ChoiceSelectUILayout.Apply(transform);
     }
 
@@ -524,10 +548,15 @@ public class RuneSelectUI : MonoBehaviour
         SetChoicePanelVisible(false);
         SetLoadoutPanelVisible(true);
         selectedSlotIndex = -1;
-        if (useAutoLayout)
-            LayoutLoadoutPanel();
+        ApplyLoadoutPanelLayout();
         RefreshAll();
         SetLoadoutTitle(pendingLoadoutTitle);
+    }
+
+    void ApplyLoadoutPanelLayout()
+    {
+        if (loadoutPanelRoot != null)
+            ChoiceSelectUILayout.Apply(loadoutPanelRoot.transform);
     }
 
     void SetLoadoutTitle(string text)
@@ -582,34 +611,6 @@ public class RuneSelectUI : MonoBehaviour
 
         if (runtimeLoadoutTitle != null)
             runtimeLoadoutTitle.gameObject.SetActive(false);
-    }
-
-    void LayoutLoadoutPanel()
-    {
-        if (loadoutPanelRoot != null && loadoutPanelRoot.transform is RectTransform slotRect)
-        {
-            slotRect.anchorMin = new Vector2(0.5f, 0.5f);
-            slotRect.anchorMax = new Vector2(0.5f, 0.5f);
-            slotRect.pivot = new Vector2(0.5f, 0.5f);
-            slotRect.anchoredPosition = new Vector2(0f, 40f);
-        }
-
-        Button confirm = confirmButton != null ? confirmButton : startButton;
-        if (confirm != null && confirm.transform is RectTransform confirmRect)
-        {
-            confirmRect.anchorMin = new Vector2(0.5f, 0f);
-            confirmRect.anchorMax = new Vector2(0.5f, 0f);
-            confirmRect.pivot = new Vector2(0.5f, 0.5f);
-            confirmRect.anchoredPosition = new Vector2(0f, 80f);
-        }
-
-        if (warningText != null && warningText.transform is RectTransform warnRect)
-        {
-            warnRect.anchorMin = new Vector2(0.5f, 0f);
-            warnRect.anchorMax = new Vector2(0.5f, 0f);
-            warnRect.pivot = new Vector2(0.5f, 0f);
-            warnRect.anchoredPosition = new Vector2(0f, 150f);
-        }
     }
 
     void SetChoicePanelVisible(bool visible)
@@ -694,6 +695,7 @@ public class RuneSelectUI : MonoBehaviour
         }
 
         pickedThisRound = true;
+        GameAudio.PlayPurchase();
         EnterLoadoutPhase();
     }
 
@@ -716,13 +718,16 @@ public class RuneSelectUI : MonoBehaviour
     void HideAndContinue()
     {
         gameObject.SetActive(false);
-        onConfirmed?.Invoke();
+
+        var callback = onConfirmed;
         onConfirmed = null;
 
         if (beginSessionOnConfirm)
             GameManager.instance.BeginGameplaySession();
         else
             GameManager.instance.ResumeGameplayFromOverlay();
+
+        callback?.Invoke();
     }
 
     void RefreshAll()
@@ -740,7 +745,7 @@ public class RuneSelectUI : MonoBehaviour
         for (int i = 0; i < slotButtons.Length; i++)
         {
             RuneData rune = RuneManager.instance.GetSlot(i);
-            string label = rune != null ? RuneRewardService.FormatType(rune) : "Empty";
+            string runeLabel = rune != null ? RuneRewardService.FormatType(rune) : "Empty";
 
             if (slotIcons != null && i < slotIcons.Length && slotIcons[i] != null)
             {
@@ -754,10 +759,53 @@ public class RuneSelectUI : MonoBehaviour
             }
 
             if (slotNames != null && i < slotNames.Length && slotNames[i] != null)
-                slotNames[i].text = label;
+                slotNames[i].text = runeLabel;
+
+            ApplySlotRuneDetail(i, rune);
         }
 
         RefreshSlotHighlights();
+    }
+
+    void ApplySlotRuneDetail(int index, RuneData rune)
+    {
+        if (slotButtons == null || index < 0 || index >= slotButtons.Length || slotButtons[index] == null)
+            return;
+
+        string detailText = rune != null
+            ? RuneRewardService.FormatDescription(rune)
+            : string.Empty;
+        Transform buttonRoot = slotButtons[index].transform;
+
+        Transform detail = buttonRoot.Find("Detail");
+        if (detail != null && detail.TryGetComponent(out TextMeshProUGUI detailTmp))
+        {
+            detailTmp.text = detailText;
+            detailTmp.richText = false;
+            detailTmp.color = Color.black;
+            detailTmp.textWrappingMode = TextWrappingModes.Normal;
+            detailTmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
+            detailTmp.verticalAlignment = VerticalAlignmentOptions.Top;
+            ApplyFont(detailTmp);
+            TmpKoreanFontUtility.EnsureGlyphs(detailTmp, koreanFont, detailText);
+            return;
+        }
+
+        foreach (TextMeshProUGUI tmp in buttonRoot.GetComponentsInChildren<TextMeshProUGUI>(true))
+        {
+            if (tmp.transform.name == "Title")
+                continue;
+
+            tmp.text = detailText;
+            tmp.richText = false;
+            tmp.color = Color.black;
+            tmp.textWrappingMode = TextWrappingModes.Normal;
+            tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
+            tmp.verticalAlignment = VerticalAlignmentOptions.Top;
+            ApplyFont(tmp);
+            TmpKoreanFontUtility.EnsureGlyphs(tmp, koreanFont, detailText);
+            return;
+        }
     }
 
     void RefreshChoices()
@@ -795,10 +843,14 @@ public class RuneSelectUI : MonoBehaviour
         if (choiceDetailLabels != null && index < choiceDetailLabels.Length && choiceDetailLabels[index] != null)
         {
             string description = RuneRewardService.FormatDescription(rune);
-            choiceDetailLabels[index].text = description;
-            choiceDetailLabels[index].richText = false;
-            choiceDetailLabels[index].color = Color.black;
-            TmpKoreanFontUtility.EnsureGlyphs(choiceDetailLabels[index], koreanFont, description);
+            TextMeshProUGUI detail = choiceDetailLabels[index];
+            detail.text = description;
+            detail.richText = false;
+            detail.color = Color.black;
+            detail.textWrappingMode = TextWrappingModes.Normal;
+            detail.horizontalAlignment = HorizontalAlignmentOptions.Center;
+            detail.verticalAlignment = VerticalAlignmentOptions.Top;
+            TmpKoreanFontUtility.EnsureGlyphs(detail, koreanFont, description);
         }
 
         if (choiceIcons != null && index < choiceIcons.Length && choiceIcons[index] != null)

@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Orbit
   category: 0
   runeType: 1
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 4376907005291444959, guid: cac904f6eaa21034f9a1750e183cf9b2, type: 3}
+  runeDescription: 생성 지점 기준 원 궤도로 공전하며 공격합니다. 지속 중 충돌해도 파괴되지 않습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

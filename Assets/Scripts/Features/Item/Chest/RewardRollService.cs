@@ -6,29 +6,23 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// 상자를 열었을 때 무기·악세사리·성물 후보 3개를 뽑는 서비스.
+/// 상자를 열었을 때 무기·악세사리 후보 3개를 뽑는 서비스.
 /// DroppedChest에서 Roll(ChestGrade)를 호출하면 RewardCandidate 리스트를 반환한다.
 /// </summary>
 public class RewardRollService : MonoBehaviour
 {
     public static RewardRollService instance;
 
-    // ── 아이템 풀 ─────────────────────────────────────────
     [Header("[ 아이템 풀 ]")]
     [Tooltip("AccessoryData SO 전부 등록")]
     public List<AccessoryData> allAccessories = new List<AccessoryData>();
 
-    [Tooltip("성물 데이터 전부 등록 (등급 없음, 고정)")]
-    public List<RelicData> allRelics = new List<RelicData>();
-
-    // ── 상자 등급별 아이템 종류 가중치 ───────────────────────
-    [Header("[ 상자 등급별 종류 가중치 (무기 / 악세사리 / 성물) ]")]
+    [Header("[ 상자 등급별 종류 가중치 (무기 / 악세사리) ]")]
     public ChestRewardWeight normalChestWeight   = ChestRewardWeight.Normal;
     public ChestRewardWeight rareChestWeight     = ChestRewardWeight.Rare;
     public ChestRewardWeight uniqueChestWeight   = ChestRewardWeight.Unique;
     public ChestRewardWeight legendaryChestWeight = ChestRewardWeight.Legendary;
 
-    // ── 상자 등급별 아이템 등급 가중치 ───────────────────────
     [Header("[ 상자 등급별 아이템 등급 가중치 ]")]
     public ItemGradeWeight normalItemGrade    = ItemGradeWeight.ForNormalChest;
     public ItemGradeWeight rareItemGrade      = ItemGradeWeight.ForRareChest;
@@ -42,7 +36,7 @@ public class RewardRollService : MonoBehaviour
         EnsureAccessoryPool();
     }
 
-    /// <summary>Inspector 미등록 시 Resources 카탈로그에서 악세·성물 풀을 채웁니다.</summary>
+    /// <summary>Inspector 미등록 시 Resources 카탈로그에서 악세사리 풀을 채웁니다.</summary>
     public void EnsureAccessoryPool()
     {
         if (allAccessories != null && allAccessories.Count > 0)
@@ -52,13 +46,12 @@ public class RewardRollService : MonoBehaviour
         if (catalog != null && catalog.allAccessories != null && catalog.allAccessories.Count > 0)
         {
             allAccessories = new List<AccessoryData>(catalog.allAccessories);
-            allRelics = new List<RelicData>(catalog.allRelics);
-            Debug.Log($"[RewardRollService] 카탈로그 로드 — 악세사리 {allAccessories.Count}개, 성물 {allRelics.Count}개");
+            Debug.Log($"[RewardRollService] 카탈로그 로드 — 악세사리 {allAccessories.Count}개");
             return;
         }
 
 #if UNITY_EDITOR
-        if (TryLoadEditorPools())
+        if (TryLoadEditorPool())
             return;
 #endif
 
@@ -68,14 +61,13 @@ public class RewardRollService : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    bool TryLoadEditorPools()
+    bool TryLoadEditorPool()
     {
         allAccessories = LoadEditorAssets<AccessoryData>("Assets/Data/Accessory");
         if (allAccessories.Count == 0)
             return false;
 
-        allRelics = LoadEditorAssets<RelicData>("Assets/Data/Relic");
-        Debug.Log($"[RewardRollService] 에디터 폴더 스캔 — 악세사리 {allAccessories.Count}개, 성물 {allRelics.Count}개");
+        Debug.Log($"[RewardRollService] 에디터 폴더 스캔 — 악세사리 {allAccessories.Count}개");
         return true;
     }
 
@@ -99,70 +91,138 @@ public class RewardRollService : MonoBehaviour
     }
 #endif
 
-    // ───────────────────────────────────────────────────────
-    //  외부 진입점 — DroppedChest에서 호출
-    // ───────────────────────────────────────────────────────
-
-    /// <summary>
-    /// 상자 등급을 받아서 후보 3개를 뽑아 반환한다.
-    /// </summary>
     public List<RewardCandidate> Roll(ChestGrade chestGrade, int count = 3)
     {
         ChestRewardWeight typeWeight  = GetTypeWeight(chestGrade);
         ItemGradeWeight   gradeWeight = GetItemGradeWeight(chestGrade);
 
-        List<RewardCandidate> result   = new List<RewardCandidate>();
-        List<AccessoryData>   accPool  = new List<AccessoryData>(allAccessories);
-        List<RelicData>       relicPool = new List<RelicData>(allRelics);
+        List<RewardCandidate> result  = new List<RewardCandidate>(count);
+        List<AccessoryData> accPool   = new List<AccessoryData>(allAccessories);
+        List<string> weaponPool = new List<string>(WeaponRewardService.GetAllWeaponIds());
 
-        // 무기 풀은 WeaponRewardService에서 가져옴
-        List<string> weaponPool = WeaponRewardService.GetAllWeaponIds();
+        int attempts = 0;
+        const int maxAttempts = 48;
 
-        for (int i = 0; i < count; i++)
+        while (result.Count < count && attempts < maxAttempts)
         {
-            RewardType type = RollRewardType(typeWeight, chestGrade);
+            attempts++;
 
-            RewardCandidate candidate = type switch
-            {
-                RewardType.Weapon    => RollWeapon(weaponPool, gradeWeight),
-                RewardType.Accessory => RollAccessory(accPool, gradeWeight),
-                RewardType.Relic     => RollRelic(relicPool),
-                _                    => null
-            };
+            RewardCandidate candidate = RollCandidate(
+                typeWeight,
+                gradeWeight,
+                weaponPool,
+                accPool);
 
-            if (candidate == null) continue;
+            if (candidate == null)
+                continue;
 
             result.Add(candidate);
+            ConsumeCandidateFromPools(candidate, weaponPool, accPool);
+        }
 
-            // 중복 방지
-            if (type == RewardType.Accessory && candidate.accessory != null)
-                accPool.Remove(candidate.accessory);
-            if (type == RewardType.Relic && candidate.relic != null)
-                relicPool.Remove(candidate.relic);
+        while (result.Count < count)
+        {
+            RewardCandidate fallback = RollFallbackCandidate(gradeWeight, weaponPool, accPool);
+            if (fallback == null)
+                break;
+
+            result.Add(fallback);
+            ConsumeCandidateFromPools(fallback, weaponPool, accPool);
         }
 
         return result;
     }
 
-    // ── 아이템 종류 룰렛 ──────────────────────────────────
-    RewardType RollRewardType(ChestRewardWeight w, ChestGrade grade)
+    RewardCandidate RollCandidate(
+        ChestRewardWeight typeWeight,
+        ItemGradeWeight gradeWeight,
+        List<string> weaponPool,
+        List<AccessoryData> accPool)
     {
-        // 성물은 Unique 이상 상자에서만 등장
-        float relicWeight = (grade >= ChestGrade.Unique) ? w.relic : 0f;
-        float total = w.weapon + w.accessory + relicWeight;
-        float roll  = UnityEngine.Random.Range(0f, total);
+        RewardType type = RollRewardType(typeWeight);
 
-        if (roll < w.weapon)                   return RewardType.Weapon;
-        if (roll < w.weapon + w.accessory)     return RewardType.Accessory;
-        return RewardType.Relic;
+        RewardCandidate candidate = type switch
+        {
+            RewardType.Weapon    => RollWeapon(weaponPool, gradeWeight),
+            RewardType.Accessory => RollAccessory(accPool, gradeWeight),
+            _                    => null
+        };
+
+        if (candidate != null)
+            return candidate;
+
+        return RollWeapon(weaponPool, gradeWeight)
+            ?? RollAccessory(accPool, gradeWeight);
     }
 
-    // ── 무기 뽑기 ────────────────────────────────────────
+    RewardCandidate RollFallbackCandidate(
+        ItemGradeWeight gradeWeight,
+        List<string> weaponPool,
+        List<AccessoryData> accPool)
+    {
+        RewardCandidate candidate = RollWeapon(weaponPool, gradeWeight)
+            ?? RollAccessory(accPool, gradeWeight);
+
+        if (candidate != null)
+            return candidate;
+
+        List<string> allWeapons = WeaponRewardService.GetAllWeaponIds();
+        if (allWeapons != null && allWeapons.Count > 0)
+        {
+            return new RewardCandidate
+            {
+                type = RewardType.Weapon,
+                weaponId = allWeapons[UnityEngine.Random.Range(0, allWeapons.Count)],
+            };
+        }
+
+        if (allAccessories != null && allAccessories.Count > 0)
+        {
+            return new RewardCandidate
+            {
+                type = RewardType.Accessory,
+                accessory = allAccessories[UnityEngine.Random.Range(0, allAccessories.Count)],
+            };
+        }
+
+        return null;
+    }
+
+    static void ConsumeCandidateFromPools(
+        RewardCandidate candidate,
+        List<string> weaponPool,
+        List<AccessoryData> accPool)
+    {
+        if (candidate == null)
+            return;
+
+        switch (candidate.type)
+        {
+            case RewardType.Weapon:
+                if (!string.IsNullOrEmpty(candidate.weaponId))
+                    weaponPool.Remove(candidate.weaponId);
+                break;
+            case RewardType.Accessory:
+                if (candidate.accessory != null)
+                    accPool.Remove(candidate.accessory);
+                break;
+        }
+    }
+
+    RewardType RollRewardType(ChestRewardWeight w)
+    {
+        float total = w.weapon + w.accessory;
+        if (total <= 0f)
+            return RewardType.Weapon;
+
+        float roll = UnityEngine.Random.Range(0f, total);
+        return roll < w.weapon ? RewardType.Weapon : RewardType.Accessory;
+    }
+
     RewardCandidate RollWeapon(List<string> pool, ItemGradeWeight gradeWeight)
     {
         if (pool == null || pool.Count == 0) return null;
 
-        // 무기 등급은 WeaponInfo.grade 기반으로 필터링
         string targetGrade = RollItemGradeString(gradeWeight);
         List<string> filtered = pool.FindAll(id =>
             WeaponRewardService.GetWeaponGrade(id) == targetGrade);
@@ -180,7 +240,6 @@ public class RewardRollService : MonoBehaviour
         };
     }
 
-    // ── 악세사리 뽑기 ─────────────────────────────────────
     RewardCandidate RollAccessory(List<AccessoryData> pool, ItemGradeWeight gradeWeight)
     {
         if (pool == null || pool.Count == 0) return null;
@@ -200,21 +259,6 @@ public class RewardRollService : MonoBehaviour
         };
     }
 
-    // ── 성물 뽑기 ────────────────────────────────────────
-    RewardCandidate RollRelic(List<RelicData> pool)
-    {
-        if (pool == null || pool.Count == 0) return null;
-
-        RelicData picked = pool[UnityEngine.Random.Range(0, pool.Count)];
-
-        return new RewardCandidate
-        {
-            type  = RewardType.Relic,
-            relic = picked,
-        };
-    }
-
-    // ── 아이템 등급 룰렛 ──────────────────────────────────
     AccessoryGrade RollAccessoryGrade(ItemGradeWeight w)
     {
         float total = w.common + w.rare + w.unique + w.legendary;
@@ -280,38 +324,31 @@ public class RewardRollService : MonoBehaviour
     }
 }
 
-// ── 보상 종류 ─────────────────────────────────────────────
 public enum RewardType
 {
     Weapon,
     Accessory,
-    Relic,
 }
 
-// ── 보상 후보 단일 데이터 ──────────────────────────────────
 public class RewardCandidate
 {
     public RewardType    type;
-    public string        weaponId;   // RewardType.Weapon일 때
-    public AccessoryData accessory;  // RewardType.Accessory일 때
-    public RelicData     relic;      // RewardType.Relic일 때
+    public string        weaponId;
+    public AccessoryData accessory;
 }
 
-// ── 상자 등급별 아이템 종류 가중치 ────────────────────────
 [Serializable]
 public struct ChestRewardWeight
 {
     public float weapon;
     public float accessory;
-    public float relic;
 
-    public static ChestRewardWeight Normal    => new ChestRewardWeight { weapon = 50f, accessory = 50f, relic = 0f  };
-    public static ChestRewardWeight Rare      => new ChestRewardWeight { weapon = 45f, accessory = 45f, relic = 10f };
-    public static ChestRewardWeight Unique    => new ChestRewardWeight { weapon = 40f, accessory = 40f, relic = 20f };
-    public static ChestRewardWeight Legendary => new ChestRewardWeight { weapon = 35f, accessory = 35f, relic = 30f };
+    public static ChestRewardWeight Normal    => new ChestRewardWeight { weapon = 50f, accessory = 50f };
+    public static ChestRewardWeight Rare      => new ChestRewardWeight { weapon = 45f, accessory = 55f };
+    public static ChestRewardWeight Unique    => new ChestRewardWeight { weapon = 40f, accessory = 60f };
+    public static ChestRewardWeight Legendary => new ChestRewardWeight { weapon = 35f, accessory = 65f };
 }
 
-// ── 상자 등급별 아이템 등급 가중치 ────────────────────────
 [Serializable]
 public struct ItemGradeWeight
 {
@@ -320,19 +357,15 @@ public struct ItemGradeWeight
     public float unique;
     public float legendary;
 
-    // 일반 상자 — Common 위주
     public static ItemGradeWeight ForNormalChest => new ItemGradeWeight
         { common = 65f, rare = 25f, unique = 8f,  legendary = 2f  };
 
-    // 희귀 상자
     public static ItemGradeWeight ForRareChest => new ItemGradeWeight
         { common = 30f, rare = 45f, unique = 20f, legendary = 5f  };
 
-    // 유니크 상자
     public static ItemGradeWeight ForUniqueChest => new ItemGradeWeight
         { common = 10f, rare = 30f, unique = 45f, legendary = 15f };
 
-    // 전설 상자
     public static ItemGradeWeight ForLegendaryChest => new ItemGradeWeight
         { common = 0f,  rare = 15f, unique = 35f, legendary = 50f };
 }

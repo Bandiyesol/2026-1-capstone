@@ -54,11 +54,22 @@ service cloud.firestore {
       allow delete: if request.auth != null
         && resource.data.uid == request.auth.uid;
     }
+    match /clearLeaderboard/{recordId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.cleared == true;
+      allow update: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
   }
 }
 ```
 
-> `usernames`는 로그인 시 아이디→이메일 조회에 필요해서 **읽기는 공개**입니다. 운영 시에는 Cloud Functions로 조회하는 방식이 더 안전합니다.
+> `usernames`는 로그인 시 아이디→이메일 조회에 필요해서 **읽기는 공개**입니다. 운영 시에는 Cloud Functions로 조회하는 방식이 더 안전합니다.  
+> `clearLeaderboard`는 **전역 클리어 랭킹**입니다. 로그인 사용자는 전체 랭킹을 읽을 수 있고, 본인 클리어 기록만 등록·수정·삭제할 수 있습니다. 첫 조회 시 `playTimeSeconds` 인덱스가 필요하면 Console에서 생성 링크를 따르세요.
 
 ---
 

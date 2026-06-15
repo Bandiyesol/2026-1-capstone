@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Recursion
   category: 2
   runeType: 11
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 3814637592161012212, guid: c3fad875c1af9ff41a0bc825db5363e0, type: 3}
+  runeDescription: 소멸 시 재귀 제외 동일 탄환을 한 번 생성합니다. 마지막 슬롯에만 착용할 수 있습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

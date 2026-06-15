@@ -22,14 +22,129 @@ public class WaveManager : MonoBehaviour
     int aliveEnemyCount; // 현재 필드(또는 진행 중인 페이즈)에 생존해 있는 적의 총 수량 카운트
     bool isSpawning;     // 현재 코루틴 루프를 통해 몬스터들을 순차적으로 필드에 소환하는 중인지 나타내는 플래그
     bool started;        // 게임 시작 시 스테이지 가동 로직이 중복으로 실행되는 것을 차단하기 위한 플래그
+    int preparedBossStageIndex = -1;
+    int bossRollGeneration;
+    bool bossPhaseCleared;
+
+    /// <summary>스테이지 시작·보스 알리미와 동일한 보스 후보 중 하나를 미리 선택합니다.</summary>
+    public int SelectedBossSpawnDataIndex { get; private set; } = -1;
 
     /// <summary>
     /// 스테이지를 처음부터 시작하기 위해 웨이브 인덱스를 초기화하고 첫 웨이브를 가동하는 메서드
     /// </summary>
     public void StartStage()
     {
+        StopAllCoroutines();
+        isSpawning = false;
+        aliveEnemyCount = 0;
+        bossPhaseCleared = false;
+
+        if (stageManager != null)
+            PrepareBossForStage(stageManager.stageIndex);
+
         currentWave = 0; // 웨이브 번호 초기화
         StartWave();     // 첫 번째 웨이브 스폰 루틴 시동
+    }
+
+    /// <summary>포털 전환 직전 — 이전 스테이지 웨이브 코루틴을 정리합니다.</summary>
+    public void AbortStageTransition()
+    {
+        StopAllCoroutines();
+        isSpawning = false;
+        aliveEnemyCount = 0;
+        bossPhaseCleared = false;
+    }
+
+    public void PrepareBossForStage(int stageIndex, bool forceReroll = false)
+    {
+        if (!forceReroll && preparedBossStageIndex == stageIndex && SelectedBossSpawnDataIndex >= 0)
+            return;
+
+        preparedBossStageIndex = stageIndex;
+        SelectedBossSpawnDataIndex = -1;
+
+        if (stageManager == null || stageManager.stageDatas == null
+            || stageIndex < 0 || stageIndex >= stageManager.stageDatas.Length)
+        {
+            return;
+        }
+
+        WaveData bossWave = FindFirstBossWave(stageManager.stageDatas[stageIndex]);
+        if (bossWave?.bossSpawnIndexes == null || bossWave.bossSpawnIndexes.Length == 0)
+            return;
+
+        int[] candidates = BossSpawnDataIndexUtility.SanitizeArray(bossWave.bossSpawnIndexes);
+        if (candidates == null || candidates.Length == 0)
+        {
+            Debug.LogError($"[WaveManager] 스테이지 {stageIndex + 1} 보스 spawn 인덱스가 유효하지 않습니다.");
+            return;
+        }
+
+        SelectedBossSpawnDataIndex = PickRandomBossSpawnIndex(candidates);
+        LogBossRoll(stageIndex, candidates, SelectedBossSpawnDataIndex);
+    }
+
+    int PickRandomBossSpawnIndex(int[] bossSpawnIndexes)
+    {
+        if (bossSpawnIndexes == null || bossSpawnIndexes.Length == 0)
+            return -1;
+
+        if (bossSpawnIndexes.Length == 1)
+            return bossSpawnIndexes[0];
+
+        int pick = Random.Range(0, bossSpawnIndexes.Length);
+        if (bossRollGeneration > 0)
+            pick = (pick + bossRollGeneration) % bossSpawnIndexes.Length;
+
+        return bossSpawnIndexes[pick];
+    }
+
+    /// <summary>새 판·스테이지 진입 시 이전 선택을 버리고 보스를 다시 뽑습니다.</summary>
+    public void RerollBossForStage(int stageIndex)
+    {
+        preparedBossStageIndex = -1;
+        SelectedBossSpawnDataIndex = -1;
+        PrepareBossForStage(stageIndex, forceReroll: true);
+    }
+
+    void LogBossRoll(int stageIndex, int[] candidates, int selectedSpawnIndex)
+    {
+        string bossName = ResolveBossNameForLog(selectedSpawnIndex);
+        string candidateText = candidates != null ? string.Join(", ", candidates) : "—";
+        Debug.Log(
+            $"[WaveManager] 스테이지 {stageIndex + 1} 보스 선택 — spawnData[{selectedSpawnIndex}] ({bossName}), " +
+            $"후보 [{candidateText}], rollGen={bossRollGeneration}");
+    }
+
+    string ResolveBossNameForLog(int spawnDataIndex)
+    {
+        spawnDataIndex = BossSpawnDataIndexUtility.Normalize(spawnDataIndex);
+        if (spawner == null || spawnDataIndex < 0 || spawnDataIndex >= spawner.spawnData.Length)
+            return "unknown";
+
+        SpawnData data = spawner.GetSpawnData(spawnDataIndex);
+        if (!data.isBoss || GameManager.instance?.pool?.bossPrefabs == null)
+            return "unknown";
+
+        GameObject[] bossPrefabs = GameManager.instance.pool.bossPrefabs;
+        if (data.prefabIndex < 0 || data.prefabIndex >= bossPrefabs.Length || bossPrefabs[data.prefabIndex] == null)
+            return "unknown";
+
+        return bossPrefabs[data.prefabIndex].name;
+    }
+
+    static WaveData FindFirstBossWave(StageData stageData)
+    {
+        if (stageData?.waves == null)
+            return null;
+
+        for (int i = 0; i < stageData.waves.Length; i++)
+        {
+            if (stageData.waves[i].isBossWave)
+                return stageData.waves[i];
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -53,7 +168,13 @@ public class WaveManager : MonoBehaviour
         isSpawning = false;   // 소환 중 플래그 초기화
         aliveEnemyCount = 0; // 필드 생존 카운트 초기화
         currentWave = 0;     // 웨이브 인덱스 초기화
+        preparedBossStageIndex = -1;
+        SelectedBossSpawnDataIndex = -1;
+        bossRollGeneration++;
+        bossPhaseCleared = false;
     }
+
+    public bool IsBossPhaseCleared => bossPhaseCleared;
 
     /// <summary>
     /// 현재 설정된 웨이브 스폰 코루틴을 안전하게 시동하는 래퍼 메서드
@@ -68,6 +189,9 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     IEnumerator SpawnWave()
     {
+        if (bossPhaseCleared)
+            yield break;
+
         isSpawning = true;   // 몬스터 소환 프로세스 시작 설정 (중간 정산 버그 방지)
         aliveEnemyCount = 0; // 이번 웨이브용 생존 카운트 리셋
 
@@ -151,6 +275,9 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     void SpawnBossWave(WaveData wave)
     {
+        // 보스 등장 전 호위 몬스터·소환 잔여물 정리 (카운트 불일치 시 타 바이옴 몬스터 겹침 방지)
+        PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
+
         // 보스 스폰 인덱스 배열이 비어있다면 에러 방지를 위해 즉시 다음 웨이브/클리어 처리
         if (wave.bossSpawnIndexes == null || wave.bossSpawnIndexes.Length == 0)
         {
@@ -158,9 +285,17 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        // 등록된 보스 풀 중 무작위로 하나를 선정하여 스폰
-        int rand = Random.Range(0, wave.bossSpawnIndexes.Length);
-        SpawnEnemy(wave.bossSpawnIndexes[rand]);
+        int[] candidates = BossSpawnDataIndexUtility.SanitizeArray(wave.bossSpawnIndexes);
+
+        int spawnIndex = BossSpawnDataIndexUtility.Normalize(SelectedBossSpawnDataIndex);
+        if (spawnIndex < 0 || System.Array.IndexOf(candidates, spawnIndex) < 0)
+        {
+            spawnIndex = PickRandomBossSpawnIndex(candidates);
+            SelectedBossSpawnDataIndex = spawnIndex;
+        }
+
+        SpawnEnemy(spawnIndex);
+        GameManager.instance?.RefreshBossBriefingForBossSpawn(spawnIndex);
 
         // 보스 본체 개체 카운트를 1로 확정 명시
         aliveEnemyCount = 1;
@@ -183,6 +318,24 @@ public class WaveManager : MonoBehaviour
         BossBase bossScript = enemy.GetComponent<BossBase>();
         if (bossScript != null)
             bossScript.waveManager = this;
+
+        // [주입 3] 멀티 파트 보스 코어 (루트에 BossBase 없음)
+        InjectBossCoreWaveManager(enemy);
+    }
+
+    void InjectBossCoreWaveManager(GameObject enemy)
+    {
+        FrostWolfCore frostCore = enemy.GetComponent<FrostWolfCore>();
+        if (frostCore != null)
+            frostCore.waveManager = this;
+
+        VolcanoPumpkinCore volcanoCore = enemy.GetComponent<VolcanoPumpkinCore>();
+        if (volcanoCore != null)
+            volcanoCore.waveManager = this;
+
+        LavaTyranoCore tyranoCore = enemy.GetComponent<LavaTyranoCore>();
+        if (tyranoCore != null)
+            tyranoCore.waveManager = this;
     }
 
     /// <summary>
@@ -190,6 +343,9 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     public void OnEnemyDead()
     {
+        if (bossPhaseCleared)
+            return;
+
         aliveEnemyCount--; // 생존 수량 차감
 
         // ★핵심 조건: 현재 코루틴을 통해 스폰이 진행 중인 상태가 아니며, 필드의 적이 완전히 전멸했을 때만 다음 웨이브 가동
@@ -197,11 +353,34 @@ public class WaveManager : MonoBehaviour
             NextWave();
     }
 
+    /// <summary>보스 클리어 후 소환 잔여물·추가 웨이브를 차단합니다.</summary>
+    public void NotifyBossStageCleared()
+    {
+        if (bossPhaseCleared)
+            return;
+
+        bossPhaseCleared = true;
+        StopAllCoroutines();
+        isSpawning = false;
+        aliveEnemyCount = 0;
+
+        if (stageManager != null && stageManager.stageDatas != null
+            && stageManager.stageIndex >= 0 && stageManager.stageIndex < stageManager.stageDatas.Length)
+        {
+            currentWave = stageManager.stageDatas[stageManager.stageIndex].waves.Length;
+        }
+
+        PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
+    }
+
     /// <summary>
     /// 현재 웨이브를 마치고 인덱스를 증가시키며, 스테이지 종료 여부를 판정하는 메서드
     /// </summary>
     void NextWave()
     {
+        if (bossPhaseCleared)
+            return;
+
         currentWave++; // 웨이브 카운트 전진
 
         // 현재 진행 중인 스테이지의 전체 웨이브 정보 로드
@@ -209,7 +388,11 @@ public class WaveManager : MonoBehaviour
 
         // 만약 현재 웨이브가 해당 스테이지가 보유한 총 웨이브 수에 도달하거나 넘어섰다면 전환 종료 (StageManager에서 클리어 처리)
         if (currentWave >= stage.waves.Length)
+        {
+            // 보스 소환 잔여 몬스터 정리 (포탈·상점 NPC 등 기믹은 유지)
+            PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
             return;
+        }
 
         // 아직 잔여 웨이브가 남아있다면 설정된 딜레이(예: 1.5초) 후에 다음 웨이브를 개시하는 코루틴 실행
         StartCoroutine(StartWaveDelayed());
@@ -220,27 +403,7 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     IEnumerator StartWaveDelayed()
     {
-        yield return new WaitForSeconds(nextWaveDelay); // 웨이브 사이 대기 시간 적용
-
-        // 첫 웨이브(0번)가 아닌 경우에만 룬 선택 UI 표시
-        if (currentWave > 0)
-        {
-            RuneSelectUI runeSelect = GameManager.instance != null
-                ? GameManager.instance.uiRuneSelect
-                : null;
-            if (runeSelect == null)
-                runeSelect = FindFirstObjectByType<RuneSelectUI>(FindObjectsInactive.Include);
-
-            if (runeSelect != null && RuneManager.instance != null)
-            {
-                bool confirmed = false;
-                runeSelect.gameObject.SetActive(true);
-                runeSelect.transform.SetAsLastSibling();
-                runeSelect.ShowBetweenWaves(() => confirmed = true);
-                yield return new WaitUntil(() => confirmed); // 플레이어가 룬 선택을 완료할 때까지 대기
-            }
-        }
-
-        StartWave(); // 다음 웨이브 루프 시동
+        yield return new WaitForSeconds(nextWaveDelay);
+        StartWave();
     }
 }

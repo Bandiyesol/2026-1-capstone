@@ -15,7 +15,18 @@ public class LavaTyranoCore : MonoBehaviour
     // 포탈 스폰의 기준점이 될 '가장 마지막에 숨진 분열 개체의 월드 좌표' 저장용
     public Vector2 lastDeathPosition;
 
+    [HideInInspector]
+    public WaveManager waveManager;
+
     bool portalSpawned; // 클리어 포탈이 중복 스폰되는 현상을 원천 방지하기 위한 플래그
+
+    void OnEnable()
+    {
+        if (waveManager == null)
+            waveManager = StageManager.instance != null ? StageManager.instance.waveManager : null;
+
+        portalSpawned = false;
+    }
 
     // 신생 유닛 리스트 등록 가동
     public void RegisterUnit(LavaTyranoUnit unit)
@@ -66,18 +77,7 @@ public class LavaTyranoCore : MonoBehaviour
     // 마지막 조각이 쓰러진 자리에 다음 방 이동 포탈 생성
     void SpawnPortal()
     {
-        if (PoolManager.Instance == null)
-            return;
-
-        // 오브젝트 풀에서 환경 기믹 아이템(포탈 프리팹) 추출
-        GameObject portal =
-            PoolManager.Instance.GetGimmick(13);
-
-        if (portal == null)
-            return;
-
-        // 최종 사망 위치에 포탈을 정확히 안착시키고 활성화
-        portal.transform.position = lastDeathPosition;
+        BossStageClearUtility.CompleteStage(lastDeathPosition, 13, waveManager);
     }
 
     // 모든 유도탄 제거

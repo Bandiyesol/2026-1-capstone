@@ -70,6 +70,9 @@ public abstract class Motion : MonoBehaviour
 		SetupPersistentRunes();
 		SetTriggerRunes();
 
+		if (instance?.info != null)
+			GameAudio.PlayWeapon(instance.info.type);
+
 		// 장착된 첫 번째 액티브 룬을 바로 실행
 		ExecuteActiveRune();
 	}
@@ -233,7 +236,10 @@ public abstract class Motion : MonoBehaviour
 
 		// 데미지를 받을 수 있는 대상이라면 피격 처리
 		if (damageable != null)
+		{
 			damageable.TakeDamage(finalDamage);
+			GameAudio.PlayEnemyHit(collision.gameObject);
+		}
 	}
 
 	/// <summary>

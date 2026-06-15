@@ -195,8 +195,7 @@ public class VoidWaveAOE : BossBullet
             player.ApplyBurn(burnDuration, burnTickDamage, burnTickInterval, burnBlinkSpeed);
 
             // 2. 글로벌 싱글톤 GameManager의 체력 프로퍼티를 직접 깎아 실질적인 데미지 반영
-            if (GameManager.instance != null)
-                GameManager.instance.Health -= damage;
+            PlayerStats.ApplyDamage(damage);
 
             // 3. 단발성 타격 원칙에 따라, 접촉 프레임 직후 즉시 본체의 판정 기능을 잠금 처리하여 버그 방지
             DisablePlayerCollision();

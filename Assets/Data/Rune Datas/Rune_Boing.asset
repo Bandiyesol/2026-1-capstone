@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Boing
   category: 4
   runeType: 15
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: -1125814516423201577, guid: 20f37809281aacc4ea73f5d12c9eb87b, type: 3}
+  runeDescription: 화면 끝에 닿으면 반대편으로 이동합니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

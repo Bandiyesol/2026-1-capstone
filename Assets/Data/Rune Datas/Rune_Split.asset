@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Split
   category: 1
   runeType: 5
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 3795855190162380014, guid: 4c9378a836ed73346a2c411357f70cd0, type: 3}
+  runeDescription: 충돌 시 여러 개로 분열합니다.
   runeDesc: 
   isDestroyed: 0
   power: 0.3

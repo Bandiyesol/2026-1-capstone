@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Explode
   category: 1
   runeType: 10
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 6880209236989720078, guid: dd09380d4773f4e40b422185764e0232, type: 3}
+  runeDescription: 충돌 시 범위 폭발로 피해를 줍니다.
   runeDesc: 
   isDestroyed: 1
   power: 1.5

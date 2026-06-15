@@ -291,11 +291,26 @@ MonoBehaviour:
   spawnDelay: 2
   health: 0
   maxHealth: 0
-  voidMinionIndexes: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
+  voidMinionIndexes:
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 35
   voidSummonBaseInterval: 7.5
   voidSummonMinInterval: 2.5
   voidSummonRadius: 15
-  apostlePoolIndex: 17
+  apostlePoolIndex: 16
   apostleSpawnOffset: 5.5
   doomBulletIndex: 20
   doomChargeDuration: 10

@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Ricochet
   category: 1
   runeType: 6
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 8741366360164495958, guid: 2deb62c0293cadc46b9b4dcc49b14fa4, type: 3}
+  runeDescription: 충돌 시 튕겨 공격합니다. 남은 횟수 동안 파괴되지 않습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

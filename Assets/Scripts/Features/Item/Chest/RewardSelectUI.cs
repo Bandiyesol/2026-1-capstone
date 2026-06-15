@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// [임시 UI] 보상 선택창 — 무기·악세사리·성물 후보 3개 표시.
+/// [임시 UI] 보상 선택창 — 무기·악세사리 후보 3개 표시.
 /// WeaponSelectUI와 동일한 구조 (Title + Detail).
 /// 태경이(이태경)가 정식 UI로 교체 예정.
 /// Title  → 이름만
@@ -28,6 +28,9 @@ public class RewardSelectUI : MonoBehaviour
     [SerializeField] TMP_FontAsset koreanFont;
 
     List<RewardCandidate> currentCandidates;
+
+    public bool IsPanelOpen =>
+        gameObject.activeSelf && (panel == null || panel.activeSelf);
 
     void Awake()
     {
@@ -155,6 +158,8 @@ public class RewardSelectUI : MonoBehaviour
 
         if (panel != null) panel.SetActive(true);
 
+        SetPanelTitle("선택");
+
         ResolveKoreanFont();
         ApplyKoreanFontToSlots();
         EnsureCandidateGlyphs(candidates);
@@ -171,8 +176,7 @@ public class RewardSelectUI : MonoBehaviour
             SetSlot(i, candidates[i]);
 
             int index = i;
-            slotButtons[i].onClick.RemoveAllListeners();
-            slotButtons[i].onClick.AddListener(() => OnSelect(index));
+            UiClickSfxUtility.Rewire(slotButtons[i], () => OnSelect(index));
         }
     }
 
@@ -181,6 +185,23 @@ public class RewardSelectUI : MonoBehaviour
     //  Title  → 이름만
     //  Detail → <color=#RRGGBB>등급</color>\n설명/스탯
     // ───────────────────────────────────────────
+
+    void SetPanelTitle(string title)
+    {
+        foreach (Transform child in transform.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.name.StartsWith("Btn"))
+                continue;
+
+            TextMeshProUGUI tmp = child.GetComponent<TextMeshProUGUI>();
+            if (tmp == null)
+                continue;
+
+            tmp.text = title;
+            TmpKoreanFontUtility.EnsureGlyphs(tmp, koreanFont, title);
+            return;
+        }
+    }
 
     void SetSlot(int i, RewardCandidate candidate)
     {
@@ -206,15 +227,6 @@ public class RewardSelectUI : MonoBehaviour
                 gradeText = acc?.grade.ToString() ?? "";
                 desc      = acc?.description ?? "";
                 gradeColored = ChoiceGradeDisplay.FormatColored(gradeText);
-                break;
-
-            case RewardType.Relic:
-                RelicData relic = candidate.relic;
-                icon      = relic?.icon;
-                title     = relic?.relicName ?? "";
-                gradeText = "성물";
-                desc      = relic?.description ?? "";
-                gradeColored = ChoiceGradeDisplay.FormatColored(gradeText, "FF3333");
                 break;
 
             default:
@@ -286,12 +298,6 @@ public class RewardSelectUI : MonoBehaviour
                 case RewardType.Accessory when candidate.accessory != null:
                     TmpKoreanFontUtility.AppendAccessoryText(sb, candidate.accessory);
                     break;
-                case RewardType.Relic when candidate.relic != null:
-                    if (!string.IsNullOrEmpty(candidate.relic.relicName))
-                        sb.Append(candidate.relic.relicName);
-                    if (!string.IsNullOrEmpty(candidate.relic.description))
-                        sb.Append(candidate.relic.description);
-                    break;
             }
         }
 
@@ -321,21 +327,27 @@ public class RewardSelectUI : MonoBehaviour
             case RewardType.Accessory:
                 AccessoryManager.instance?.Add(selected.accessory);
                 break;
-
-            case RewardType.Relic:
-                Debug.Log($"[RewardSelectUI] 성물 획득: {selected.relic?.relicName} (미구현)");
-                break;
         }
 
+        GameAudio.PlayPurchase();
         Hide();
     }
 
     void Hide()
     {
         Time.timeScale = 1f;
-        GameManager.instance.Resume();
         if (panel != null) panel.SetActive(false);
-        // 오브젝트 자체 비활성화 — 다른 UI 클릭 방해 방지
+        gameObject.SetActive(false);
+
+        if (GameManager.instance != null)
+            GameManager.instance.ResumeGameplayFromOverlay();
+    }
+
+    /// <summary>스테이지 전환 등 — 게임 재개 없이 패널만 닫습니다.</summary>
+    public void ForceCloseWithoutResume()
+    {
+        currentCandidates = null;
+        if (panel != null) panel.SetActive(false);
         gameObject.SetActive(false);
     }
 }

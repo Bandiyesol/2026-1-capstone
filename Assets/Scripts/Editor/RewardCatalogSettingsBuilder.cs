@@ -65,7 +65,6 @@ public static class RewardCatalogSettingsBuilder
 		}
 
 		catalog.allAccessories = RewardCatalogEditorUtility.LoadAllAccessories();
-		catalog.allRelics = RewardCatalogEditorUtility.LoadAllRelics();
 
 		EditorUtility.SetDirty(catalog);
 		AssetDatabase.SaveAssets();
@@ -73,7 +72,7 @@ public static class RewardCatalogSettingsBuilder
 
 		Debug.Log(
 			$"[RewardCatalogSettingsBuilder] 카탈로그 {(force ? "재생성" : "생성")} 완료 — " +
-			$"악세사리 {catalog.allAccessories.Count}개, 성물 {catalog.allRelics.Count}개");
+			$"악세사리 {catalog.allAccessories.Count}개");
 
 		TmpKoreanFontEditor.AddAccessoryGlyphsToNeoDgmSilent();
 	}

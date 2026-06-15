@@ -258,18 +258,8 @@ public class FrostWolfCore : MonoBehaviour
         if (ChestDropManager.Instance != null)
             ChestDropManager.Instance.TryDropFromBoss(lastDeathPosition);
 
-        // 3. 다음 방/스테이지 프리패스 전환용 글로벌 포탈 오브젝트 팝업
-        if (PoolManager.Instance != null)
-        {
-            GameObject portal = PoolManager.Instance.GetGimmick(portalGimmickIndex);
-            if (portal != null)
-                portal.transform.position = lastDeathPosition;
-        }
-
-        // 💡 [핵심 예외 처리] 세 마리가 모두 전멸한 이 시점에 '딱 한 번만' 웨이브 카운트를 차감합니다.
-        // 개별 늑대의 Dead()에서는 base.Dead()를 스킵했기 때문에, 
-        // 몬스터가 3마리 죽었다고 해서 WaveManager의 카운트가 3번 차감되는 버그를 원천 봉쇄합니다.
-        waveManager?.OnEnemyDead();
+        // 3. 다음 스테이지 마법진 + (확률) 상점 주인 + 웨이브 클리어
+        BossStageClearUtility.CompleteStage(lastDeathPosition, portalGimmickIndex, waveManager);
 
         // 코어 자체를 비활성화하여 보스룸 전체 세션을 최종 클로징
         gameObject.SetActive(false);

@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Vampire
   category: 1
   runeType: 7
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: -3350927881645572598, guid: 849b930ab2c2ab14981a8ffdd389d8c9, type: 3}
+  runeDescription: 충돌 데미지만큼 플레이어 스탯을 회복합니다.
   runeDesc: 
   isDestroyed: 0
   power: 0.3

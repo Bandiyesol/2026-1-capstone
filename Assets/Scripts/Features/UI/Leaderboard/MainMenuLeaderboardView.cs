@@ -108,8 +108,7 @@ public class MainMenuLeaderboardView : MonoBehaviour
 				continue;
 
 			int index = i;
-			rankButtons[i].onClick.RemoveAllListeners();
-			rankButtons[i].onClick.AddListener(() => OnRankRowClicked(index));
+			UiClickSfxUtility.Rewire(rankButtons[i], () => OnRankRowClicked(index));
 		}
 	}
 
@@ -121,6 +120,18 @@ public class MainMenuLeaderboardView : MonoBehaviour
 		string recordId = recordIds[index];
 		if (string.IsNullOrEmpty(recordId))
 			return;
+
+		_ = OpenRankRecordDetailAsync(recordId);
+	}
+
+	async System.Threading.Tasks.Task OpenRankRecordDetailAsync(string recordId)
+	{
+		GameRunRecord record = await GameRunLeaderboard.FindRecordByIdAsync(recordId);
+		if (record == null)
+		{
+			Debug.LogWarning($"[MainMenuLeaderboardView] 랭킹 기록을 찾지 못했습니다: {recordId}");
+			return;
+		}
 
 		if (GameManager.instance != null)
 		{

@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Blink
   category: 4
   runeType: 14
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 8392801653997051193, guid: d038381143df7d645b8d4ff6ccc4a820, type: 3}
+  runeDescription: 일정 간격으로 앞으로 순간 이동합니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

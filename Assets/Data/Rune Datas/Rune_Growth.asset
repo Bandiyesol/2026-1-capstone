@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Growth
   category: 3
   runeType: 13
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: -5167816483075583988, guid: 6c39c6a2f424eca4b8e1f3d966ff3cb7, type: 3}
+  runeDescription: 크기와 데미지가 점점 증폭됩니다. 적중 시 현재 배수만큼 피해를 줍니다.
   runeDesc: 
   isDestroyed: 0
   power: 1.5

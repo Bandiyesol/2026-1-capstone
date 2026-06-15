@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Wave
   category: 0
   runeType: 2
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 4039341406784821266, guid: 41e963ca0b888bd468a9571b5509d6a4, type: 3}
+  runeDescription: 사인 곡선 궤도로 공격합니다. 지속 중 충돌해도 파괴되지 않습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

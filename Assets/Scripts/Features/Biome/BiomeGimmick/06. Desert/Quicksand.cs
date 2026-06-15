@@ -137,14 +137,10 @@ public class Quicksand : BiomeGimmick
         else
         {
             // [에러 수정] 중심부 지속 피해를 PlayerStats의 방어/회피 파이프라인으로 안전하게 전달
-            if (PlayerStats.Instance != null)
-            {
-                PlayerStats.Instance.TakeDamage(damagePerSecond * Time.deltaTime);
-            }
-            else
-            {
-                GameManager.instance.Health -= damagePerSecond * Time.deltaTime; // 폴백용
-            }
+            PlayerStats.ApplyDamage(
+                damagePerSecond * Time.deltaTime,
+                applyIFrames: false,
+                PlayerDamageKind.PerSecondFrame);
 
             // 탈출 판정: 중심 반경에 여유 오차범위(0.12f)를 더해 늪을 완전히 빠져나갔는지 체크
             if (dist > centerRadius + 0.12f)

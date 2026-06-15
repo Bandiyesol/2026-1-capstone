@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Homing
   category: 0
   runeType: 4
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: -1783049322070951978, guid: bcde628f0b0fe524996ed8d402c88f9d, type: 3}
+  runeDescription: 가장 가까운 적을 추적하며 공격합니다. 지속 중 충돌해도 파괴되지 않습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

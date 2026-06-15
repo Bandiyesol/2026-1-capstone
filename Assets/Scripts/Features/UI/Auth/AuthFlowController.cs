@@ -272,6 +272,7 @@ public class AuthFlowController : MonoBehaviour
 
 		ClearAllAuthInputs();
 		SetStatus("");
+		await GameRunLeaderboard.RefreshGlobalAsync();
 		GameManager.RefreshMainMenuLeaderboard();
 	}
 
@@ -305,6 +306,7 @@ public class AuthFlowController : MonoBehaviour
 	{
 		await WaitLoadingMinDisplayAsync();
 		UserAccountDisplay.ClearCache();
+		GameRunLeaderboard.ClearGlobalCache();
 
 		if (gameStartRoot != null)
 			gameStartRoot.SetActive(false);

@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Gravity
   category: 3
   runeType: 12
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 2859070811053039604, guid: efa3a679e3c59854f86e9123bb4c75e1, type: 3}
+  runeDescription: 블랙홀 방향으로 적을 끌어당깁니다. 지속 중 충돌해도 파괴되지 않습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

@@ -248,6 +248,9 @@ public class VolcanoPumpkinUnit : BossBase
     // [패턴 2] 일반 몬스터 부하 소환 코루틴 (리더 전용)
     IEnumerator SummonEnemyRoutine()
     {
+        if (BossSummonGuard.IsBlocked())
+            yield break;
+
         isPatternPlaying = true;
         canMove = false;
 

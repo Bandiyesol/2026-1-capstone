@@ -361,8 +361,7 @@ public class VoidApostleController : BossBase
             if (player != null)
             {
                 // 분신의 하향 조정된 전용 데미지(attackDamage)를 싱글톤 게임매니저 체력 프로퍼티에 직접 차감 반영
-                if (GameManager.instance != null)
-                    GameManager.instance.Health -= attackDamage;
+                PlayerStats.ApplyDamage(attackDamage);
 
                 // [방사형 넉백 벡터 연산] 사도 중심에서 플레이어 위치 방향 벡터를 추출하고 정규화하여 설정된 파워로 튕겨냄
                 Vector2 knockDir = (collision.transform.position - transform.position).normalized;

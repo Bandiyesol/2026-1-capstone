@@ -166,14 +166,7 @@ public class GiantRock : BiomeGimmick, IDamageable
             if (player != null)
             {
                 // [방어 시스템 연동] 무조건 깎이던 연산에서 스탯 방어 필터링으로 보완
-                if (PlayerStats.Instance != null)
-                {
-                    PlayerStats.Instance.TakeDamage(fallDamage);
-                }
-                else
-                {
-                    GameManager.instance.Health -= fallDamage;
-                }
+                PlayerStats.ApplyDamage(fallDamage);
 
                 // 밖으로 밀기 연출 유지
                 PushOut(collision);

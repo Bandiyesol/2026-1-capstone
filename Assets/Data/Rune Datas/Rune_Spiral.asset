@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Spiral
   category: 0
   runeType: 3
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: 9186137114903715767, guid: 5fb4d5d7eca135845b6b036e093339c2, type: 3}
+  runeDescription: 나선형 궤도로 공격합니다. 지속 중 충돌해도 파괴되지 않습니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

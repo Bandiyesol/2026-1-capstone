@@ -176,6 +176,7 @@ public class WeaponManager : MonoBehaviour
 			"Sword" => "sword-practice-wooden",
 			"Bow" => "bow_short",
 			"Orb" => "orb_poison",
+			"Sickle" => "sickle_01",
 			_ => "sword-practice-wooden"
 		};
 	}

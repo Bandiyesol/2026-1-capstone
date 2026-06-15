@@ -358,27 +358,28 @@ public class VoidCalamityBoss : BossBase
 
     protected override void Dead()
     {
-        // 중복 사망 연출이 프레임 중복으로 다중 연산되는 버그를 예방하기 위한 전역 사망 락 가드
         if (isDead) return;
-        isDead = true;
 
-        // 사망 시점에 혹여나 잔존하여 돌아가고 있을지 모르는 파멸 주문 차징 코루틴 프로세스를 완벽히 강제 종료
         if (doomCoroutine != null) StopCoroutine(doomCoroutine);
 
-        // 보스 소멸에 맞춰 바닥에 깔려 있던 파멸 경고 범위를 깔끔하게 비활성화
         if (doomWarningCircle != null) doomWarningCircle.SetActive(false);
 
-        // 풀링 최적화 청소: 필드 상에 무결하게 깔아두어 관리 중이던 호위 분신 오브젝트 전량을 유실 없이 풀 비활성화 회수
-        foreach (GameObject obj in apostleObjects) if (obj != null) obj.SetActive(false);
-        // 사방에 날아가고 있던 잔여 탄막 투사체 오브젝트들도 플레이어 억까 방지를 위해 전량 비활성화 소거 회수
-        foreach (GameObject bullet in spawnedBullets) if (bullet != null) bullet.SetActive(false);
-        spawnedBullets.Clear(); // 메모리 참조 누수 방지용 클리어
+        if (isApostlePatternActive)
+            EndApostlePattern(interrupted: true);
 
-        // 혼돈의 세계 패턴으로 소환되어 필드에 흩어져 잔존하던 모든 바이옴 일반 적(몬스터)들까지 일괄 비활성화 영면 퇴장 처리
-        foreach (GameObject gimmick in spawnedVoidGimmicks) if (gimmick != null) gimmick.SetActive(false);
-        spawnedVoidGimmicks.Clear(); // 댕글링 포인터 방지용 클리어
+        foreach (GameObject obj in apostleObjects)
+            if (obj != null) obj.SetActive(false);
+        apostleObjects.Clear();
+        activeApostles.Clear();
 
-        // 보스 본인의 게임 오브젝트 활성 상태를 오브젝트 풀 반환 규격에 맞춰 꺼줌으로써 최종 사망 처리 완료
-        gameObject.SetActive(false);
+        foreach (GameObject bullet in spawnedBullets)
+            if (bullet != null) bullet.SetActive(false);
+        spawnedBullets.Clear();
+
+        foreach (GameObject gimmick in spawnedVoidGimmicks)
+            if (gimmick != null) gimmick.SetActive(false);
+        spawnedVoidGimmicks.Clear();
+
+        base.Dead();
     }
 }

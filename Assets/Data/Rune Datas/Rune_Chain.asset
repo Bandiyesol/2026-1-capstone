@@ -15,8 +15,8 @@ MonoBehaviour:
   runeName: Chain
   category: 1
   runeType: 9
-  runeIcon: {fileID: 0}
-  runeDescription: 
+  runeIcon: {fileID: -4885433024822862695, guid: 94ee9e9c7e258394ab29fa3ed5148325, type: 3}
+  runeDescription: 충돌 시 주변 적에게 데미지가 전이됩니다.
   runeDesc: 
   isDestroyed: 0
   power: 0

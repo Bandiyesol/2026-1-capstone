@@ -12,23 +12,21 @@ public class StagePortal : MonoBehaviour
     {
         if (isTriggered || !collision.CompareTag(playerTag)) return;
 
-        if (StageManager.instance != null)
+        if (GameManager.instance != null)
+        {
+            if (!GameManager.instance.CanUseStagePortal())
+                return;
+
+            isTriggered = true;
+            GameManager.instance.AdvanceStageViaPortal();
+        }
+        else if (StageManager.instance != null)
         {
             isTriggered = true;
-            bool moved = StageManager.instance.NextStage();
-
-            if (moved)
-            {
-                StageManager.instance.waveManager.StartStage();
-            }
-
-            // 작동 후 비활성화
-            gameObject.SetActive(false);
+            StageManager.instance.NextStage();
         }
-        else
-        {
-            Debug.LogWarning("씬에 StageManager 인스턴스가 존재하지 않습니다!");
-        }
+
+        gameObject.SetActive(false);
     }
 
     // 스테이지가 바뀔 때 마법진이 꺼졌다 켜지거나 재생성된다면 플래그를 리셋해줍니다.

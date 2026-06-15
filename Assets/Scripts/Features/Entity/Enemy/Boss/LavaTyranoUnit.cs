@@ -120,15 +120,22 @@ public class LavaTyranoUnit : BossBase
         // 1타 2피: 하나의 개체가 파괴되며 동일 형태의 자식 2마리 순차 복제 생성
         for (int i = 0; i < 2; i++)
         {
-            GameObject obj = GameManager.instance.pool.GetBoss(splitUnitPoolIndex);
+            GameObject obj = GameManager.instance.pool.GetBoss(ResolveSplitUnitPoolIndex());
 
             if (obj == null)
                 continue;
 
             LavaTyranoUnit unit = obj.GetComponent<LavaTyranoUnit>();
+            if (unit == null)
+            {
+                unit = obj.GetComponentInChildren<LavaTyranoUnit>(true);
+            }
 
             if (unit == null)
+            {
+                obj.SetActive(false);
                 continue;
+            }
 
             // 스폰 직후 겹침으로 인한 물리 충돌 에러 방지용 무작위 외곽 반경 오프셋 배치
             Vector2 offset = Random.insideUnitCircle * 1.5f;
@@ -147,6 +154,44 @@ public class LavaTyranoUnit : BossBase
         }
 
         DieUnit(); // 자식 세대를 안전하게 출범시킨 현재 세대 유닛은 무대 뒤로 소멸
+    }
+
+    int ResolveSplitUnitPoolIndex()
+    {
+        if (splitUnitPoolIndex >= 0 && IsLavaTyranoUnitBossPoolIndex(splitUnitPoolIndex))
+            return splitUnitPoolIndex;
+
+        PoolManager pool = GameManager.instance != null ? GameManager.instance.pool : null;
+        if (pool?.bossPrefabs == null)
+            return splitUnitPoolIndex >= 0 ? splitUnitPoolIndex : 0;
+
+        for (int i = 0; i < pool.bossPrefabs.Length; i++)
+        {
+            if (IsLavaTyranoUnitBossPrefab(pool.bossPrefabs[i]))
+                return i;
+        }
+
+        return splitUnitPoolIndex >= 0 ? splitUnitPoolIndex : 0;
+    }
+
+    static bool IsLavaTyranoUnitBossPoolIndex(int index)
+    {
+        PoolManager pool = GameManager.instance != null ? GameManager.instance.pool : null;
+        if (pool?.bossPrefabs == null || index < 0 || index >= pool.bossPrefabs.Length)
+            return false;
+
+        return IsLavaTyranoUnitBossPrefab(pool.bossPrefabs[index]);
+    }
+
+    static bool IsLavaTyranoUnitBossPrefab(GameObject prefab)
+    {
+        if (prefab == null)
+            return false;
+
+        if (prefab.GetComponent<LavaTyranoCore>() != null)
+            return false;
+
+        return prefab.GetComponent<LavaTyranoUnit>() != null;
     }
 
     // 패턴 주기가 충족되면 부모 시스템 시퀀스에 의해 트리거 연동 호출
