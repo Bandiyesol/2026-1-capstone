@@ -188,6 +188,7 @@ MonoBehaviour:
     spawntime: 0
     cooltime: 0
     attackspeed: 0
+    tickInterval: 0
     movespeed: 0
     tickInterval: 0
 --- !u!95 &5092708090864435821

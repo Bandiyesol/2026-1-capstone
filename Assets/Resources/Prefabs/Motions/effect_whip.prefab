@@ -179,6 +179,7 @@ MonoBehaviour:
       weaponCategory: 
       legendaryPassiveId: 
     isSplited: 0
+    isSplitChild: 0
     isRevived: 0
     isSplitChild: 0
     damage: 0
@@ -188,6 +189,7 @@ MonoBehaviour:
     spawntime: 0
     cooltime: 0
     attackspeed: 0
+    tickInterval: 0
     movespeed: 0
     tickInterval: 0
 --- !u!95 &8270030916971298278

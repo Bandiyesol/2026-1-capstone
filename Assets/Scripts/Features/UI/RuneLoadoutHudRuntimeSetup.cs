@@ -80,6 +80,10 @@ public static class RuneLoadoutHudRuntimeSetup
 		hud.ConfigureIcon(hudIcon);
 		EnsureIconChild(clone.transform, hudIcon);
 
+		Transform iconChild = clone.transform.Find("Image");
+		if (iconChild != null && iconChild.name != "Icon")
+			iconChild.name = "Icon";
+
 		if (clone.transform is RectTransform runeRect && settingButton.transform is RectTransform settingRect)
 		{
 			runeRect.anchorMin = settingRect.anchorMin;
