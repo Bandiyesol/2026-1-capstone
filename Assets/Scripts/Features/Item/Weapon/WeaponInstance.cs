@@ -229,12 +229,18 @@ public class WeaponInstance
 
 	void SpawnMotion(GameObject prefab, Vector3 spawnPos, Quaternion spawnRotation, List<RuneData> activeRunes)
 	{
+		if (PoolManager.Instance != null && !PoolManager.Instance.CanSpawnMotion(1))
+			return;
+
 		Motion motion = null;
 		if (PoolManager.Instance != null)
 			motion = PoolManager.Instance.SpawnMotion(info.motionId, spawnPos, spawnRotation);
 
 		if (motion == null)
 		{
+			if (PoolManager.Instance != null && !PoolManager.Instance.CanSpawnMotion(1))
+				return;
+
 			GameObject motionObject = UnityEngine.Object.Instantiate(prefab, spawnPos, spawnRotation);
 			motion = motionObject.GetComponent<Motion>();
 		}

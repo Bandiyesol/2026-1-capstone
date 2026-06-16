@@ -26,6 +26,8 @@ public class PoolManager : MonoBehaviour
     readonly Dictionary<string, List<Motion>> motionPools = new Dictionary<string, List<Motion>>();
     readonly Dictionary<string, GameObject> motionPrefabById = new Dictionary<string, GameObject>();
 
+    public const int MaxActiveMotions = 96;
+
     void Awake()
     {
         // 싱글톤 초기화
@@ -238,6 +240,9 @@ public class PoolManager : MonoBehaviour
             }
         }
 
+        if (motion == null && !CanSpawnMotion(1))
+            return null;
+
         if (motion == null)
         {
             GameObject created = Instantiate(prefab, transform);
@@ -259,6 +264,26 @@ public class PoolManager : MonoBehaviour
             motion.gameObject.SetActive(true);
         return motion;
     }
+
+    /// <summary>현재 활성 Motion 수.</summary>
+    public int GetActiveMotionCount()
+    {
+        int count = 0;
+        foreach (List<Motion> pool in motionPools.Values)
+        {
+            foreach (Motion motion in pool)
+            {
+                if (motion != null && motion.gameObject.activeSelf)
+                    count++;
+            }
+        }
+
+        return count;
+    }
+
+    public int GetRemainingMotionBudget() => Mathf.Max(0, MaxActiveMotions - GetActiveMotionCount());
+
+    public bool CanSpawnMotion(int count = 1) => GetRemainingMotionBudget() >= count;
 
     /// <summary>무기 Motion을 풀로 반환합니다.</summary>
     public void ReleaseMotion(Motion motion)
