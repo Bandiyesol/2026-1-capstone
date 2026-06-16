@@ -51,17 +51,29 @@ public static class GameSessionReset
 			return;
 
 		pool.ReturnAllActiveToPool();
+		pool.PurgeAllMotionRuneEffects();
 	}
 
 	static void ResetWorldDropsAndMotions()
 	{
-		if (PoolManager.Instance == null)
+		PoolManager pool = PoolManager.Instance;
+		if (pool != null)
+			pool.PurgeAllMotionRuneEffects();
+
+		foreach (Motion motion in Object.FindObjectsByType<Motion>(FindObjectsInactive.Include, FindObjectsSortMode.None))
 		{
-			foreach (Motion motion in Object.FindObjectsByType<Motion>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-			{
-				if (motion != null)
-					Object.Destroy(motion.gameObject);
-			}
+			if (motion == null)
+				continue;
+
+			motion.ForceClearRuneEffects();
+
+			if (!motion.gameObject.activeSelf)
+				continue;
+
+			if (pool != null)
+				pool.ReleaseMotion(motion);
+			else
+				Object.Destroy(motion.gameObject);
 		}
 
 		foreach (DroppedCoin coin in Object.FindObjectsByType<DroppedCoin>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -104,6 +116,8 @@ public static class GameSessionReset
 
 		if (RuneManager.instance != null)
 			RuneManager.instance.ClearAll();
+
+		PotionEffect.instance?.ClearAllBuffs();
 	}
 
 	static void ResetShop()

@@ -148,9 +148,7 @@ public class GiantRock : BiomeGimmick, IDamageable
 
             // 예외 무기가 아니라면(일반 화살, 총알 등) 투사체를 소멸시켜 관통을 막음
             if (!isExempt)
-            {
-                collision.gameObject.SetActive(false);
-            }
+                weaponMotion.RequestDestroy(DestroyReason.WeaponLogic);
         }
         // ------------------------------------------------------
 

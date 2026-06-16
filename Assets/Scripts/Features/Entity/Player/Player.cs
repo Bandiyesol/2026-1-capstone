@@ -265,6 +265,9 @@ public class Player : MonoBehaviour
     /// </summary>
     public void Stun(float time)
     {
+        if (isStunned)
+            return;
+
         // 기절 시 기존에 돌고 있던 상태이상 코루틴(화상, 빙결 등) 리스트를 초기화하여 교통정리
         StopAllCoroutines();
 

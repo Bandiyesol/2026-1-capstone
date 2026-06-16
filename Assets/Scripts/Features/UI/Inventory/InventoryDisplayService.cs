@@ -350,9 +350,11 @@ public static class InventoryDisplayService
 		sb.AppendLine(title);
 		sb.AppendLine($"개수 {stack.count}");
 
+		Sprite icon = stack.icon ?? PotionIconResolver.ResolveFromId(stack.potionId);
+
 		return new InventorySlotViewData
 		{
-			icon = stack.icon,
+			icon = icon,
 			stackCount = stack.count,
 			tooltip = sb.ToString().TrimEnd()
 		};
