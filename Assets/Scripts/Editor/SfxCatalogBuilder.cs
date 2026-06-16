@@ -125,6 +125,45 @@ public static class SfxCatalogBuilder
 		EditorUtility.SetDirty(catalog);
 	}
 
+	/// <summary>신의 방패(AccGodShieldLoop) 체감 크기를 기준으로 SFX 볼륨을 맞춥니다.</summary>
+	public static void ApplyVolumeBalanceFromGodShieldReference(SfxCatalog catalog)
+	{
+		if (catalog?.entries == null)
+			return;
+
+		SfxCatalog.Entry reference = default;
+		bool hasReference = false;
+		foreach (SfxCatalog.Entry entry in catalog.entries)
+		{
+			if (entry.id != SfxId.AccGodShieldLoop || entry.clip == null)
+				continue;
+
+			reference = entry;
+			hasReference = true;
+			break;
+		}
+
+		if (!hasReference)
+		{
+			Debug.LogWarning("[SfxCatalogBuilder] 신의 방패 클립을 찾지 못해 평균 RMS로 보정합니다.");
+			ApplyVolumeBalance(catalog, AudioCatalogBalanceUtility.ComputeTargetRms(CollectClips(catalog)));
+			return;
+		}
+
+		for (int i = 0; i < catalog.entries.Length; i++)
+		{
+			SfxCatalog.Entry entry = catalog.entries[i];
+			entry.volumeScale = AudioCatalogBalanceUtility.ScaleForClipAttenuateToReference(
+				entry.clip,
+				entry.volumeScale,
+				reference.clip,
+				reference.volumeScale);
+			catalog.entries[i] = entry;
+		}
+
+		EditorUtility.SetDirty(catalog);
+	}
+
 	public static IEnumerable<AudioClip> CollectClips(SfxCatalog catalog)
 	{
 		if (catalog?.entries == null)

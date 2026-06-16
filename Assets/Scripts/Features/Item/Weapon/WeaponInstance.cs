@@ -12,7 +12,6 @@ public class WeaponInstance
 	const float MeleeSpawnOffset = 0.7f;
 	const float ProjectileSpreadDegrees = 12f;
 	const float ReachFromRangeBonusRatio = 0.7f;
-	const float SizeFromRangeBonusRatio = 1.5f;
 
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
@@ -247,59 +246,53 @@ public class WeaponInstance
 
 	/// <summary>
 	/// 악세사리 등으로 변한 PlayerStats를 무기 복제본에 배율로 적용합니다.
-	/// - ProjectileSpeed → 투사체 속도(movespeed)
-	/// - ProjectileRange → 원거리 무기 사거리(reach)
-	/// - MeleeRange      → 근접 무기 범위(reach)
-	/// ※ AttackPower / 치명타는 Motion → DamageCalculator에서 이미 반영됨
+	/// - ProjectileSpeed  → 투사체 속도(movespeed)
+	/// - ProjectileRange  → 원거리 사거리(reach)만 (flat은 수치 가산)
+	/// - ProjectileSize   → 원거리 투사체 크기(size)만
+	/// - MeleeRange       → 근접 범위(reach)만
 	/// </summary>
-void ApplyPlayerStats(WeaponInstance clone)
-{
-    PlayerStats stats = DamageCalculator.ResolvePlayerStats();
-    if (stats == null) return;
-
-    clone.movespeed *= stats.ProjectileSpeed;
-
-    switch (info.type)
-    {
-        case "Sword":
-        case "Hammer":
-        case "Sickle":
-        case "Grimore":
-		case "Whip":
-            Debug.Log($"[무기] MeleeRange={stats.MeleeRange}");  // ← 추가
-            ApplyRangeScaling(clone, stats.MeleeRange);
-            break;
-
-		case "Orb":
-        case "Bow":
-        case "Gun":
-        case "Boomerang":
-        case "Staff":
-            ApplyRangeScaling(clone, stats.ProjectileRange);
-            break;
-    }
-}
-
-	static void ApplyRangeScaling(WeaponInstance clone, float rangeStat)
+	void ApplyPlayerStats(WeaponInstance clone)
 	{
-		float reachMultiplier = ResolveReachMultiplier(rangeStat);
-		float sizeMultiplier = ResolveSizeMultiplier(rangeStat);
+		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
+		if (stats == null) return;
 
-		clone.reach *= reachMultiplier;
+		clone.movespeed *= stats.ProjectileSpeed;
+
+		switch (info.type)
+		{
+			case "Sword":
+			case "Hammer":
+			case "Sickle":
+			case "Grimore":
+			case "Whip":
+				ApplyReachScaling(clone, stats.MeleeRangeMultiplier, stats.MeleeRangeFlatAdd);
+				break;
+
+			case "Orb":
+			case "Bow":
+			case "Gun":
+			case "Boomerang":
+			case "Staff":
+				ApplyReachScaling(clone, stats.ProjectileRangeMultiplier, stats.ProjectileRangeFlatAdd);
+				ApplyProjectileSize(clone, stats.ProjectileSize);
+				break;
+		}
+	}
+
+	static void ApplyReachScaling(WeaponInstance clone, float rangeMultiplier, float rangeFlatAdd)
+	{
+		float mult = SoftenedRangeMultiplier(rangeMultiplier, ReachFromRangeBonusRatio);
+		clone.reach = (clone.reach + rangeFlatAdd) * mult;
+	}
+
+	static void ApplyProjectileSize(WeaponInstance clone, float sizeMultiplier)
+	{
+		if (sizeMultiplier <= 0f)
+			return;
+
 		clone.size *= sizeMultiplier;
 	}
 
-	static float ResolveReachMultiplier(float rangeStat)
-	{
-		return SoftenedRangeMultiplier(rangeStat, ReachFromRangeBonusRatio);
-	}
-
-	static float ResolveSizeMultiplier(float rangeStat)
-	{
-		return SoftenedRangeMultiplier(rangeStat, SizeFromRangeBonusRatio);
-	}
-
-	/// <summary>스탯 1.0 기준, 초과·감소분에만 비율을 곱해 완만하게 반영합니다.</summary>
 	static float SoftenedRangeMultiplier(float rangeStat, float bonusRatio)
 	{
 		if (rangeStat <= 0f)

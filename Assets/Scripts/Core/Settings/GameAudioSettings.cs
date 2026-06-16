@@ -405,6 +405,38 @@ public class GameAudioSettings : MonoBehaviour
 		activeLoopById[id] = source;
 	}
 
+	public void PlaySfxOnce(SfxId id, float volumeMultiplier = 1f)
+	{
+		StopSfxLoop(id);
+
+		if (sfxEntryCache == null || sfxEntryCache.Count == 0)
+			BuildSfxCache();
+
+		if (sfxEntryCache == null || !sfxEntryCache.TryGetValue(id, out SfxCatalog.Entry entry) || entry.clip == null)
+		{
+			EnsureSfxCatalog();
+			BuildSfxCache();
+			if (sfxCatalog == null || !sfxCatalog.TryGet(id, out entry) || entry.clip == null)
+				return;
+		}
+
+		ConfigureSfxLoopSources();
+		AudioSource source = GetFreeLoopSource();
+		if (source == null && sfxLoopPool != null && sfxLoopPool.Length > 0)
+			source = sfxLoopPool[0];
+		if (source == null)
+			return;
+
+		float scale = entry.volumeScale * Mathf.Max(0.05f, volumeMultiplier);
+		source.Stop();
+		source.loop = false;
+		source.clip = entry.clip;
+		GameSettings.EnsureLoaded();
+		source.volume = GameSettings.SfxVolume;
+		EnsureMixSettings();
+		source.PlayOneShot(entry.clip, scale * mixSettings.sfxMasterMixScale);
+	}
+
 	public void StopSfxLoop(SfxId id)
 	{
 		if (!activeLoopById.TryGetValue(id, out AudioSource source))
@@ -573,7 +605,9 @@ public class GameAudioSettings : MonoBehaviour
 		if (source == null)
 			return;
 
-		source.PlayOneShot(clip, GetEffectiveSfxVolume(volumeScale));
+		EnsureMixSettings();
+		// source.volume = SfxVolume — PlayOneShot 배율에는 믹스·클립 보정만 적용
+		source.PlayOneShot(clip, volumeScale * mixSettings.sfxMasterMixScale);
 	}
 
 	void PlayBgmStinger(AudioClip clip, BgmMode mode, float volumeScale)

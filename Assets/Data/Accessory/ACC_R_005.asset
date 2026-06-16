@@ -22,7 +22,7 @@ MonoBehaviour:
   - statType: 25
     value: 0.15
     isMulti: 1
-  - statType: 4
+  - statType: 27
     value: 0.05
     isMulti: 1
   effectType: 0

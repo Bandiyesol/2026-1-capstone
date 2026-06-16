@@ -93,10 +93,13 @@ public class PlayerStats : MonoBehaviour
     [Tooltip("투사체 속도 배율 (기본 1.0 = 100%)")]
     [SerializeField] private StatValue projectileSpeed = new StatValue { baseValue = 1f };
 
-    [Tooltip("투사체 최대 사거리 배율. 최종 사거리 = 무기 리치 × 투사체 사거리")]
+    [Tooltip("투사체 최대 사거리 배율. 최종 사거리 = (무기 리치 + flat) × 배율")]
     [SerializeField] private StatValue projectileRange = new StatValue { baseValue = 1.0f };
 
-    [Tooltip("근접 무기 공격 범위 배율. 최종 범위 = 무기 기본 범위 × 공격 범위 (검, 망치, 낫, 채찍, 부메랑)")]
+    [Tooltip("투사체 크기 배율. 최종 크기 = 무기 size × 투사체 크기")]
+    [SerializeField] private StatValue projectileSize = new StatValue { baseValue = 1.0f };
+
+    [Tooltip("근접 무기 공격 범위 배율. 최종 범위 = (무기 기본 범위 + flat) × 배율")]
     [SerializeField] private StatValue meleeRange      = new StatValue { baseValue = 1.0f };
 
     [Tooltip("치명타가 발동될 확률 (0~1 사이 값. 1 = 100%)")]
@@ -234,8 +237,23 @@ public class PlayerStats : MonoBehaviour
     /// <summary>투사체 사거리 배율 (무기 리치와 곱함)</summary>
     public float ProjectileRange  => projectileRange.Final;
 
+    /// <summary>투사체 사거리 % 보너스만 (flat 제외)</summary>
+    public float ProjectileRangeMultiplier => projectileRange.baseValue * (1f + projectileRange.multiBonus);
+
+    /// <summary>투사체 사거리 고정 가산 (작살 등)</summary>
+    public float ProjectileRangeFlatAdd => projectileRange.flatBonus;
+
+    /// <summary>투사체 크기 배율 (무기 size와 곱함)</summary>
+    public float ProjectileSize => projectileSize.Final;
+
     /// <summary>근접 무기 공격 범위 배율 (무기 기본 범위와 곱함)</summary>
     public float MeleeRange       => meleeRange.Final;
+
+    /// <summary>근접 범위 % 보너스만 (flat 제외)</summary>
+    public float MeleeRangeMultiplier => meleeRange.baseValue * (1f + meleeRange.multiBonus);
+
+    /// <summary>근접 범위 고정 가산</summary>
+    public float MeleeRangeFlatAdd => meleeRange.flatBonus;
 
     /// <summary>치명타 확률 (0~1)</summary>
     public float CritChance       => Mathf.Clamp01(critChance.Final);
@@ -551,6 +569,7 @@ public class PlayerStats : MonoBehaviour
             case StatType.ProjectileCount:  projectileCount.flatBonus += flat; projectileCount.multiBonus += multi; break;
             case StatType.ProjectileSpeed:  projectileSpeed.flatBonus += flat; projectileSpeed.multiBonus += multi; break;
             case StatType.ProjectileRange:  projectileRange.flatBonus += flat; projectileRange.multiBonus += multi; break;
+            case StatType.ProjectileSize:   projectileSize.flatBonus  += flat; projectileSize.multiBonus  += multi; break;
             case StatType.CritChance:       critChance.flatBonus      += flat; critChance.multiBonus      += multi; break;
             case StatType.CritDamage:       critDamage.flatBonus      += flat; critDamage.multiBonus      += multi; break;
             case StatType.MeleeRange:       meleeRange.flatBonus      += flat; meleeRange.multiBonus      += multi; break;
@@ -610,7 +629,7 @@ public class PlayerStats : MonoBehaviour
     private void PrintStats()
     {
         Debug.Log("─── PlayerStats 현재 최종값 ───");
-        Debug.Log($"[공격] 공격력={AttackPower:F2}  공격속도={AttackSpeed:F2}  투사체수={ProjectileCount}  투사체속도={ProjectileSpeed:F2}  사거리={ProjectileRange:F2}  근접범위={MeleeRange:F2}  크리확률={CritChance:P0}  크리배율={CritDamage:F2}");
+        Debug.Log($"[공격] 공격력={AttackPower:F2}  공격속도={AttackSpeed:F2}  투사체수={ProjectileCount}  투사체속도={ProjectileSpeed:F2}  사거리={ProjectileRange:F2}  투사체크기={ProjectileSize:F2}  근접범위={MeleeRange:F2}  크리확률={CritChance:P0}  크리배율={CritDamage:F2}");
         Debug.Log($"[방어] 방어력={Defense:F2}  관통={ArmorPenetration:F2}  최대HP={MaxHP:F0}  현재HP={currentHP:F0}  피해감소={DamageReduction:P0}  장판감소={DotDamageReduction:P0}  반사={DamageReflect:P0}  회피={Evasion:P0}  무적={InvincibilityFrames:F2}s  힐배율={HealingBonus:F2}");
         Debug.Log($"[유틸] 이동속도={MovementSpeed:F2}  자석범위={MagnetRange:F2}  쿨감={CooldownReduction:P0}  시야={VisionRange:F2}  골드획득={GoldGainBonus:P0}");
         Debug.Log($"[속성] 화염={fireEnabled}({FirePower:F2})  독={poisonEnabled}({PoisonPower:F2})  빙결={freezeEnabled}({FreezePower:F2})  물={waterEnabled}({WaterPower:F2})  번개={lightningEnabled}({LightningPower:F2})");
@@ -664,4 +683,5 @@ public enum StatType
     FreezePower,
     WaterPower,
     LightningPower,
+    ProjectileSize,
 }
