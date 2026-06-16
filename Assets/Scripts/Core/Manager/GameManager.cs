@@ -363,6 +363,19 @@ public class GameManager : MonoBehaviour
 		return true;
 	}
 
+	/// <summary>F12 상점 — 런 시작 후(무기·룬 선택 완료)이며 플레이 중일 때만. 이미 열린 상점은 닫기 가능.</summary>
+	public bool CanUseShopHotkey()
+	{
+		if (!GameRunSessionTracker.IsActive)
+			return false;
+
+		ShopUI shop = FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);
+		if (shop != null && shop.IsPanelOpen)
+			return true;
+
+		return isLive;
+	}
+
 	void DismissBlockingRewardOverlays()
 	{
 		RewardSelectUI reward = RewardSelectUI.GetOrFind();

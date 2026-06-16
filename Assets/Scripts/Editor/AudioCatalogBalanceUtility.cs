@@ -72,5 +72,44 @@ public static class AudioCatalogBalanceUtility
 
 		return Mathf.Clamp(targetRms / rms, MinScale, MaxScale);
 	}
+
+	/// <summary>
+	/// 신의 방패 체감 크기(rms×volumeScale)보다 큰 SFX만 줄입니다. 작은 소리는 키우지 않습니다.
+	/// </summary>
+	public static float ScaleForClipAttenuateToReference(
+		AudioClip clip,
+		float currentVolumeScale,
+		AudioClip referenceClip,
+		float referenceVolumeScale)
+	{
+		if (clip == null || referenceClip == null || referenceVolumeScale <= 0f)
+			return currentVolumeScale;
+
+		float refRms = MeasureClipRms(referenceClip);
+		float clipRms = MeasureClipRms(clip);
+		if (refRms <= MinRms || clipRms <= MinRms)
+			return currentVolumeScale;
+
+		float targetEffective = refRms * referenceVolumeScale;
+		float currentEffective = clipRms * currentVolumeScale;
+		if (currentEffective <= targetEffective)
+			return currentVolumeScale;
+
+		return Mathf.Clamp(targetEffective / clipRms, MinScale, MaxScale);
+	}
+
+	/// <summary>기준 클립의 현재 체감 크기(rms×volumeScale)에 다른 클립을 맞춥니다. (양방향 — 레거시)</summary>
+	public static float ScaleForClipRelativeToReference(AudioClip clip, AudioClip referenceClip, float referenceVolumeScale)
+	{
+		if (clip == null || referenceClip == null || referenceVolumeScale <= 0f)
+			return 1f;
+
+		float refRms = MeasureClipRms(referenceClip);
+		if (refRms <= MinRms)
+			return 1f;
+
+		float targetEffective = refRms * referenceVolumeScale;
+		return ScaleForClip(clip, targetEffective);
+	}
 }
 #endif

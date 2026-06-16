@@ -103,6 +103,8 @@ public class AuthFormKeyboardNavigation : MonoBehaviour
 
 		foreach (Component input in form.inputs)
 		{
+			UiTypingSfxUtility.Wire(input);
+
 			if (AuthInputUtility.TryGetTmpInputField(input, out TMP_InputField tmp))
 			{
 				tmp.lineType = TMP_InputField.LineType.SingleLine;

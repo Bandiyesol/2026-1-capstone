@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: AudioMixSettings
   m_EditorClassIdentifier: Assembly-CSharp::AudioMixSettings
   bgmMasterMixScale: 1.066
-  sfxMasterMixScale: 0.75
+  sfxMasterMixScale: 0.4
   playerHitSfxCooldown: 0.5
   enemyHitSfxCooldown: 0.05

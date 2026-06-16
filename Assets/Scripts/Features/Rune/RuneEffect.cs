@@ -28,6 +28,18 @@ public abstract class RuneEffect : MonoBehaviour
 		currentCooltime = 0f;
 	}
 
+	/// <summary>플레이 중이며, 이 룬이 현재 로드아웃에 장착되어 있을 때만 true.</summary>
+	public bool ShouldRunEffect()
+	{
+		if (GameManager.instance == null || !GameManager.instance.isLive)
+			return false;
+
+		if (data == null || parentMotion == null || parentMotion.instance == null)
+			return false;
+
+		return RuneManager.instance != null && RuneManager.instance.ContainsRune(data);
+	}
+
 	// 홍식 버전 채택 — CooldownMultiplier 반영 (특수 물약 버프 연동)
 	public void ResetCooltime()
 	{
@@ -51,6 +63,9 @@ public abstract class RuneEffect : MonoBehaviour
 
 		return weapon.info.type is "Sword" or "Hammer" or "Sickle" or "Whip" or "Orb";
 	}
+
+	protected bool IsOrbWeapon()
+		=> weapon?.info != null && weapon.info.type == "Orb";
 
 	/// <summary>
 	/// 액티브 룬 전진 속도.

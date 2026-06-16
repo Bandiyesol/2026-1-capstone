@@ -26,8 +26,6 @@ public class MotionBow : Motion
 	protected override bool ShouldDestroyOnHit()
 		=> true;
 
-	protected override void OnTriggerStay2D(Collider2D collision) { }
-
 	/// <summary>
 	/// 매 프레임 수명 및 사거리 초과 여부를 체크합니다.
 	/// </summary>
