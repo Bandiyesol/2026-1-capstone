@@ -301,12 +301,7 @@ MonoBehaviour:
   shardChance: 0.0075
   shardCount: 32
   enragedSpeedMultiplier: 3.5
-  summonEnemyIndexes:
-  - 42
-  - 43
-  - 44
-  - 45
-  - 46
+  summonEnemyIndexes: 2a0000002b0000002c0000002d0000002e000000
   summonInterval: 0.75
   summonRadius: 4
 --- !u!114 &-1917441331024495194
@@ -321,7 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
-  enemyFarFromPlayerDistance: 25
-  pastScreenEdge: 10
+  enemyFarFromPlayerDistance: 32.5
+  pastScreenEdge: 20
   lateralPastScreen: 0
   gameplayCamera: {fileID: 0}
