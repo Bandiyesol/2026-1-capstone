@@ -282,6 +282,7 @@ public class AccessoryEffect : MonoBehaviour
     GameObject bossArrowPrefab;
     GameObject bossArrowInstance;
     [HideInInspector] public Transform bossTarget;
+    bool portalArrowActive;
     [Tooltip("화살표 플레이어로부터 거리")] public float bossArrowDistance = 1.5f;
 
     // SkeletonOnKill (흑마법의 인장 — 처치 시 주변 적 이동속도 감소)
@@ -1178,10 +1179,10 @@ public class AccessoryEffect : MonoBehaviour
             }
         }
 
-        // 신기한 화살 — 보스·마법진 방향으로 화살표 회전
-        if (Has(AccessoryEffectType.BossArrow) && bossArrowInstance != null
-            && bossTarget != null && bossTarget.gameObject.activeInHierarchy
-            && PlayerStats.Instance != null)
+        // 신기한 화살(보스) / 마법진 안내 화살표
+        if (bossArrowInstance != null && bossTarget != null && bossTarget.gameObject.activeInHierarchy
+            && PlayerStats.Instance != null
+            && (portalArrowActive || Has(AccessoryEffectType.BossArrow)))
         {
             Vector3 dir = (bossTarget.position - PlayerStats.Instance.transform.position).normalized;
             // 스프라이트 기본 방향이 위(↑)이므로 -90도 오프셋
@@ -1919,6 +1920,7 @@ public class AccessoryEffect : MonoBehaviour
     void ClearBossArrow()
     {
         bossTarget = null;
+        portalArrowActive = false;
         if (bossArrowInstance != null)
         {
             Destroy(bossArrowInstance);
@@ -1930,6 +1932,7 @@ public class AccessoryEffect : MonoBehaviour
     public void NotifyBossSpawn(Transform boss)
     {
         if (!Has(AccessoryEffectType.BossArrow)) return;
+        portalArrowActive = false;
         bossTarget = boss;
         if (bossArrowInstance != null) Destroy(bossArrowInstance);
         bossArrowInstance = null;
@@ -1945,23 +1948,24 @@ public class AccessoryEffect : MonoBehaviour
         Debug.Log("[AccessoryEffect] 신기한 화살 — 보스 처치, 화살표 제거");
     }
 
-    /// <summary>마법진 스폰 시 StageClearSpawnUtility에서 호출</summary>
+    /// <summary>마법진 스폰 시 StageClearSpawnUtility에서 호출 — 악세사리 없이도 표시</summary>
     public void NotifyPortalSpawn(Transform portal)
     {
-        if (!Has(AccessoryEffectType.BossArrow) || portal == null) return;
+        if (portal == null) return;
+        portalArrowActive = true;
         bossTarget = portal;
         if (bossArrowInstance != null) Destroy(bossArrowInstance);
         bossArrowInstance = null;
         EnsureBossArrowInstance();
-        Debug.Log("[AccessoryEffect] 신기한 화살 — 마법진 방향 안내 시작!");
+        Debug.Log("[AccessoryEffect] 마법진 방향 안내 시작!");
     }
 
     /// <summary>마법진 진입 시 StagePortal에서 호출</summary>
     public void NotifyPortalConsumed()
     {
-        if (!Has(AccessoryEffectType.BossArrow)) return;
+        if (!portalArrowActive && !Has(AccessoryEffectType.BossArrow)) return;
         ClearBossArrow();
-        Debug.Log("[AccessoryEffect] 신기한 화살 — 마법진 진입, 화살표 제거");
+        Debug.Log("[AccessoryEffect] 마법진 진입, 화살표 제거");
     }
 
     // ───────────────────────────────────────────
