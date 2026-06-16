@@ -182,5 +182,5 @@ MonoBehaviour:
   damage: 5
   speed: 8
   lifeTime: 3.5
-  stunChance: 0.45
+  stunChance: 0.3
   stunDuration: 6

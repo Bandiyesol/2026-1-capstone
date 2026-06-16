@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b73513227a2e95439619d59611c7198, type: 3}
   m_Name: Enemy_ImmortalUndeadBoss_C
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  maxHealth: 4000
+  maxHealth: 80000
   moveSpeed: 7.5
   attackDamage: 55
   defense: 0.65
