@@ -131,9 +131,7 @@ public class CursedBubble : BiomeGimmick, IDamageable
 
             // 예외 무기 제외하고 투사체 제거
             if (!isExempt)
-            {
-                collision.gameObject.SetActive(false);
-            }
+                weaponMotion.RequestDestroy(DestroyReason.WeaponLogic);
         }
     }
 }

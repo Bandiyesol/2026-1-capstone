@@ -221,8 +221,8 @@ public class DeepSeaMutant : BossBase
         if (!invinciblePhase)
             return;
 
-        // [핵심 기믹] 부하가 죽을 때마다 보스의 체력이 최대 체력의 1%씩 강제로 깎임 (자해)
-        health -= maxHealth * 0.01f;
+        // [핵심 기믹] 부하가 죽을 때마다 보스의 체력이 최대 체력의 5%씩 강제로 깎임 (자해)
+        health -= maxHealth * 0.05f;
 
         // 자해로 인해 체력이 0 이하가 되면 즉시 사망 처리 후 탈출
         if (health <= 0f)

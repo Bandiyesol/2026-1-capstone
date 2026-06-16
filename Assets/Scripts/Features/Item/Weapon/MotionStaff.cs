@@ -13,8 +13,6 @@ public class MotionStaff : Motion
 
 	protected override bool ShouldDestroyOnHit() => true;
 
-	protected override void OnTriggerStay2D(Collider2D collision) { }
-
 	protected override void Update()
 	{
 		base.Update();
