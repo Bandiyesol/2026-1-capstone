@@ -497,7 +497,9 @@ public class Player : MonoBehaviour
             transform.position = Vector3.zero;
         }
 
-        // 5. 그래픽 렌더 색상 정화
+        // 5. 그래픽 렌더 색상·가시성 정화 (공허 낙사 등에서 spriter.enabled = false 복구)
+        if (spriter != null)
+            spriter.enabled = true;
         ResetStatusTint();
         speed = baseSpeed;
         moveSpeedMultiplier = 1f;
