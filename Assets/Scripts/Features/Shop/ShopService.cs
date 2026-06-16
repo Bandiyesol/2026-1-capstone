@@ -125,13 +125,13 @@ public static class ShopService
 		{
 			potionId = listing.potion.potionType.ToString();
 			displayName = listing.potion.potionName;
-			icon = listing.potion.icon;
+			icon = PotionIconResolver.Resolve(listing.potion);
 		}
 		else
 		{
 			potionId = listing.fallbackPotionType.ToString();
 			displayName = listing.fallbackPotionName;
-			icon = null;
+			icon = PotionIconResolver.Resolve(listing.fallbackPotionType);
 		}
 
 		if (!inventory.TryAdd(potionId, icon, 1, displayName))

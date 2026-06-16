@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f38791de35e1ae4daabcbc646933e9c, type: 3}
+  m_Name: Potion_SpeedBuff
+  m_EditorClassIdentifier: Assembly-CSharp::PotionData
+  potionType: 3
+  potionName: 신속 물약
+  description: 15초간 이동 속도 +40%, 회피 +20%
+  icon: {fileID: 21300000, guid: 2433098aad219bd40b3f215c765145a1, type: 3}
+  price: 35
