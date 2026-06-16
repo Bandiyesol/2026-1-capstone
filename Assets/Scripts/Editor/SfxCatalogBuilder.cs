@@ -31,7 +31,40 @@ public static class SfxCatalogBuilder
 		("오브", SfxId.WeaponOrb),
 		("마도서", SfxId.WeaponGrimoire),
 		("스태프", SfxId.WeaponStaff),
+		("입력창에 입력 소리", SfxId.UiTextInput),
+		("마법진 이동 소리", SfxId.PortalTravel),
+		("제우스의 심판", SfxId.AccZeusJudgment),
+		("심연의 군주", SfxId.AccAbyssLord),
+		("번개 맞은 검", SfxId.AccLightningStrike),
+		("에키드나의 목걸이", SfxId.AccChainLightning),
+		("마법의 구", SfxId.AccMagicOrb),
+		("그림자 가면", SfxId.AccShadowClone),
+		("투명 망토", SfxId.AccShadowCloak),
+		("폭탄광", SfxId.AccExplosion),
+		("불사조의 망토 폭발 소리", SfxId.AccPhoenixExplosion),
+		("불사조의 망토 버프 소리", SfxId.AccPhoenixBuff),
+		("미네르바의 지혜", SfxId.AccMinervaWisdom),
+		("미다스의 장갑", SfxId.AccMidasGold),
+		("시간술사의 모래시계 가방", SfxId.AccHourglass),
+		("신의 방패", SfxId.AccGodShieldLoop),
+		("무한의 마력", SfxId.AccInfiniteManaLoop),
+		("재앙의 씨앗 씨앗 심는 소리", SfxId.AccCalamitySeedPlant),
+		("재앙의 씨앗 폭발 소리", SfxId.AccCalamitySeedExplosion),
+		("영혼의 랜턴 공전 소리", SfxId.AccSoulLanternOrbitLoop),
+		("영혼의 랜턴 총알 소리", SfxId.AccSoulLanternShot),
+		("용의 심장 심장 뛰는 소리", SfxId.AccDragonHeartbeatLoop),
+		("용의 심장 울음소리", SfxId.AccDragonRoar),
+		("차원 여행자의 게이트", SfxId.AccDimensionFootprint),
+		("금지된 마법서", SfxId.AccForbiddenTome),
+		("번개 깃든 악령", SfxId.AccElectricChain),
 	};
+
+	[MenuItem("Tools/Game/Rebuild Sfx Catalog")]
+	public static void RebuildFromMenu()
+	{
+		RebuildCatalog(applyBalance: true);
+		AssetDatabase.SaveAssets();
+	}
 
 	[InitializeOnLoadMethod]
 	static void EnsureOnLoad()
@@ -116,8 +149,16 @@ public static class SfxCatalogBuilder
 		}
 
 		SfxCatalog catalog = AssetDatabase.LoadAssetAtPath<SfxCatalog>(CatalogPath);
-		if (catalog == null || catalog.entries == null || catalog.entries.Length < ClipMap.Length)
+		if (catalog == null || catalog.entries == null || catalog.entries.Length != ClipMap.Length)
 			RebuildCatalog(applyBalance: true);
+	}
+
+	public static void RebuildFromCommandLine()
+	{
+		RebuildCatalog(applyBalance: true);
+		AssetDatabase.SaveAssets();
+		Debug.Log("[SfxCatalogBuilder] Command-line rebuild complete.");
+		EditorApplication.Exit(0);
 	}
 
 	static Dictionary<string, AudioClip> LoadClipsByBaseName()

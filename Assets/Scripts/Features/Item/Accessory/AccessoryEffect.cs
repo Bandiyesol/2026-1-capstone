@@ -20,6 +20,7 @@ public class AccessoryEffect : MonoBehaviour
 
     // SpeedOnHit
     Coroutine speedOnHitRoutine;
+    bool speedOnHitActive = false;
 
     // MovingDamage
     Vector3 lastPosition;
@@ -47,6 +48,7 @@ public class AccessoryEffect : MonoBehaviour
     GameObject footprintPrefab;
     [Tooltip("발자국 지속 시간(초)")]    public float footprintLifetime    = 2f;
     [Tooltip("발자국 소환 간격(초)")]    public float footprintInterval    = 0.2f;
+    [Tooltip("발자국 효과음 추가 배율")] public float footprintSfxScale    = 0.22f;
     [Tooltip("이동 중 회피율 보너스")]   public float footprintEvasionBonus = 0.3f;
     [Tooltip("발자국 크기")]             public float footprintScale       = 6f;
     float footprintTimer = 0f;
@@ -224,6 +226,8 @@ public class AccessoryEffect : MonoBehaviour
     // CalamitySeed
     readonly System.Collections.Generic.Dictionary<Enemy,Coroutine> seedRoutines
         = new System.Collections.Generic.Dictionary<Enemy,Coroutine>();
+
+    int lastMidasGoldTier;
 
     // MinervaWisdom (미네르바의 지혜)
     [Header("[ MinervaWisdom — 미네르바의 지혜 ]")]
@@ -461,6 +465,14 @@ public class AccessoryEffect : MonoBehaviour
             Debug.LogWarning("[AccessoryEffect] Effects/MagicOrbEffect 프리팹을 찾을 수 없습니다.");
     }
 
+    void OnDestroy()
+    {
+        GameAudio.StopLoop(SfxId.AccGodShieldLoop);
+        GameAudio.StopLoop(SfxId.AccInfiniteManaLoop);
+        GameAudio.StopLoop(SfxId.AccSoulLanternOrbitLoop);
+        GameAudio.StopLoop(SfxId.AccPhoenixBuff);
+    }
+
     // ───────────────────────────────────────────
     //  효과 활성화
     // ───────────────────────────────────────────
@@ -560,6 +572,7 @@ public class AccessoryEffect : MonoBehaviour
                         dragonHeartInstance.transform.localPosition = Vector3.zero;
                         dragonHeartInstance.transform.localScale    = Vector3.one * dragonHeartScale;
                     }
+                    GameAudio.PlayTogether(SfxId.AccDragonHeartbeatLoop, SfxId.AccDragonRoar);
                 }
                 break;
 
@@ -771,6 +784,7 @@ public class AccessoryEffect : MonoBehaviour
 
         // 폭발 이펙트 + 광역 3000% 피해
         Vector3 pos = PlayerStats.Instance.transform.position;
+        GameAudio.Play(SfxId.AccPhoenixExplosion);
         if (phoenixExplosionPrefab != null)
             StartCoroutine(SpawnEffectRoutine(phoenixExplosionPrefab, pos, 1f, phoenixExplosionScale));
 
@@ -794,6 +808,7 @@ public class AccessoryEffect : MonoBehaviour
                                       PlayerStats.Instance.transform);
         aura.transform.localPosition = Vector3.zero; // 플레이어 중심에 딱 붙임
         aura.transform.localScale    = Vector3.one * phoenixAuraScale;
+        GameAudio.PlayLoop(SfxId.AccPhoenixBuff);
 
         // 오라 범위 내 적에게 화상 적용
         if (phoenixAuraBurnRoutine != null) StopCoroutine(phoenixAuraBurnRoutine);
@@ -802,6 +817,7 @@ public class AccessoryEffect : MonoBehaviour
         yield return new WaitForSeconds(phoenixInvincibleTime);
 
         if (phoenixAuraBurnRoutine != null) StopCoroutine(phoenixAuraBurnRoutine);
+        GameAudio.StopLoop(SfxId.AccPhoenixBuff);
         if (aura != null) Destroy(aura);
     }
 
@@ -848,6 +864,7 @@ public class AccessoryEffect : MonoBehaviour
         // 번개 깃든 암령 — 적중마다 감전 + 주변 30% 전기 피해
         if (Has(AccessoryEffectType.ElectricOnHit) && enemy != null && enemy.IsLive)
         {
+            GameAudio.Play(SfxId.AccElectricChain);
             // 감전 (빙결 재활용)
             enemy.ApplyFreeze(electricStunDuration);
 
@@ -871,6 +888,7 @@ public class AccessoryEffect : MonoBehaviour
         {
             if (Random.value < magicExplosionChance)
             {
+                GameAudio.Play(SfxId.AccForbiddenTome);
                 Vector3 pos = enemy.transform.position;
                 if (magicExplosionPrefab != null)
                     StartCoroutine(SpawnEffectRoutine(magicExplosionPrefab, pos, magicExplosionTime, magicExplosionScale));
@@ -932,6 +950,7 @@ public class AccessoryEffect : MonoBehaviour
         {
             if (Random.value < explosionChance)
             {
+                GameAudio.Play(SfxId.AccExplosion);
                 Vector3 pos = enemy.transform.position;
                 // 폭발 이펙트 소환
                 if (explosionEffectPrefab != null)
@@ -1009,6 +1028,7 @@ public class AccessoryEffect : MonoBehaviour
 
         // 반투명 적용
         sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, shadowTrackerAlpha);
+        GameAudio.Play(SfxId.AccShadowCloak);
         Debug.Log("[AccessoryEffect] 투명 망토 — 은신!");
 
         // 모든 적 어그로 해제 (target = null)
@@ -1115,6 +1135,7 @@ public class AccessoryEffect : MonoBehaviour
                 if (footprintTimer >= footprintInterval)
                 {
                     footprintTimer = 0f;
+                    GameAudio.Play(SfxId.AccDimensionFootprint, footprintSfxScale);
                     GameObject fp = Instantiate(footprintPrefab, curPos, Quaternion.identity);
                     fp.transform.localScale = Vector3.one * footprintScale;
                     Destroy(fp, footprintLifetime);
@@ -1131,6 +1152,12 @@ public class AccessoryEffect : MonoBehaviour
             if (playerSpriter != null)
             {
                 int gold = GameManager.instance.Coin;
+                int goldTier = gold / 500;
+                if (goldTier > lastMidasGoldTier)
+                {
+                    GameAudio.Play(SfxId.AccMidasGold);
+                    lastMidasGoldTier = goldTier;
+                }
                 // 500골드마다 단계 증가, 최대 5단계 (2500골드)
                 float t = Mathf.Clamp01(gold / 2500f);
                 // 흰색 → 황금색 (1f, 0.84f, 0f)
@@ -1217,14 +1244,22 @@ public class AccessoryEffect : MonoBehaviour
     }
 
     IEnumerator SpeedOnHitRoutine()
+{
+    // 버프가 비활성 상태일 때만 스탯 적용 (중첩 방지)
+    if (!speedOnHitActive)
     {
         if (PlayerStats.Instance == null) yield break;
         PlayerStats.Instance.AddMulti(StatType.MovementSpeed, speedOnHitBonus);
-        yield return new WaitForSeconds(speedOnHitDuration);
-        if (PlayerStats.Instance != null)
-            PlayerStats.Instance.AddMulti(StatType.MovementSpeed, -speedOnHitBonus);
-        speedOnHitRoutine = null;
+        speedOnHitActive = true;
     }
+
+    yield return new WaitForSeconds(speedOnHitDuration);
+
+    if (PlayerStats.Instance != null)
+        PlayerStats.Instance.AddMulti(StatType.MovementSpeed, -speedOnHitBonus);
+    speedOnHitActive = false;
+    speedOnHitRoutine = null;
+}
 
     IEnumerator BurningAuraRoutine()
     {
@@ -1305,6 +1340,7 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             // 적/보스만 정지 (플레이어는 계속 움직임)
+            GameAudio.Play(SfxId.AccHourglass);
             Debug.Log("[AccessoryEffect] 시간술사의 모래시계 — 시간 정지!");
             Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
             BossBase[] bosses = Object.FindObjectsByType<BossBase>(FindObjectsSortMode.None);
@@ -1350,12 +1386,14 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             godShieldDamageFixed = true;
+            GameAudio.PlayLoop(SfxId.AccGodShieldLoop);
             Debug.Log("[AccessoryEffect] 신의 방패 활성화 — 피해 1 고정 + 상태이상 면역");
 
             yield return new WaitForSeconds(godShieldActiveTime);
 
             // 방패 비활성화
             godShieldDamageFixed = false;
+            GameAudio.StopLoop(SfxId.AccGodShieldLoop);
             if (godShieldInstance != null)
             {
                 Destroy(godShieldInstance);
@@ -1388,6 +1426,7 @@ public class AccessoryEffect : MonoBehaviour
                 infiniteManaInstance.transform.localPosition = Vector3.zero;
                 infiniteManaInstance.transform.localScale    = Vector3.one * infiniteManaScale;
             }
+            GameAudio.PlayLoop(SfxId.AccInfiniteManaLoop);
             Debug.Log("[AccessoryEffect] 무한의 마력 — 발동! 투사체 2배 + 공속 +50%");
 
             yield return new WaitForSeconds(infiniteManaDuration);
@@ -1400,6 +1439,7 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             // 파티클 제거
+            GameAudio.StopLoop(SfxId.AccInfiniteManaLoop);
             if (infiniteManaInstance != null)
             {
                 Destroy(infiniteManaInstance);
@@ -1425,6 +1465,7 @@ public class AccessoryEffect : MonoBehaviour
         GameObject seedFx = null;
         if (seedEffectPrefab != null && enemy != null)
         {
+            GameAudio.Play(SfxId.AccCalamitySeedPlant);
             Vector3 headPos = enemy.transform.position + Vector3.up * seedHeadOffset;
             seedFx = Instantiate(seedEffectPrefab, headPos, Quaternion.identity);
             seedFx.transform.localScale = Vector3.one * seedScale;
@@ -1455,6 +1496,7 @@ public class AccessoryEffect : MonoBehaviour
 
         if (enemy != null && enemy.IsLive)
         {
+            GameAudio.Play(SfxId.AccCalamitySeedExplosion);
             // 폭발 이펙트
             if (seedExplosionPrefab != null)
             {
@@ -1494,6 +1536,7 @@ public class AccessoryEffect : MonoBehaviour
     /// <summary>낙뢰 — 지정 위치 주변 적에게 광역 피해 + 이펙트</summary>
     void TriggerLightning(Vector3 pos, float damage, float radius, Enemy exclude)
     {
+        GameAudio.Play(SfxId.AccLightningStrike);
         // 이펙트 소환
         if (lightningEffectPrefab != null)
             StartCoroutine(SpawnEffectRoutine(lightningEffectPrefab, pos, lightningEffectTime, lightningEffectScale));
@@ -1509,6 +1552,7 @@ public class AccessoryEffect : MonoBehaviour
     /// <summary>연쇄 번개 — 첫 적부터 가까운 적으로 count회 연쇄 + 이펙트</summary>
     void TriggerChainLightning(Enemy first, float damage, int count)
     {
+        GameAudio.Play(SfxId.AccChainLightning);
         Enemy current = first;
         var hit = new HashSet<Enemy> { first };
         first.TakeDamage(damage);
@@ -1546,6 +1590,9 @@ public class AccessoryEffect : MonoBehaviour
     void FireRevengeArrows(Vector3 from)
     {
         if (PlayerStats.Instance == null) return;
+
+        if (ResolveArrowEffectPrefab() == magicOrbEffectPrefab)
+            GameAudio.Play(SfxId.AccMagicOrb);
 
         float baseDamage = PlayerStats.Instance.AttackPower * revengeArrowDamageRatio;
         float angleStep  = 360f / revengeArrowCount;
@@ -1706,6 +1753,7 @@ public class AccessoryEffect : MonoBehaviour
 
         minervaCurrentFrame++;
         UpdateMinervaSprite();
+        GameAudio.Play(SfxId.AccMinervaWisdom);
 
         // 공격력 +10% 스택
         if (PlayerStats.Instance != null)
@@ -1760,6 +1808,7 @@ public class AccessoryEffect : MonoBehaviour
                     tentacleRoutines.Add(StartCoroutine(TentacleAttackRoutine(tentacle, spawnPos)));
                 }
             }
+            GameAudio.Play(SfxId.AccAbyssLord);
             Debug.Log("[AccessoryEffect] 심연의 군주 — 촉수 4개 소환!");
 
             // 3초 지속 후 소멸은 TentacleAttackRoutine에서 처리
@@ -1811,6 +1860,7 @@ public class AccessoryEffect : MonoBehaviour
 
     IEnumerator ZeusJudgmentRoutine(Enemy first)
     {
+        GameAudio.Play(SfxId.AccZeusJudgment);
         // 첫 번째 적에게 낙뢰 이펙트 + 피해 + 감전
         if (zeusLightningPrefab != null)
             StartCoroutine(SpawnEffectRoutine(zeusLightningPrefab,
@@ -1913,6 +1963,8 @@ public class AccessoryEffect : MonoBehaviour
     void FireSoulBulletsAtEnemies()
     {
         if (PlayerStats.Instance == null) return;
+        GameAudio.StopLoop(SfxId.AccSoulLanternOrbitLoop);
+        GameAudio.Play(SfxId.AccSoulLanternShot);
         List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
         if (nearby.Count == 0) return;
 
@@ -1929,6 +1981,7 @@ public class AccessoryEffect : MonoBehaviour
     void SpawnSoulBullets()
     {
         // 기존 탄환 제거
+        GameAudio.StopLoop(SfxId.AccSoulLanternOrbitLoop);
         foreach (GameObject b in soulBullets)
             if (b != null) Destroy(b);
         soulBullets.Clear();
@@ -1942,6 +1995,7 @@ public class AccessoryEffect : MonoBehaviour
             bullet.transform.localScale = Vector3.one * 10f;
             soulBullets.Add(bullet);
         }
+        GameAudio.PlayLoop(SfxId.AccSoulLanternOrbitLoop);
         Debug.Log("[AccessoryEffect] 영혼의 등불 — 탄환 3개 소환!");
     }
 
@@ -2100,6 +2154,7 @@ public class AccessoryEffect : MonoBehaviour
 
         Vector3 spawnPos = PlayerStats.Instance.transform.position + Vector3.left * 1f;
         shadowCloneInstance = Instantiate(shadowClonePrefab, spawnPos, Quaternion.identity);
+        GameAudio.Play(SfxId.AccShadowClone);
         Debug.Log("[AccessoryEffect] 그림자 가면 — 분신 소환!");
     }
 

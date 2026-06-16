@@ -17,12 +17,16 @@ public class GameAudioSettings : MonoBehaviour
 	[SerializeField] AudioMixSettings mixSettings;
 
 	const int SfxPoolSize = 8;
+	const int SfxLoopSlotCount = 6;
 	const int BgmSourcePriority = 0;
 	const int SfxSourcePriority = 256;
 	const float BgmWatchInterval = 0.5f;
 
 	AudioSource[] sfxPool;
 	int sfxPoolIndex;
+	AudioSource[] sfxLoopPool;
+	readonly Dictionary<SfxId, AudioSource> activeLoopById = new Dictionary<SfxId, AudioSource>();
+	bool sfxLoopSourcesConfigured;
 	Dictionary<SfxId, SfxCatalog.Entry> sfxEntryCache;
 	bool sfxSourcesConfigured;
 	float nextBgmWatchTime;
@@ -61,6 +65,7 @@ public class GameAudioSettings : MonoBehaviour
 		EnsureBgmCatalog();
 		EnsureSfxCatalog();
 		ConfigureSfxSources();
+		ConfigureSfxLoopSources();
 		ConfigureBgmSource();
 		BuildSfxCache();
 		PreloadSfxClips();
@@ -74,6 +79,7 @@ public class GameAudioSettings : MonoBehaviour
 		ConfigureBgmSource();
 		PlayMainMenuBgm();
 		UiClickSfxUtility.WireAllInScene();
+		UiTypingSfxUtility.WireAllInScene();
 	}
 
 	void Update()
@@ -87,6 +93,7 @@ public class GameAudioSettings : MonoBehaviour
 
 	void OnDestroy()
 	{
+		StopAllSfxLoops();
 		if (Instance == this)
 			Instance = null;
 	}
@@ -195,6 +202,8 @@ public class GameAudioSettings : MonoBehaviour
 						source.volume = GameSettings.SfxVolume;
 				}
 			}
+
+			RefreshLoopVolumes();
 		}
 
 		ApplyBgmVolume();
@@ -278,9 +287,13 @@ public class GameAudioSettings : MonoBehaviour
 		sfxSource = null;
 		sfxPool = null;
 		sfxPoolIndex = 0;
+		sfxLoopPool = null;
+		sfxLoopSourcesConfigured = false;
+		activeLoopById.Clear();
 		sfxSourcesConfigured = false;
 		ResolveAudioSources();
 		ConfigureSfxSources();
+		ConfigureSfxLoopSources();
 		ConfigureBgmSource();
 		ApplyVolumes();
 	}
@@ -322,6 +335,120 @@ public class GameAudioSettings : MonoBehaviour
 
 		sfxPoolIndex = 0;
 		sfxSourcesConfigured = true;
+	}
+
+	void ConfigureSfxLoopSources()
+	{
+		if (sfxLoopSourcesConfigured)
+			return;
+
+		if (sfxSource == null)
+			return;
+
+		if (sfxSource == bgmSource)
+			return;
+
+		sfxLoopPool = new AudioSource[SfxLoopSlotCount];
+		for (int i = 0; i < SfxLoopSlotCount; i++)
+		{
+			AudioSource loopSource = sfxSource.gameObject.AddComponent<AudioSource>();
+			ApplySfxSourceSettings(loopSource);
+			loopSource.loop = true;
+			loopSource.volume = sfxSource.volume;
+			sfxLoopPool[i] = loopSource;
+		}
+
+		sfxLoopSourcesConfigured = true;
+	}
+
+	AudioSource GetFreeLoopSource()
+	{
+		if (sfxLoopPool == null || sfxLoopPool.Length == 0)
+			return null;
+
+		foreach (AudioSource source in sfxLoopPool)
+		{
+			if (source == null || source.isPlaying)
+				continue;
+
+			return source;
+		}
+
+		return sfxLoopPool[0];
+	}
+
+	public void PlaySfxLoop(SfxId id)
+	{
+		if (activeLoopById.ContainsKey(id))
+			return;
+
+		if (sfxEntryCache == null || sfxEntryCache.Count == 0)
+			BuildSfxCache();
+
+		if (sfxEntryCache == null || !sfxEntryCache.TryGetValue(id, out SfxCatalog.Entry entry) || entry.clip == null)
+		{
+			EnsureSfxCatalog();
+			BuildSfxCache();
+			if (sfxCatalog == null || !sfxCatalog.TryGet(id, out entry) || entry.clip == null)
+				return;
+		}
+
+		ConfigureSfxLoopSources();
+		AudioSource source = GetFreeLoopSource();
+		if (source == null)
+			return;
+
+		source.clip = entry.clip;
+		source.volume = GetEffectiveSfxVolume(entry.volumeScale);
+		source.loop = true;
+		source.Play();
+		activeLoopById[id] = source;
+	}
+
+	public void StopSfxLoop(SfxId id)
+	{
+		if (!activeLoopById.TryGetValue(id, out AudioSource source))
+			return;
+
+		if (source != null)
+		{
+			source.Stop();
+			source.clip = null;
+		}
+
+		activeLoopById.Remove(id);
+	}
+
+	public void StopAllSfxLoops()
+	{
+		foreach (KeyValuePair<SfxId, AudioSource> pair in activeLoopById)
+		{
+			if (pair.Value == null)
+				continue;
+
+			pair.Value.Stop();
+			pair.Value.clip = null;
+		}
+
+		activeLoopById.Clear();
+	}
+
+	void RefreshLoopVolumes()
+	{
+		if (activeLoopById.Count == 0)
+			return;
+
+		if (sfxEntryCache == null || sfxEntryCache.Count == 0)
+			BuildSfxCache();
+
+		foreach (KeyValuePair<SfxId, AudioSource> pair in activeLoopById)
+		{
+			if (pair.Value == null)
+				continue;
+
+			if (sfxEntryCache != null && sfxEntryCache.TryGetValue(pair.Key, out SfxCatalog.Entry entry))
+				pair.Value.volume = GetEffectiveSfxVolume(entry.volumeScale);
+		}
 	}
 
 	void ApplySfxSourceSettings(AudioSource source)
@@ -440,6 +567,7 @@ public class GameAudioSettings : MonoBehaviour
 			ResolveAudioSources();
 
 		ConfigureSfxSources();
+		ConfigureSfxLoopSources();
 
 		AudioSource source = GetNextSfxSource();
 		if (source == null)
@@ -470,7 +598,7 @@ public class GameAudioSettings : MonoBehaviour
 		bgmSource.Play();
 	}
 
-	public void PlaySfx(SfxId id)
+	public void PlaySfx(SfxId id, float volumeMultiplier = 1f)
 	{
 		if (sfxEntryCache == null || sfxEntryCache.Count == 0)
 			BuildSfxCache();
@@ -483,7 +611,8 @@ public class GameAudioSettings : MonoBehaviour
 				return;
 		}
 
-		PlaySfxClip(entry.clip, entry.volumeScale);
+		float scale = entry.volumeScale * Mathf.Max(0.05f, volumeMultiplier);
+		PlaySfxClip(entry.clip, scale);
 	}
 
 	/// <summary>효과음 1회 재생 시 GameSettings 볼륨을 반영합니다.</summary>

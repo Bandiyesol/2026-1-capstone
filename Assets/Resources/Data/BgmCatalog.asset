@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BgmCatalog
   m_EditorClassIdentifier: Assembly-CSharp::BgmCatalog
   mainMenuClip: {fileID: 8300000, guid: fc3d15dee5156f64b85fdf9fb8360b4a, type: 3}
-  mainMenuVolumeScale: 3
+  mainMenuVolumeScale: 2.1479294
   stageClips:
   - {fileID: 8300000, guid: cf3f09ac0635a874d8ec8d939b20545f, type: 3}
   - {fileID: 8300000, guid: 707c594576d86a249bd172cf4a6aa20e, type: 3}
@@ -23,17 +23,17 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 924d21cd11612734c9a007a8bd4869b1, type: 3}
   - {fileID: 8300000, guid: b08420bfedc5bd5478d9fd73a8a01453, type: 3}
   stageVolumeScales:
-  - 1.1913029
-  - 0.7309048
-  - 0.7408948
-  - 0.70771533
-  - 0.7583392
-  - 1.1235858
-  - 1.3497032
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
   stage1VolumeTrim: 0.62
   shopClip: {fileID: 8300000, guid: 8d721771d57fb5f4fa154ce27b12928e, type: 3}
-  shopVolumeScale: 1
+  shopVolumeScale: 0.407984
   stageClearClip: {fileID: 8300000, guid: 1b9e149c5397e474ebcfe559e70b901a, type: 3}
-  stageClearVolumeScale: 1
+  stageClearVolumeScale: 0.5616723
   deathClip: {fileID: 8300000, guid: 01bc857abb36ed3488a617eb352682c6, type: 3}
-  deathVolumeScale: 1
+  deathVolumeScale: 1.0269245
