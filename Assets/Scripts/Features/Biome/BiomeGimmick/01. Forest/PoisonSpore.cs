@@ -66,17 +66,15 @@ public class PoisonSpore : BiomeGimmick
 
     void Explode()
     {
-        // 중복 폭발 방지
         if (exploded)
             return;
 
         exploded = true;
+        StopAllCoroutines(); // 추가: lifeTime 타이머 중단
 
-        // 충돌 비활성화
         if (coll != null)
             coll.enabled = false;
 
-        // 폭발 애니메이션 실행
         if (anim != null)
             anim.SetTrigger("Explode");
     }

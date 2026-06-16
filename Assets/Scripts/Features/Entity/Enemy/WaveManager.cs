@@ -216,20 +216,16 @@ public class WaveManager : MonoBehaviour
         // 🎯 [분기 1] 보스 웨이브인 경우
         if (wave.isBossWave)
         {
-            // 1단계: 보스 등장 전, 함께 배치된 선결 잡몹(호위 부대) 스폰 및 전멸 대기
             if (wave.enemies != null && wave.enemies.Length > 0)
             {
-                // 잡몹 스폰 코루틴의 완료를 대기
                 yield return StartCoroutine(SpawnNormalWave(wave));
-                // 소환된 잡몹들이 플레이어에게 전멸당해 카운트가 0이 될 때까지 명확히 대기 프레임 유지
+                Debug.Log($"[WaveManager] 선결 잡몹 스폰 완료, aliveEnemyCount={aliveEnemyCount}"); // 추가
                 yield return new WaitUntil(() => aliveEnemyCount <= 0);
+                Debug.Log("[WaveManager] 선결 잡몹 전멸 확인, 보스 스폰 진행"); // 추가
             }
 
-            // 2단계: 선결 잡몹이 모두 처리된 후 최종 보스 본체(코어) 소환
             SpawnBossWave(wave);
-
-            // 💡 중요: 코어 소환 직후 다음 웨이브 검사 로직으로 바로 넘어가지 않게 
-            // 보스 본체가 스스로 사망을 보고(OnEnemyDead 호출)할 때까지 여기서 무한 대기합니다.
+            Debug.Log("[WaveManager] SpawnBossWave 호출됨"); // 추가
             yield return new WaitUntil(() => aliveEnemyCount <= 0);
         }
         // 🎯 [분기 2] 일반 잡몹 웨이브인 경우

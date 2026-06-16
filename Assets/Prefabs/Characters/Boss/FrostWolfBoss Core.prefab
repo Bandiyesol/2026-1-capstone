@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
-  enemyFarFromPlayerDistance: 25
-  pastScreenEdge: 10
+  enemyFarFromPlayerDistance: 32.5
+  pastScreenEdge: 20
   lateralPastScreen: 0
   gameplayCamera: {fileID: 0}
 --- !u!1 &6826696366345343251
@@ -458,8 +458,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
-  enemyFarFromPlayerDistance: 25
-  pastScreenEdge: 10
+  enemyFarFromPlayerDistance: 32.5
+  pastScreenEdge: 20
   lateralPastScreen: 0
   gameplayCamera: {fileID: 0}
 --- !u!1 &8702706316910615828
@@ -745,7 +745,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a68e5a92cfd9540b4a005c762bc4c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrasslandReposition
-  enemyFarFromPlayerDistance: 25
-  pastScreenEdge: 10
+  enemyFarFromPlayerDistance: 32.5
+  pastScreenEdge: 20
   lateralPastScreen: 0
   gameplayCamera: {fileID: 0}
