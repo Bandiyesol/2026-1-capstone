@@ -18,7 +18,7 @@ MonoBehaviour:
   description: "\uD22C\uC0AC\uCCB4 \uD06C\uAE30 +10%"
   icon: {fileID: 21300000, guid: 261082558eac5024795a1a00936fb820, type: 3}
   modifiers:
-  - statType: 4
+  - statType: 27
     value: 0.1
     isMulti: 1
   effectType: 0

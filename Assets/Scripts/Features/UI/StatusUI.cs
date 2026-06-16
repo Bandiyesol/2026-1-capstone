@@ -385,6 +385,7 @@ public static class PlayerStatsDisplay
 		sb.AppendLine($"투사체 수: {stats.ProjectileCount}");
 		sb.AppendLine($"투사체 속도: {stats.ProjectileSpeed:F2}");
 		sb.AppendLine($"투사체 사거리: {stats.ProjectileRange:F2}");
+		sb.AppendLine($"투사체 크기: {stats.ProjectileSize:F2}");
 		sb.AppendLine($"근접 범위: {stats.MeleeRange:F2}");
 		sb.AppendLine($"치명타 확률: {stats.CritChance:P0}");
 		sb.AppendLine($"치명타 피해: {stats.CritDamage:F2}");
