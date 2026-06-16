@@ -18,6 +18,7 @@ public static class StageClearSpawnUtility
 		if (portal != null)
 		{
 			portal.transform.position = position;
+			AccessoryEffect.instance?.NotifyPortalSpawn(portal.transform);
 		}
 		else
 		{

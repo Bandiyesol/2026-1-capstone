@@ -42,19 +42,18 @@ public static class AudioCatalogRebuilder
 
 		float targetRms = AudioCatalogBalanceUtility.ComputeTargetRms(clips);
 		float bgmTargetRms = targetRms * mix.bgmMasterMixScale;
-		float sfxTargetRms = targetRms * mix.sfxMasterMixScale;
 
 		if (bgm != null)
 			BgmCatalogBuilder.ApplyVolumeBalance(bgm, bgmTargetRms);
 		if (sfx != null)
-			SfxCatalogBuilder.ApplyVolumeBalance(sfx, sfxTargetRms);
+			SfxCatalogBuilder.ApplyVolumeBalanceFromGodShieldReference(sfx);
 
 		if (saveAssets)
 			AssetDatabase.SaveAssets();
 
 		Debug.Log(
 			$"[AudioCatalogRebuilder] 볼륨 보정 — BGM RMS {bgmTargetRms:F4} (x{mix.bgmMasterMixScale:F2}), " +
-			$"SFX RMS {sfxTargetRms:F4} (x{mix.sfxMasterMixScale:F2})");
+			$"SFX 기준: 신의 방패 — 더 큰 소리만 줄임 (신의 방패보다 작은 소리는 유지)");
 	}
 }
 #endif

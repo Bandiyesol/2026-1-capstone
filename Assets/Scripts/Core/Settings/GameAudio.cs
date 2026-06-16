@@ -8,6 +8,11 @@ public static class GameAudio
 		GameAudioSettings.Instance?.PlaySfx(id, volumeMultiplier);
 	}
 
+	public static void PlayOnce(SfxId id, float volumeMultiplier = 1f)
+	{
+		GameAudioSettings.Instance?.PlaySfxOnce(id, volumeMultiplier);
+	}
+
 	public static void PlayLoop(SfxId id)
 	{
 		GameAudioSettings.Instance?.PlaySfxLoop(id);

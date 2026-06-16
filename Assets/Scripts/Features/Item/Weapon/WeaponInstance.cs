@@ -11,8 +11,9 @@ public class WeaponInstance
 {
 	const float MeleeSpawnOffset = 0.7f;
 	const float ProjectileSpreadDegrees = 12f;
-	const float ReachFromRangeBonusRatio = 0.65f;
-	const float SizeFromRangeBonusRatio = 0.4f;
+	const float ProjectileReachFromRangeBonusRatio = 0.7f;
+	const float MeleeReachFromRangeBonusRatio = 1f;
+	const float MeleeVisualFromRangeBonusRatio = 0.45f;
 
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
@@ -129,12 +130,15 @@ public class WeaponInstance
 		if (prefab == null) return;
 
 		Vector2 aimDirection = ResolveAimDirection(playerPos);
-		int projectileCount = ResolveProjectileCount();
+		int spawnCount = UsesMultiProjectileSpawn(info.type) ? ResolveProjectileCount() : 1;
 
-		for (int i = 0; i < projectileCount; i++)
+		for (int i = 0; i < spawnCount; i++)
 		{
-			ResolveSpawnTransform(playerPos.position, aimDirection, i, projectileCount, out Vector3 spawnPos, out Quaternion spawnRotation);
+			ResolveSpawnTransform(playerPos.position, aimDirection, i, spawnCount, out Vector3 spawnPos, out Quaternion spawnRotation);
 			SpawnMotion(prefab, spawnPos, spawnRotation, activeRunes);
+
+			if (!UsesMultiProjectileSpawn(info.type))
+				continue;
 
 			// [악세사리] 랜턴 — 10% 확률로 투사체 복제 (같은 위치/방향에 추가 소환)
 			if (AccessoryEffect.instance != null &&
@@ -161,6 +165,10 @@ public class WeaponInstance
 		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
 		return stats != null ? stats.ProjectileCount : 1;
 	}
+
+	/// <summary>활·총·스태프·오브만 투사체 수 스탯을 적용합니다.</summary>
+	static bool UsesMultiProjectileSpawn(string weaponType) =>
+		weaponType is "Bow" or "Gun" or "Staff" or "Orb";
 
 	static Vector2 ResolveAimDirection(Transform playerPos)
 	{
@@ -249,7 +257,8 @@ public class WeaponInstance
 	/// 악세사리 등으로 변한 PlayerStats를 무기 복제본에 배율로 적용합니다.
 	/// - ProjectileSpeed → 투사체 속도(movespeed)
 	/// - ProjectileRange → 원거리 무기 사거리(reach)
-	/// - MeleeRange      → 근접 무기 범위(reach)
+	/// - ProjectileSize  → 원거리 무기 크기(size)
+	/// - MeleeRange      → 근접 무기 범위(reach) + 히트박스(size, 완만)
 	/// ※ AttackPower / 치명타는 Motion → DamageCalculator에서 이미 반영됨
 	/// </summary>
 	void ApplyPlayerStats(WeaponInstance clone)
@@ -257,47 +266,38 @@ public class WeaponInstance
 		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
 		if (stats == null) return;
 
-		// 투사체 속도 배율 (기본 1.0)
 		clone.movespeed *= stats.ProjectileSpeed;
 
-		// 무기 타입별 사거리·크기 배율 적용 (상한 없이 완만한 비율로 누적)
 		switch (info.type)
 		{
 			case "Sword":
 			case "Hammer":
 			case "Sickle":
 			case "Grimore":
-			case "Orb":
-				ApplyRangeScaling(clone, stats.MeleeRange);
+			case "Whip":
+				ApplyRangeScaling(clone, stats.MeleeRange, MeleeReachFromRangeBonusRatio);
+				ApplySizeScaling(clone, stats.MeleeRange, MeleeVisualFromRangeBonusRatio);
 				break;
 
+			case "Orb":
 			case "Bow":
 			case "Gun":
-			case "Whip":
 			case "Boomerang":
 			case "Staff":
-				ApplyRangeScaling(clone, stats.ProjectileRange);
+				ApplyRangeScaling(clone, stats.ProjectileRange, ProjectileReachFromRangeBonusRatio);
+				ApplySizeScaling(clone, stats.ProjectileSize, 1f);
 				break;
 		}
 	}
 
-	static void ApplyRangeScaling(WeaponInstance clone, float rangeStat)
+	static void ApplyRangeScaling(WeaponInstance clone, float rangeStat, float bonusRatio)
 	{
-		float reachMultiplier = ResolveReachMultiplier(rangeStat);
-		float sizeMultiplier = ResolveSizeMultiplier(rangeStat);
-
-		clone.reach *= reachMultiplier;
-		clone.size *= sizeMultiplier;
+		clone.reach *= SoftenedRangeMultiplier(rangeStat, bonusRatio);
 	}
 
-	static float ResolveReachMultiplier(float rangeStat)
+	static void ApplySizeScaling(WeaponInstance clone, float sizeStat, float bonusRatio)
 	{
-		return SoftenedRangeMultiplier(rangeStat, ReachFromRangeBonusRatio);
-	}
-
-	static float ResolveSizeMultiplier(float rangeStat)
-	{
-		return SoftenedRangeMultiplier(rangeStat, SizeFromRangeBonusRatio);
+		clone.size *= SoftenedRangeMultiplier(sizeStat, bonusRatio);
 	}
 
 	/// <summary>스탯 1.0 기준, 초과·감소분에만 비율을 곱해 완만하게 반영합니다.</summary>
