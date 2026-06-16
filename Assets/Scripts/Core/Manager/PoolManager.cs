@@ -270,17 +270,30 @@ public class PoolManager : MonoBehaviour
         motion.gameObject.SetActive(false);
     }
 
-    public void ReturnAllActiveMotions()
-    {
-        foreach (List<Motion> pool in motionPools.Values)
-        {
-            foreach (Motion motion in pool)
-            {
-                if (motion != null && motion.gameObject.activeSelf)
-                    ReleaseMotion(motion);
-            }
-        }
-    }
+	public void ReturnAllActiveMotions()
+	{
+		foreach (List<Motion> pool in motionPools.Values)
+		{
+			foreach (Motion motion in pool)
+			{
+				if (motion != null && motion.gameObject.activeSelf)
+					ReleaseMotion(motion);
+			}
+		}
+	}
+
+	/// <summary>풀에 있는 모든 Motion에서 룬 컴포넌트를 제거합니다 (세션 리셋용).</summary>
+	public void PurgeAllMotionRuneEffects()
+	{
+		foreach (List<Motion> pool in motionPools.Values)
+		{
+			foreach (Motion motion in pool)
+			{
+				if (motion != null)
+					motion.ForceClearRuneEffects();
+			}
+		}
+	}
     #endregion
 
     void EnsurePoolCapacity(ref List<GameObject>[] pools, GameObject[] prefabs)

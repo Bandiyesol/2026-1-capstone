@@ -144,6 +144,9 @@ public abstract class Motion : MonoBehaviour
 		// 지속 룬(상태/로직) 매 프레임 업데이트 적용
 		foreach (var effect in persistentEffects)
 		{
+			if (effect is RuneEffect runeEffect && !runeEffect.ShouldRunEffect())
+				continue;
+
 			// 플레이어/무기 상태에 영향을 주는 룬 업데이트
 			if (effect is IStateEffect state)
 				state.UpdateState();
@@ -320,6 +323,12 @@ public abstract class Motion : MonoBehaviour
 		while (currentActiveRune != null && !(currentActiveRune is IActiveDriver))
 			ExecuteActiveRune();
 
+		if (currentActiveRune is RuneEffect activeRune && !activeRune.ShouldRunEffect())
+		{
+			currentActiveRune = null;
+			return;
+		}
+
 		// 현재 액티브 룬이 있고, 그 룬이 이동(Driver)을 제어하는 인터페이스를 가졌다면
 		if (currentActiveRune != null &&
 			currentActiveRune is IActiveDriver driver)
@@ -340,6 +349,9 @@ public abstract class Motion : MonoBehaviour
 	{
 		get
 		{
+			if (instance?.info != null && instance.info.type == "Orb")
+				return false;
+
 			EffectRicochet ricochet = GetComponent<EffectRicochet>();
 			return ricochet != null && ricochet.PreferStraightTravel;
 		}
@@ -348,6 +360,9 @@ public abstract class Motion : MonoBehaviour
 	protected bool TryApplyRicochetStraightMovement()
 	{
 		if (instance == null)
+			return false;
+
+		if (instance.info != null && instance.info.type == "Orb")
 			return false;
 
 		EffectRicochet ricochet = GetComponent<EffectRicochet>();
@@ -379,6 +394,9 @@ public abstract class Motion : MonoBehaviour
 		{
 			ITriggerEffect effect = cachedTriggerEffects[i];
 			RuneEffect rune = effect as RuneEffect;
+
+			if (rune != null && !rune.ShouldRunEffect())
+				continue;
 
 			// 룬이 존재하고 쿨타임이 다 차서 발동 준비가 되었다면
 			if (rune != null && rune.isReady)
@@ -576,6 +594,9 @@ public abstract class Motion : MonoBehaviour
 		ClearAttachedRuneEffects();
 	}
 
+	/// <summary>풀 재사용·세션 리셋 시 붙어 있는 룬 컴포넌트를 즉시 제거합니다.</summary>
+	public void ForceClearRuneEffects() => ClearAttachedRuneEffects();
+
 	/// <summary>
 	/// 풀 재사용 시 Destroy() 지연으로 이전 룬 상태(elapsedtime, remainingBounces 등)가 남는 문제 방지.
 	/// </summary>
@@ -591,10 +612,7 @@ public abstract class Motion : MonoBehaviour
 			if (effects[i] == null)
 				continue;
 
-			if (Application.isPlaying)
-				Destroy(effects[i]);
-			else
-				DestroyImmediate(effects[i]);
+			DestroyImmediate(effects[i]);
 		}
 	}
 
