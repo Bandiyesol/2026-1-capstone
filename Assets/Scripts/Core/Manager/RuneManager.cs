@@ -116,12 +116,29 @@ public class RuneManager : MonoBehaviour
         Validate();
     }
 
-    public void ClearAll()
-    {
-        for (int i = 0; i < SlotCount; i++)
-            slots[i] = null;
-        Validate();
-    }
+	public void ClearAll()
+	{
+		for (int i = 0; i < MaxSlotCount; i++)
+			slots[i] = null;
+
+		extraSlots = 0;
+		CooldownMultiplier = 1f;
+		Validate();
+	}
+
+	public bool ContainsRune(RuneData rune)
+	{
+		if (rune == null)
+			return false;
+
+		for (int i = 0; i < MaxSlotCount; i++)
+		{
+			if (slots[i] == rune)
+				return true;
+		}
+
+		return false;
+	}
 
     public void ResetToInitial()
     {

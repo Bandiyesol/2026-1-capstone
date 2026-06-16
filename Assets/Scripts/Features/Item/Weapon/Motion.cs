@@ -71,11 +71,14 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	public virtual void Initialize(WeaponInstance instance, List<RuneData> runes, float inheritedLifeTime = -1f)
 	{
+		isInitialLifeSet = false;
+
 		ClearAttachedRuneEffects();
 
 		isDestroyRequested = false;
 		isFinalizing = false;
 		isExplosionRunning = false;
+		poolReleaseScheduled = false;
 		hitCooldownUntil.Clear();
 
 		this.instance = instance;
@@ -144,6 +147,9 @@ public abstract class Motion : MonoBehaviour
 		// 지속 룬(상태/로직) 매 프레임 업데이트 적용
 		foreach (var effect in persistentEffects)
 		{
+			if (effect is RuneEffect runeEffect && !runeEffect.ShouldRunEffect())
+				continue;
+
 			// 플레이어/무기 상태에 영향을 주는 룬 업데이트
 			if (effect is IStateEffect state)
 				state.UpdateState();
@@ -165,7 +171,7 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (!isInitialLifeSet || IsDestroyed || isFinalizing)
+		if (!isActiveAndEnabled || !isInitialLifeSet || IsDestroyed || isFinalizing)
 			return;
 
 		HandleCollision(collision);
@@ -173,6 +179,10 @@ public abstract class Motion : MonoBehaviour
 
 	protected virtual void OnTriggerStay2D(Collider2D collision)
 	{
+		// 1회 타격 투사체는 Stay 콜백을 생략해 대량 충돌 시 부하를 줄입니다.
+		if (ShouldDestroyOnHit())
+			return;
+
 		if (!isInitialLifeSet || IsDestroyed || isFinalizing)
 			return;
 
@@ -230,7 +240,25 @@ public abstract class Motion : MonoBehaviour
 		if (isExplosionRunning)
 			return;
 
-		StartCoroutine(ExplosionRoutine(center, radius, damage, destroyAfterHit));
+		TryStartManagedCoroutine(ExplosionRoutine(center, radius, damage, destroyAfterHit));
+	}
+
+	/// <summary>
+	/// 비활성 Motion(기믹 SetActive(false) 등)에서도 폭발·풀 반환 코루틴이 돌 수 있게 PoolManager에 위임합니다.
+	/// </summary>
+	void TryStartManagedCoroutine(IEnumerator routine)
+	{
+		if (routine == null)
+			return;
+
+		if (isActiveAndEnabled)
+		{
+			StartCoroutine(routine);
+			return;
+		}
+
+		if (PoolManager.Instance != null)
+			PoolManager.Instance.StartCoroutine(routine);
 	}
 
 	IEnumerator ExplosionRoutine(Vector3 center, float radius, float damage, bool destroyAfterHit)
@@ -320,6 +348,12 @@ public abstract class Motion : MonoBehaviour
 		while (currentActiveRune != null && !(currentActiveRune is IActiveDriver))
 			ExecuteActiveRune();
 
+		if (currentActiveRune is RuneEffect activeRune && !activeRune.ShouldRunEffect())
+		{
+			currentActiveRune = null;
+			return;
+		}
+
 		// 현재 액티브 룬이 있고, 그 룬이 이동(Driver)을 제어하는 인터페이스를 가졌다면
 		if (currentActiveRune != null &&
 			currentActiveRune is IActiveDriver driver)
@@ -340,6 +374,9 @@ public abstract class Motion : MonoBehaviour
 	{
 		get
 		{
+			if (instance?.info != null && instance.info.type == "Orb")
+				return false;
+
 			EffectRicochet ricochet = GetComponent<EffectRicochet>();
 			return ricochet != null && ricochet.PreferStraightTravel;
 		}
@@ -348,6 +385,9 @@ public abstract class Motion : MonoBehaviour
 	protected bool TryApplyRicochetStraightMovement()
 	{
 		if (instance == null)
+			return false;
+
+		if (instance.info != null && instance.info.type == "Orb")
 			return false;
 
 		EffectRicochet ricochet = GetComponent<EffectRicochet>();
@@ -369,7 +409,7 @@ public abstract class Motion : MonoBehaviour
 		if (!CanHitTarget(collision))
 			return;
 
-		if (!TryGetDamageable(collision, out _))
+		if (!TryGetDamageable(collision, out IDamageable damageable))
 			return;
 
 		bool triggerAnyActivated = false;
@@ -379,6 +419,9 @@ public abstract class Motion : MonoBehaviour
 		{
 			ITriggerEffect effect = cachedTriggerEffects[i];
 			RuneEffect rune = effect as RuneEffect;
+
+			if (rune != null && !rune.ShouldRunEffect())
+				continue;
 
 			// 룬이 존재하고 쿨타임이 다 차서 발동 준비가 되었다면
 			if (rune != null && rune.isReady)
@@ -400,7 +443,7 @@ public abstract class Motion : MonoBehaviour
 					DamageCalculator.CalculateBaseDamage(instance, rune.data);
 
 				// 대상에게 데미지 적용
-				ApplyCalculatedDamage(collision, calculatedDamage);
+				ApplyCalculatedDamage(damageable, collision.gameObject, calculatedDamage);
 
 				// 발동했으므로 룬 쿨타임 초기화
 				rune.ResetCooltime();
@@ -425,7 +468,7 @@ public abstract class Motion : MonoBehaviour
 			float defaultDamage =
 				DamageCalculator.CalculateBaseDamage(instance, null);
 
-			ApplyCalculatedDamage(collision, defaultDamage);
+			ApplyCalculatedDamage(damageable, collision.gameObject, defaultDamage);
 
 			// 맞은 뒤 파괴되어야 하는 무기(예: 활)라면 무기 로직에 의한 파괴 요청
 			if (ShouldDestroyOnHit())
@@ -449,16 +492,20 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void ApplyCalculatedDamage(Collider2D collision, float finalDamage)
 	{
-		var damageable = collision.GetComponent<IDamageable>()
-			?? collision.GetComponentInParent<IDamageable>()
-			?? collision.GetComponentInChildren<IDamageable>();
+		if (!TryGetDamageable(collision, out IDamageable damageable))
+			return;
 
-		// 데미지를 받을 수 있는 대상이라면 피격 처리
-		if (damageable != null)
-		{
-			damageable.TakeDamage(finalDamage);
-			GameAudio.PlayEnemyHit(collision.gameObject);
-		}
+		ApplyCalculatedDamage(damageable, collision != null ? collision.gameObject : null, finalDamage);
+	}
+
+	protected virtual void ApplyCalculatedDamage(IDamageable damageable, GameObject hitObject, float finalDamage)
+	{
+		if (damageable == null)
+			return;
+
+		damageable.TakeDamage(finalDamage);
+		if (hitObject != null)
+			GameAudio.PlayEnemyHit(hitObject);
 	}
 
 	/// <summary>
@@ -489,7 +536,7 @@ public abstract class Motion : MonoBehaviour
 		isDestroyRequested = true;
 
 		if (HasFinalRune())
-			StartCoroutine(FinalizeMotionAfterDelay());
+			TryStartManagedCoroutine(FinalizeMotionAfterDelay());
 		else
 			ScheduleReleaseMotionToPool();
 	}
@@ -534,7 +581,16 @@ public abstract class Motion : MonoBehaviour
 			return;
 
 		poolReleaseScheduled = true;
-		StartCoroutine(ReleaseMotionToPoolDeferred());
+
+		// 물리 콜백 중에는 DestroyImmediate/풀 반환이 불안정하므로 다음 프레임으로 미룹니다.
+		// 이미 비활성화된 경우(기믹 SetActive 등)는 즉시 풀 반환합니다.
+		if (isActiveAndEnabled)
+			TryStartManagedCoroutine(ReleaseMotionToPoolDeferred());
+		else
+		{
+			poolReleaseScheduled = false;
+			ReleaseMotionToPool();
+		}
 	}
 
 	IEnumerator ReleaseMotionToPoolDeferred()
@@ -576,6 +632,9 @@ public abstract class Motion : MonoBehaviour
 		ClearAttachedRuneEffects();
 	}
 
+	/// <summary>풀 재사용·세션 리셋 시 붙어 있는 룬 컴포넌트를 즉시 제거합니다.</summary>
+	public void ForceClearRuneEffects() => ClearAttachedRuneEffects();
+
 	/// <summary>
 	/// 풀 재사용 시 Destroy() 지연으로 이전 룬 상태(elapsedtime, remainingBounces 등)가 남는 문제 방지.
 	/// </summary>
@@ -591,10 +650,7 @@ public abstract class Motion : MonoBehaviour
 			if (effects[i] == null)
 				continue;
 
-			if (Application.isPlaying)
-				Destroy(effects[i]);
-			else
-				DestroyImmediate(effects[i]);
+			DestroyImmediate(effects[i]);
 		}
 	}
 

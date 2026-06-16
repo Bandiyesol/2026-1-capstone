@@ -18,7 +18,7 @@ public class EffectRicochet : RuneEffect, ITriggerEffect
 	public bool ProtectParent => false;
 
 	/// <summary>도탄 후 반사 방향으로만 직진 (유도/파동 궤적 덮어쓰기 방지).</summary>
-	public bool PreferStraightTravel => useStraightTravel;
+	public bool PreferStraightTravel => useStraightTravel && !IsOrbWeapon();
 
 	public override void InitEffect(WeaponInstance instance, Motion motion, RuneData runeData)
 	{
@@ -29,7 +29,7 @@ public class EffectRicochet : RuneEffect, ITriggerEffect
 		ignoreHitUntil = 0f;
 		useStraightTravel = false;
 
-		if (weapon != null)
+		if (weapon != null && !IsOrbWeapon())
 			weapon.movespeed = Mathf.Max(MinMoveSpeed, weapon.movespeed * RicochetMoveSpeedScale);
 	}
 
@@ -53,6 +53,9 @@ public class EffectRicochet : RuneEffect, ITriggerEffect
 	/// <summary>충돌 시 반대 방향으로 튕김. 성공 여부 반환.</summary>
 	public bool TryReflect(Collider2D collision)
 	{
+		if (IsOrbWeapon())
+			return false;
+
 		if (!isReady || remainingBounces <= 0 || !TryGetDamageable(collision, out _))
 			return false;
 
