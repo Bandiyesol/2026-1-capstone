@@ -93,13 +93,13 @@ public class PlayerStats : MonoBehaviour
     [Tooltip("투사체 속도 배율 (기본 1.0 = 100%)")]
     [SerializeField] private StatValue projectileSpeed = new StatValue { baseValue = 1f };
 
-    [Tooltip("투사체 최대 사거리 배율. 최종 사거리 = (무기 리치 + flat) × 배율")]
+    [Tooltip("투사체 최대 사거리 배율. 최종 사거리 = 무기 리치 × 투사체 사거리")]
     [SerializeField] private StatValue projectileRange = new StatValue { baseValue = 1.0f };
 
-    [Tooltip("투사체 크기 배율. 최종 크기 = 무기 size × 투사체 크기")]
+    [Tooltip("투사체 크기 배율. 최종 크기 = 무기 기본 크기 × 투사체 크기")]
     [SerializeField] private StatValue projectileSize = new StatValue { baseValue = 1.0f };
 
-    [Tooltip("근접 무기 공격 범위 배율. 최종 범위 = (무기 기본 범위 + flat) × 배율")]
+    [Tooltip("근접 무기 공격 범위 배율. 최종 범위 = 무기 기본 범위 × 공격 범위 (검, 망치, 낫, 채찍, 부메랑)")]
     [SerializeField] private StatValue meleeRange      = new StatValue { baseValue = 1.0f };
 
     [Tooltip("치명타가 발동될 확률 (0~1 사이 값. 1 = 100%)")]
@@ -237,23 +237,11 @@ public class PlayerStats : MonoBehaviour
     /// <summary>투사체 사거리 배율 (무기 리치와 곱함)</summary>
     public float ProjectileRange  => projectileRange.Final;
 
-    /// <summary>투사체 사거리 % 보너스만 (flat 제외)</summary>
-    public float ProjectileRangeMultiplier => projectileRange.baseValue * (1f + projectileRange.multiBonus);
-
-    /// <summary>투사체 사거리 고정 가산 (작살 등)</summary>
-    public float ProjectileRangeFlatAdd => projectileRange.flatBonus;
-
     /// <summary>투사체 크기 배율 (무기 size와 곱함)</summary>
-    public float ProjectileSize => projectileSize.Final;
+    public float ProjectileSize   => projectileSize.Final;
 
     /// <summary>근접 무기 공격 범위 배율 (무기 기본 범위와 곱함)</summary>
     public float MeleeRange       => meleeRange.Final;
-
-    /// <summary>근접 범위 % 보너스만 (flat 제외)</summary>
-    public float MeleeRangeMultiplier => meleeRange.baseValue * (1f + meleeRange.multiBonus);
-
-    /// <summary>근접 범위 고정 가산</summary>
-    public float MeleeRangeFlatAdd => meleeRange.flatBonus;
 
     /// <summary>치명타 확률 (0~1)</summary>
     public float CritChance       => Mathf.Clamp01(critChance.Final);

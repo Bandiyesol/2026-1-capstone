@@ -48,6 +48,7 @@ public abstract class Motion : MonoBehaviour
 
 	// 동일 적에 대한 연속 타격 간격 (근접 OnTriggerStay 대응)
 	readonly Dictionary<int, float> hitCooldownUntil = new Dictionary<int, float>();
+	readonly List<ITriggerEffect> cachedTriggerEffects = new List<ITriggerEffect>();
 	const float DefaultHitInterval = 0.25f;
 	const float FinalExecuteDelay = 0.35f;
 
@@ -106,6 +107,8 @@ public abstract class Motion : MonoBehaviour
 
 		// 장착된 첫 번째 액티브 룬을 바로 실행
 		ExecuteActiveRune();
+
+		RebuildTriggerEffectCache();
 
 		// 초기화 완료 (룬 부착 후 Update 허용)
 		isInitialLifeSet = true;
@@ -207,12 +210,9 @@ public abstract class Motion : MonoBehaviour
 			return false;
 
 		// 현재 이 무기 게임오브젝트에 붙어있는 트리거 룬 효과들 찾기
-		var triggerEffects = GetComponents<RuneEffect>().OfType<ITriggerEffect>();
-
-		foreach (var trigger in triggerEffects)
+		for (int i = 0; i < cachedTriggerEffects.Count; i++)
 		{
-			// 트리거 룬 중 하나라도 부모(무기)의 파괴를 막고 있다면 파괴 불가 판정
-			if (trigger.ProtectParent)
+			if (cachedTriggerEffects[i].ProtectParent)
 				return false;
 		}
 
@@ -372,17 +372,12 @@ public abstract class Motion : MonoBehaviour
 		if (!TryGetDamageable(collision, out _))
 			return;
 
-		// 무기에 장착된 트리거 효과(충돌 시 발동) 룬 가져오기
-		var triggerEffects = GetComponents<RuneEffect>()
-			.Where(r => r != null)
-			.OfType<ITriggerEffect>()
-			.ToList();
-
 		bool triggerAnyActivated = false;
 
 		// 1. 트리거 룬에 의한 공격 처리
-		foreach (var effect in triggerEffects)
+		for (int i = 0; i < cachedTriggerEffects.Count; i++)
 		{
+			ITriggerEffect effect = cachedTriggerEffects[i];
 			RuneEffect rune = effect as RuneEffect;
 
 			// 룬이 존재하고 쿨타임이 다 차서 발동 준비가 되었다면
@@ -574,6 +569,7 @@ public abstract class Motion : MonoBehaviour
 		allRunes = null;
 		life = 0f;
 		hitCooldownUntil.Clear();
+		cachedTriggerEffects.Clear();
 
 		RestoreVisualsForPool();
 		RestoreDefaultColliderSizes();
@@ -787,5 +783,17 @@ public abstract class Motion : MonoBehaviour
 			this,
 			data
 		);
+	}
+
+	void RebuildTriggerEffectCache()
+	{
+		cachedTriggerEffects.Clear();
+
+		RuneEffect[] effects = GetComponents<RuneEffect>();
+		for (int i = 0; i < effects.Length; i++)
+		{
+			if (effects[i] is ITriggerEffect trigger)
+				cachedTriggerEffects.Add(trigger);
+		}
 	}
 }

@@ -5,11 +5,28 @@ using UnityEngine;
 /// </summary>
 public class MotionWhip : MotionAnimatedMelee
 {
-    protected override string AttackStateName => "effect_whip";
+	Vector3 desiredScale;
 
-    protected override void OnStartMotion()
-    {
-        base.OnStartMotion();
-        Debug.Log($"[채찍] size={instance.size}, scale={transform.localScale}");
-    }
+	protected override string AttackStateName => "effect_whip";
+
+	protected override void OnStartMotion()
+	{
+		base.OnStartMotion();
+		desiredScale = transform.localScale;
+	}
+
+	protected override void Update()
+	{
+		base.Update();
+
+		// 채찍 애니메이션이 스케일을 되돌리므로 근접 범위 보정값을 매 프레임 유지합니다.
+		if (!IsDestroyed && transform.localScale != desiredScale)
+			transform.localScale = desiredScale;
+	}
+
+	public override void ResetForPool()
+	{
+		base.ResetForPool();
+		desiredScale = Vector3.one;
+	}
 }
