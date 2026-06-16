@@ -259,6 +259,7 @@ public class PoolManager : MonoBehaviour
             pool.Add(motion);
         }
 
+        motion.ResetForPool();
         motion.transform.SetPositionAndRotation(position, rotation);
         if (activateImmediately)
             motion.gameObject.SetActive(true);

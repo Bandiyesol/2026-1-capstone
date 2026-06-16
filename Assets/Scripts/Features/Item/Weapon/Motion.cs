@@ -71,11 +71,14 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	public virtual void Initialize(WeaponInstance instance, List<RuneData> runes, float inheritedLifeTime = -1f)
 	{
+		isInitialLifeSet = false;
+
 		ClearAttachedRuneEffects();
 
 		isDestroyRequested = false;
 		isFinalizing = false;
 		isExplosionRunning = false;
+		poolReleaseScheduled = false;
 		hitCooldownUntil.Clear();
 
 		this.instance = instance;
@@ -168,7 +171,7 @@ public abstract class Motion : MonoBehaviour
 	/// </summary>
 	protected virtual void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (!isInitialLifeSet || IsDestroyed || isFinalizing)
+		if (!isActiveAndEnabled || !isInitialLifeSet || IsDestroyed || isFinalizing)
 			return;
 
 		HandleCollision(collision);
@@ -237,7 +240,25 @@ public abstract class Motion : MonoBehaviour
 		if (isExplosionRunning)
 			return;
 
-		StartCoroutine(ExplosionRoutine(center, radius, damage, destroyAfterHit));
+		TryStartManagedCoroutine(ExplosionRoutine(center, radius, damage, destroyAfterHit));
+	}
+
+	/// <summary>
+	/// 비활성 Motion(기믹 SetActive(false) 등)에서도 폭발·풀 반환 코루틴이 돌 수 있게 PoolManager에 위임합니다.
+	/// </summary>
+	void TryStartManagedCoroutine(IEnumerator routine)
+	{
+		if (routine == null)
+			return;
+
+		if (isActiveAndEnabled)
+		{
+			StartCoroutine(routine);
+			return;
+		}
+
+		if (PoolManager.Instance != null)
+			PoolManager.Instance.StartCoroutine(routine);
 	}
 
 	IEnumerator ExplosionRoutine(Vector3 center, float radius, float damage, bool destroyAfterHit)
@@ -515,7 +536,7 @@ public abstract class Motion : MonoBehaviour
 		isDestroyRequested = true;
 
 		if (HasFinalRune())
-			StartCoroutine(FinalizeMotionAfterDelay());
+			TryStartManagedCoroutine(FinalizeMotionAfterDelay());
 		else
 			ScheduleReleaseMotionToPool();
 	}
@@ -560,7 +581,16 @@ public abstract class Motion : MonoBehaviour
 			return;
 
 		poolReleaseScheduled = true;
-		StartCoroutine(ReleaseMotionToPoolDeferred());
+
+		// 물리 콜백 중에는 DestroyImmediate/풀 반환이 불안정하므로 다음 프레임으로 미룹니다.
+		// 이미 비활성화된 경우(기믹 SetActive 등)는 즉시 풀 반환합니다.
+		if (isActiveAndEnabled)
+			TryStartManagedCoroutine(ReleaseMotionToPoolDeferred());
+		else
+		{
+			poolReleaseScheduled = false;
+			ReleaseMotionToPool();
+		}
 	}
 
 	IEnumerator ReleaseMotionToPoolDeferred()
