@@ -11,8 +11,8 @@ public class WeaponInstance
 {
 	const float MeleeSpawnOffset = 0.7f;
 	const float ProjectileSpreadDegrees = 12f;
-	const float ReachFromRangeBonusRatio = 0.65f;
-	const float SizeFromRangeBonusRatio = 0.4f;
+	const float ReachFromRangeBonusRatio = 0.7f;
+	const float SizeFromRangeBonusRatio = 1.5f;
 
 	// 무기의 이름, 모션 ID, 타입(검, 활 등)이 들어있는 기본 고정 데이터
 	public WeaponInfo info;
@@ -252,34 +252,33 @@ public class WeaponInstance
 	/// - MeleeRange      → 근접 무기 범위(reach)
 	/// ※ AttackPower / 치명타는 Motion → DamageCalculator에서 이미 반영됨
 	/// </summary>
-	void ApplyPlayerStats(WeaponInstance clone)
-	{
-		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
-		if (stats == null) return;
+void ApplyPlayerStats(WeaponInstance clone)
+{
+    PlayerStats stats = DamageCalculator.ResolvePlayerStats();
+    if (stats == null) return;
 
-		// 투사체 속도 배율 (기본 1.0)
-		clone.movespeed *= stats.ProjectileSpeed;
+    clone.movespeed *= stats.ProjectileSpeed;
 
-		// 무기 타입별 사거리·크기 배율 적용 (상한 없이 완만한 비율로 누적)
-		switch (info.type)
-		{
-			case "Sword":
-			case "Hammer":
-			case "Sickle":
-			case "Grimore":
-			case "Orb":
-				ApplyRangeScaling(clone, stats.MeleeRange);
-				break;
+    switch (info.type)
+    {
+        case "Sword":
+        case "Hammer":
+        case "Sickle":
+        case "Grimore":
+		case "Whip":
+            Debug.Log($"[무기] MeleeRange={stats.MeleeRange}");  // ← 추가
+            ApplyRangeScaling(clone, stats.MeleeRange);
+            break;
 
-			case "Bow":
-			case "Gun":
-			case "Whip":
-			case "Boomerang":
-			case "Staff":
-				ApplyRangeScaling(clone, stats.ProjectileRange);
-				break;
-		}
-	}
+		case "Orb":
+        case "Bow":
+        case "Gun":
+        case "Boomerang":
+        case "Staff":
+            ApplyRangeScaling(clone, stats.ProjectileRange);
+            break;
+    }
+}
 
 	static void ApplyRangeScaling(WeaponInstance clone, float rangeStat)
 	{

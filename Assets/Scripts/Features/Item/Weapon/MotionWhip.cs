@@ -5,5 +5,11 @@ using UnityEngine;
 /// </summary>
 public class MotionWhip : MotionAnimatedMelee
 {
-	protected override string AttackStateName => "effect_whip";
+    protected override string AttackStateName => "effect_whip";
+
+    protected override void OnStartMotion()
+    {
+        base.OnStartMotion();
+        Debug.Log($"[채찍] size={instance.size}, scale={transform.localScale}");
+    }
 }

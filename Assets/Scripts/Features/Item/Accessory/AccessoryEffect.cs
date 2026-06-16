@@ -20,6 +20,7 @@ public class AccessoryEffect : MonoBehaviour
 
     // SpeedOnHit
     Coroutine speedOnHitRoutine;
+    bool speedOnHitActive = false;
 
     // MovingDamage
     Vector3 lastPosition;
@@ -1243,14 +1244,22 @@ public class AccessoryEffect : MonoBehaviour
     }
 
     IEnumerator SpeedOnHitRoutine()
+{
+    // 버프가 비활성 상태일 때만 스탯 적용 (중첩 방지)
+    if (!speedOnHitActive)
     {
         if (PlayerStats.Instance == null) yield break;
         PlayerStats.Instance.AddMulti(StatType.MovementSpeed, speedOnHitBonus);
-        yield return new WaitForSeconds(speedOnHitDuration);
-        if (PlayerStats.Instance != null)
-            PlayerStats.Instance.AddMulti(StatType.MovementSpeed, -speedOnHitBonus);
-        speedOnHitRoutine = null;
+        speedOnHitActive = true;
     }
+
+    yield return new WaitForSeconds(speedOnHitDuration);
+
+    if (PlayerStats.Instance != null)
+        PlayerStats.Instance.AddMulti(StatType.MovementSpeed, -speedOnHitBonus);
+    speedOnHitActive = false;
+    speedOnHitRoutine = null;
+}
 
     IEnumerator BurningAuraRoutine()
     {
