@@ -1351,9 +1351,11 @@ public class AccessoryEffect : MonoBehaviour
                 soulBullets[i].transform.position = PlayerStats.Instance.transform.position + offset;
 
                 // 공전 중 충돌 피해 (0.5f 반경 내 적에게 틱 데미지)
-                Collider2D[] cols = Physics2D.OverlapCircleAll(soulBullets[i].transform.position, 0.5f);
-                foreach (Collider2D col in cols)
+                using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(
+                    soulBullets[i].transform.position, 0.5f);
+                for (int j = 0; j < query.Count; j++)
                 {
+                    Collider2D col = query.Get(j);
                     Enemy e = col.GetComponent<Enemy>();
                     if (e != null && e.IsLive)
                         e.TakeDamage(soulBulletDamage * Time.deltaTime);
@@ -1794,9 +1796,10 @@ public class AccessoryEffect : MonoBehaviour
                 arrowFx.transform.position = pos;
 
             // 이동 경로에서 적 감지
-            Collider2D[] cols = Physics2D.OverlapCircleAll(pos, 0.3f);
-            foreach (Collider2D col in cols)
+            using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(pos, 0.3f);
+            for (int h = 0; h < query.Count; h++)
             {
+                Collider2D col = query.Get(h);
                 Enemy e = col.GetComponent<Enemy>();
                 if (e != null && e.IsLive && !hit.Contains(e))
                 {
@@ -1984,9 +1987,10 @@ public class AccessoryEffect : MonoBehaviour
             // 촉수 위치 주변 적 공격 (레이어 무관하게 직접 탐색)
             bool hitAny = false;
             Vector3 currentPos = tentacle != null ? tentacle.transform.position : pos;
-            Collider2D[] tentacleHits = Physics2D.OverlapCircleAll(currentPos, abyssAttackRadius);
-            foreach (Collider2D col in tentacleHits)
+            using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(currentPos, abyssAttackRadius);
+            for (int h = 0; h < query.Count; h++)
             {
+                Collider2D col = query.Get(h);
                 Enemy e = col.GetComponent<Enemy>();
                 if (e != null && e.IsLive)
                 {
@@ -2148,7 +2152,7 @@ public class AccessoryEffect : MonoBehaviour
         if (PlayerStats.Instance == null) return;
         GameAudio.StopLoop(SfxId.AccSoulLanternOrbitLoop);
         GameAudio.Play(SfxId.AccSoulLanternShot);
-        List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        IReadOnlyList<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
         if (nearby.Count == 0) return;
 
         for (int i = soulBullets.Count - 1; i >= 0; i--)
@@ -2205,7 +2209,7 @@ public class AccessoryEffect : MonoBehaviour
 
         // 각 탄환마다 가장 가까운 적을 찾아 유도
         var targets = new List<Enemy>();
-        List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        IReadOnlyList<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
 
         for (int i = 0; i < soulBullets.Count; i++)
         {
@@ -2252,7 +2256,7 @@ public class AccessoryEffect : MonoBehaviour
             {
                 if (PlayerStats.Instance != null)
                 {
-                    List<Enemy> nearby = FindEnemiesAround(bullet.transform.position, 20f);
+                    IReadOnlyList<Enemy> nearby = FindEnemiesAround(bullet.transform.position, 20f);
                     current = nearby.Count > 0 ? nearby[0] : null;
                 }
             }
@@ -2344,17 +2348,23 @@ public class AccessoryEffect : MonoBehaviour
     // ───────────────────────────────────────────
     //  유틸
     // ───────────────────────────────────────────
-    List<Enemy> FindEnemiesAround(Vector3 center, float radius)
+    static readonly List<Enemy> enemiesAroundScratch = new List<Enemy>(32);
+    static int enemyLayerMask = -1;
+
+    IReadOnlyList<Enemy> FindEnemiesAround(Vector3 center, float radius)
     {
-        var result = new List<Enemy>();
-        // Enemy 레이어 마스크 사용 (Physics2D 충돌 설정 무관하게 탐색)
-        int enemyLayer = LayerMask.GetMask("Enemy");
-        Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius, enemyLayer);
-        foreach (Collider2D hit in hits)
+        enemiesAroundScratch.Clear();
+        if (enemyLayerMask < 0)
+            enemyLayerMask = LayerMask.GetMask("Enemy");
+
+        using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(center, radius, enemyLayerMask);
+        for (int i = 0; i < query.Count; i++)
         {
-            Enemy e = hit.GetComponent<Enemy>();
-            if (e != null) result.Add(e);
+            Enemy e = query.Get(i).GetComponent<Enemy>();
+            if (e != null)
+                enemiesAroundScratch.Add(e);
         }
-        return result;
+
+        return enemiesAroundScratch;
     }
 }

@@ -270,14 +270,7 @@ public class IceGiantBoss : BossBase
             Physics2D.IgnoreCollision(bulletCol, bossCollider);
 
         // 2. 현재 월드상에 생존해 있는 모든 일반 적(Enemy)들과의 상호 충돌 무시 연산
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        foreach (GameObject enemy in enemies)
-        {
-            Collider2D enemyCol = enemy.GetComponent<Collider2D>();
-            if (enemyCol != null)
-                Physics2D.IgnoreCollision(bulletCol, enemyCol);
-        }
+        EnemyColliderRegistry.IgnoreAllEnemies(bulletCol);
     }
 
     // ============================================================

@@ -60,10 +60,11 @@ public class WaterSpout : BiomeGimmick
 
     void ApplySuction()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, suctionRange);
-        foreach (var hitCollider in hits)
+        using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(transform.position, suctionRange);
+        for (int i = 0; i < query.Count; i++)
         {
-            if (hitCollider.CompareTag("Player"))
+            Collider2D hitCollider = query.Get(i);
+            if (hitCollider != null && hitCollider.CompareTag("Player"))
             {
                 Player player = hitCollider.GetComponent<Player>();
                 if (player != null)
