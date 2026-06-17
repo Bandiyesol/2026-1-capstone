@@ -22,13 +22,13 @@ public abstract class BiomeGimmick : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        // 남은 시간 초기화
         currentLifeTime = lifeTime;
 
-        // 켜질 때 기믹 시작
+        // 풀 재사용 시 이전 코루틴 잔재 제거
+        StopAllCoroutines();
+
         OnSpawn();
 
-        // 일정 시간 뒤 비활성화
         if (lifeTime > 0f)
             StartCoroutine(DisableRoutine());
     }
