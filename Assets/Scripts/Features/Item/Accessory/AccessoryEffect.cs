@@ -371,11 +371,13 @@ public class AccessoryEffect : MonoBehaviour
 
     [Header("[ DuplicateBullet — 랜턴 ]")]
 
-    [Header("[ RevengeArrow — 가시 목걸이 ]")]
+    [Header("[ RevengeArrow — 가시 목걸이 / 마법의 구 ]")]
     [Tooltip("피격 시 발사할 화살 개수")] public int   revengeArrowCount      = 8;
     [Tooltip("화살 피해 배율 (공격력 ×)")]public float revengeArrowDamageRatio= 0.3f;
     [Tooltip("화살 이동 속도")]           public float revengeArrowSpeed      = 8f;
     [Tooltip("화살 사거리")]              public float revengeArrowRange      = 6f;
+    [Tooltip("피격 발동 쿨타임(초)")]     public float revengeArrowCooldown   = 5f;
+    float lastRevengeArrowTime = -999f;
 
     void Awake()
     {
@@ -538,6 +540,7 @@ public class AccessoryEffect : MonoBehaviour
         minervaCurrentBonus = 0f;
         soulBulletAngleOffset = 0f;
         lastPosition = Vector3.zero;
+        lastRevengeArrowTime = -999f;
 
         if (playerSpriter != null)
             playerSpriter.color = Color.white;
@@ -883,9 +886,12 @@ public class AccessoryEffect : MonoBehaviour
                 e.ApplyFreeze(slowOnHitFreezeTime);
         }
 
-        // 가시 목걸이 — 피격 시 8방향 화살 발사
-        if (Has(AccessoryEffectType.RevengeArrow))
+        // 가시 목걸이 / 마법의 구 — 피격 시 8방향 화살 발사 (쿨타임)
+        if (Has(AccessoryEffectType.RevengeArrow)
+            && Time.time - lastRevengeArrowTime >= revengeArrowCooldown)
+        {
             FireRevengeArrows(playerPos);
+        }
     }
 
     // ───────────────────────────────────────────
@@ -1732,6 +1738,8 @@ public class AccessoryEffect : MonoBehaviour
     void FireRevengeArrows(Vector3 from)
     {
         if (PlayerStats.Instance == null) return;
+
+        lastRevengeArrowTime = Time.time;
 
         if (ResolveArrowEffectPrefab() == magicOrbEffectPrefab)
             GameAudio.Play(SfxId.AccMagicOrb);
