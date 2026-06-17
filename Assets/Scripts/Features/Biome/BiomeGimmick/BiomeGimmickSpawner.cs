@@ -204,4 +204,28 @@ public class BiomeGimmickSpawner : MonoBehaviour
 
         isSpawnSequence = false;
     }
+
+    /// <summary>
+    /// 새 게임이나 판이 시작될 때 기존 상태와 잔여 기믹을 완벽히 청소하는 초기화 메서드
+    /// </summary>
+    public void ResetSpawner()
+    {
+        // 1. 돌고 있던 생성 코루틴 전면 중지
+        StopAllCoroutines();
+
+        // 2. 제어 변수들 공장 초기화 상태로 리셋
+        isSpawnSequence = false;
+        timer = 0f;
+        lastStageIndex = -1; // -1로 세팅해야 첫 스테이지(0) 진입 시 무조건 스테이지 전환 로직을 탑니다.
+
+        // 3. [중요] 자식으로 남아있던 이전 판의 기믹 찌꺼기들을 전부 풀로 반환(비활성화) 처리
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Transform child = transform.GetChild(i);
+            if (child != null && child.gameObject.activeSelf)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+    }
 }

@@ -18,6 +18,9 @@ public class WaveManager : MonoBehaviour
     [Header("상태")]
     public int currentWave; // 현재 진행 중인 웨이브 번호 (배열 인덱스 기준, 0부터 시작)
 
+    [Header("바이옴 기믹 스포너들")]
+    public BiomeGimmickSpawner[] gimmickSpawners;
+
     // --- 내부 상태 제어 변수 ---
     int aliveEnemyCount; // 현재 필드(또는 진행 중인 페이즈)에 생존해 있는 적의 총 수량 카운트
     bool isSpawning;     // 현재 코루틴 루프를 통해 몬스터들을 순차적으로 필드에 소환하는 중인지 나타내는 플래그
@@ -43,6 +46,16 @@ public class WaveManager : MonoBehaviour
 
         if (stageManager != null)
             PrepareBossForStage(stageManager.stageIndex);
+
+        // [변경] FindObjectsOfType을 지우고, 인스펙터로 연결된 배열을 바로 사용!
+        if (gimmickSpawners != null)
+        {
+            foreach (var spawner in gimmickSpawners)
+            {
+                if (spawner != null) // 혹시 모를 null 체크
+                    spawner.ResetSpawner();
+            }
+        }
 
         currentWave = 0; // 웨이브 번호 초기화
         StartWave();     // 첫 번째 웨이브 스폰 루틴 시동
@@ -198,15 +211,17 @@ public class WaveManager : MonoBehaviour
     /// <summary>
     /// [메인 제어 루틴] 타이밍 버그가 수정된 안전한 스폰 제어 코루틴
     /// </summary>
+    /// <summary>
+    /// [메인 제어 루틴] 타이밍 버그가 수정된 안전한 스폰 제어 코루틴
+    /// </summary>
     IEnumerator SpawnWave()
     {
         if (bossPhaseCleared)
             yield break;
 
-        isSpawning = true;   // 몬스터 소환 프로세스 시작 설정 (중간 정산 버그 방지)
-        aliveEnemyCount = 0; // 이번 웨이브용 생존 카운트 리셋
+        isSpawning = true;
+        aliveEnemyCount = 0;
 
-        // 현재 진행 중인 스테이지 인덱스와 웨이브 인덱스를 기반으로 ScriptableObject 등에서 웨이브 데이터 인출
         var stageData = stageManager.stageDatas[stageManager.stageIndex];
         if (stageData.waves == null || currentWave >= stageData.waves.Length)
             yield break;
@@ -219,19 +234,25 @@ public class WaveManager : MonoBehaviour
             if (wave.enemies != null && wave.enemies.Length > 0)
             {
                 yield return StartCoroutine(SpawnNormalWave(wave));
-                Debug.Log($"[WaveManager] 선결 잡몹 스폰 완료, aliveEnemyCount={aliveEnemyCount}"); // 추가
+                Debug.Log($"[WaveManager] 선결 잡몹 스폰 완료, aliveEnemyCount={aliveEnemyCount}");
                 yield return new WaitUntil(() => aliveEnemyCount <= 0);
-                Debug.Log("[WaveManager] 선결 잡몹 전멸 확인, 보스 스폰 진행"); // 추가
+                Debug.Log("[WaveManager] 선결 잡몹 전멸 확인, 보스 스폰 진행");
             }
 
             SpawnBossWave(wave);
-            Debug.Log("[WaveManager] SpawnBossWave 호출됨"); // 추가
+            Debug.Log("[WaveManager] SpawnBossWave 호출됨");
+
+            // 여기서 보스가 죽을 때까지 코루틴이 대기합니다.
             yield return new WaitUntil(() => aliveEnemyCount <= 0);
+
+            // =========================================================
+            // [여기에 추가] 보스가 죽어서 대기가 풀리면 즉시 보스 스테이지 클리어 처리!
+            // =========================================================
+            NotifyBossStageCleared();
         }
         // 🎯 [분기 2] 일반 잡몹 웨이브인 경우
         else
         {
-            // 지정된 잡몹 배치 테이블에 맞춰 스폰 진행 후 코루틴 종료 대기
             yield return StartCoroutine(SpawnNormalWave(wave));
         }
 
