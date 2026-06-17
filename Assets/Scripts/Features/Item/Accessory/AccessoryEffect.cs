@@ -103,6 +103,7 @@ public class AccessoryEffect : MonoBehaviour
     GameObject godShieldInstance;
     [Tooltip("방패 활성 시간(초)")]   public float godShieldActiveTime  = 15f;
     [Tooltip("방패 재충전 시간(초)")] public float godShieldRechargeTime = 15f;
+    [Tooltip("방패 활성 중 받는 피해 고정값")] public float godShieldFixedDamage = 0.01f;
     [Tooltip("프리팹 크기")]          public float godShieldScale        = 2f;
 
     // TimeStop (시간술사의 모래시계)
@@ -706,8 +707,9 @@ public class AccessoryEffect : MonoBehaviour
                         dragonHeartInstance.transform.localPosition = Vector3.zero;
                         dragonHeartInstance.transform.localScale    = Vector3.one * dragonHeartScale;
                     }
-                    GameAudio.PlayLoop(SfxId.AccDragonHeartbeatLoop);
-                    GameAudio.Play(SfxId.AccDragonRoar);
+                    GameAudio.StopLoop(SfxId.AccDragonHeartbeatLoop);
+                    GameAudio.PlayOnce(SfxId.AccDragonHeartbeatLoop);
+                    GameAudio.PlayOnce(SfxId.AccDragonRoar);
                 }
                 break;
 
@@ -846,9 +848,9 @@ public class AccessoryEffect : MonoBehaviour
                 return 0f;
             }
         }
-        // 신의 방패 — 활성 중 받는 피해 1 고정
+        // 신의 방패 — 활성 중 받는 피해 고정
         if (Has(AccessoryEffectType.GodShield) && godShieldDamageFixed)
-            return 1f;
+            return godShieldFixedDamage;
 
         return finalDamage;
     }
@@ -1510,7 +1512,7 @@ public class AccessoryEffect : MonoBehaviour
         }
     }
 
-    /// <summary>신의 방패 — 15초 피해 1 고정 + 상태이상 면역 + 프리팹, 이후 재충전 15초</summary>
+    /// <summary>신의 방패 — 15초 피해 고정 + 상태이상 면역 + 프리팹, 이후 재충전 15초</summary>
     IEnumerator GodShieldRoutine()
     {
         while (true)
@@ -1532,14 +1534,14 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             godShieldDamageFixed = true;
-            GameAudio.PlayLoop(SfxId.AccGodShieldLoop);
-            Debug.Log("[AccessoryEffect] 신의 방패 활성화 — 피해 1 고정 + 상태이상 면역");
+            GameAudio.StopLoop(SfxId.AccGodShieldLoop);
+            GameAudio.PlayOnce(SfxId.AccGodShieldLoop, 1.4f);
+            Debug.Log($"[AccessoryEffect] 신의 방패 활성화 — 피해 {godShieldFixedDamage} 고정 + 상태이상 면역");
 
             yield return new WaitForSeconds(godShieldActiveTime);
 
             // 방패 비활성화
             godShieldDamageFixed = false;
-            GameAudio.StopLoop(SfxId.AccGodShieldLoop);
             if (godShieldInstance != null)
             {
                 Destroy(godShieldInstance);
@@ -1572,7 +1574,8 @@ public class AccessoryEffect : MonoBehaviour
                 infiniteManaInstance.transform.localPosition = Vector3.zero;
                 infiniteManaInstance.transform.localScale    = Vector3.one * infiniteManaScale;
             }
-            GameAudio.PlayLoop(SfxId.AccInfiniteManaLoop);
+            GameAudio.StopLoop(SfxId.AccInfiniteManaLoop);
+            GameAudio.PlayOnce(SfxId.AccInfiniteManaLoop);
             Debug.Log("[AccessoryEffect] 무한의 마력 — 발동! 투사체 2배 + 공속 +50%");
 
             yield return new WaitForSeconds(infiniteManaDuration);
@@ -1585,7 +1588,6 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             // 파티클 제거
-            GameAudio.StopLoop(SfxId.AccInfiniteManaLoop);
             if (infiniteManaInstance != null)
             {
                 Destroy(infiniteManaInstance);
