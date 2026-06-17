@@ -83,6 +83,15 @@ public class Enemy : MonoBehaviour, IDamageable
         spriter.sortingOrder = 2; // 살아있을 때 레이어 순서 높임
         spriter.color = originColor;
         ApplyData(); // 데이터 로드 및 스텟 적용
+        if (coll != null)
+            EnemyColliderRegistry.Register(coll);
+    }
+
+    void OnDisable()
+    {
+        ClearGravityPull();
+        if (coll != null)
+            EnemyColliderRegistry.Unregister(coll);
     }
 
     void ApplyData()
@@ -147,6 +156,13 @@ public class Enemy : MonoBehaviour, IDamageable
         gravityPullUntil = Time.time + 0.2f;
     }
 
+    public void ClearGravityPull()
+    {
+        gravityPullCenter = null;
+        gravityPullForce = 0f;
+        gravityPullUntil = 0f;
+    }
+
     void LateUpdate()
     {
         // 게임 중지, 사망, 타겟 부재 시 렌더링 연산 스킵
@@ -168,22 +184,27 @@ public class Enemy : MonoBehaviour, IDamageable
     }
 
     // IDamageable 인터페이스 구현부: 외부(무기 등)에서 호출 시 데미지 적용
-    public void TakeDamage(float damage)
-    {
-        if (!isLive || health <= 0f) return;
+public void TakeDamage(float damage)
+{
+    TakeDamageInternal(damage, triggerAccessoryHook: true);
+}
 
-        health -= damage;
+// 악세사리 광역 효과 등 "이미 NotifyEnemyHit을 발동시킨 공격"에서 호출
+public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
+{
+    if (!isLive || health <= 0f) return;
 
-        // [악세사리 훅] 황금 손목 보호대·눈꽃 송이 — 적중 시 효과
+    health -= damage;
+
+    if (triggerAccessoryHook)
         AccessoryEffect.instance?.NotifyEnemyHit(this);
 
-        // 중복 코루틴 방지하면서 피격 빨간색 깜빡임 효과 실행
-        if (!isHitEffectRunning)
-            StartCoroutine(HitFlashEffect());
+    if (!isHitEffectRunning)
+        StartCoroutine(HitFlashEffect());
 
-        if (health <= 0f)
-            Die(); // 사망 처리
-    }
+    if (health <= 0f)
+        Die();
+}
 
     // 피격 시 0.1초 동안 빨갛게 변했다가 원래대로 돌아오는 코루틴
     // 상태이상 색상 우선순위에 따라 현재 색상 결정

@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 // [RuneEffect.cs] 인터페이스 정의
 public interface IActiveDriver  { bool isFinished { get; } void UpdateMovement(); }
@@ -16,6 +16,12 @@ public abstract class RuneEffect : MonoBehaviour
 	public RuneData data { get; protected set; }
 	public float currentCooltime { get; protected set; } = 0f;
 
+	static int activeGameplaySessionId;
+	int initGameplaySessionId;
+
+	/// <summary>메인 메뉴 복귀·새 게임 시작 시 호출 — 이전 판의 룬 컴포넌트가 동작하지 않게 합니다.</summary>
+	public static void InvalidateGameplaySession() => activeGameplaySessionId++;
+
 	public bool isReady          => currentCooltime <= 0f;
 	public virtual bool isFinished     => true;
 	public virtual bool ManualCollision => false;
@@ -26,11 +32,15 @@ public abstract class RuneEffect : MonoBehaviour
 		parentMotion  = motion;
 		data          = runeData;
 		currentCooltime = 0f;
+		initGameplaySessionId = activeGameplaySessionId;
 	}
 
 	/// <summary>플레이 중이며, 이 룬이 현재 로드아웃에 장착되어 있을 때만 true.</summary>
 	public bool ShouldRunEffect()
 	{
+		if (initGameplaySessionId != activeGameplaySessionId)
+			return false;
+
 		if (GameManager.instance == null || !GameManager.instance.isLive)
 			return false;
 
@@ -102,21 +112,29 @@ public abstract class RuneEffect : MonoBehaviour
 		return damageable != null;
 	}
 
-	protected static Collider2D[] FindEnemyColliders(Vector2 center, float radius)
+	static readonly List<Collider2D> FindEnemyScratch = new List<Collider2D>(32);
+
+	protected static void CollectEnemyColliders(Vector2 center, float radius, List<Collider2D> results)
 	{
+		results.Clear();
 		if (radius <= 0f)
-			return System.Array.Empty<Collider2D>();
+			return;
 
-		Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
-		List<Collider2D> enemies = new();
-
-		foreach (Collider2D hit in hits)
+		using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(center, radius);
+		for (int i = 0; i < query.Count; i++)
 		{
-			if (hit == null) continue;
-			if (hit.CompareTag("Enemy") || TryGetDamageable(hit, out _))
-				enemies.Add(hit);
-		}
+			Collider2D hit = query.Get(i);
+			if (hit == null)
+				continue;
 
-		return enemies.ToArray();
+			if (hit.CompareTag("Enemy") || TryGetDamageable(hit, out _))
+				results.Add(hit);
+		}
+	}
+
+	protected static IReadOnlyList<Collider2D> FindEnemyColliders(Vector2 center, float radius)
+	{
+		CollectEnemyColliders(center, radius, FindEnemyScratch);
+		return FindEnemyScratch;
 	}
 }

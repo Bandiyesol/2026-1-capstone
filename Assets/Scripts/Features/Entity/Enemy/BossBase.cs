@@ -28,10 +28,10 @@ public class BossBase : MonoBehaviour, IDamageable
     protected float patternTimer;
     protected bool isDead;
 
-    /// <summary>마지막으로 쓰러진 보스의 월드 좌표 (엔딩 연출용).</summary>
-    public static Vector3? LastDeathWorldPosition { get; private set; }
+    // 체력/스탯 초기화가 필요한지 여부 — ResetBoss() 호출 시 true, OnEnable()에서 초기화 후 false
+    bool needsReset = true;
 
-    /// <summary>현재 스테이지에서 마지막으로 쓰러진 적의 월드 좌표 (엔딩 연출 폴백).</summary>
+    public static Vector3? LastDeathWorldPosition { get; private set; }
     public static Vector3? LastEnemyDeathWorldPosition { get; private set; }
 
     public static void RecordEnemyDeath(Vector3 worldPosition)
@@ -63,11 +63,10 @@ public class BossBase : MonoBehaviour, IDamageable
     protected virtual void OnEnable()
     {
         if (GameManager.instance != null)
-        {
             target = GameManager.instance.player.transform;
-        }
 
-        if (data != null)
+        // needsReset이 true일 때만 스탯 초기화 (전투 중 의도치 않은 재활성화 시 체력 유지)
+        if (needsReset && data != null)
         {
             maxHealth = data.maxHealth;
             health = maxHealth;
@@ -75,6 +74,7 @@ public class BossBase : MonoBehaviour, IDamageable
             attackDamage = data.attackDamage;
             defense = data.damageReduction;
             patternCooldown = data.patternCooldown;
+            needsReset = false;
         }
 
         canMove = true;
@@ -86,6 +86,14 @@ public class BossBase : MonoBehaviour, IDamageable
         if (col != null) col.enabled = true;
 
         rigid.linearVelocity = Vector2.zero;
+    }
+
+    /// <summary>
+    /// 풀에서 꺼내기 직전 PoolManager에서 호출 — 다음 OnEnable()에서 체력/스탯을 풀피로 초기화하도록 예약
+    /// </summary>
+    public void ResetBoss()
+    {
+        needsReset = true;
     }
 
     protected virtual void Update()
@@ -137,15 +145,16 @@ public class BossBase : MonoBehaviour, IDamageable
         health -= finalDamage;
 
         if (health <= 0)
-        {
             Dead();
-        }
     }
 
     protected virtual void Dead()
     {
         if (isDead) return;
         isDead = true;
+
+        // 다음 판에서 풀에서 꺼낼 때 풀피로 시작하도록 예약
+        needsReset = true;
 
         LastDeathWorldPosition = transform.position;
         RecordEnemyDeath(transform.position);
@@ -161,7 +170,6 @@ public class BossBase : MonoBehaviour, IDamageable
 
         waveManager?.OnEnemyDead();
 
-        // [악세사리 훅] 신기한 화살 — 보스 사망 알림
         AccessoryEffect.instance?.NotifyBossDead();
 
         rigid.linearVelocity = Vector2.zero;
@@ -170,7 +178,6 @@ public class BossBase : MonoBehaviour, IDamageable
         if (spriter != null) spriter.enabled = false;
         if (col != null) col.enabled = false;
 
-        // WaveManager가 스테이지 종료 시 보스를 먼저 비활성화하므로, 코루틴은 GameManager에서 실행
         Vector3 spawnPosition = transform.position;
         MonoBehaviour coroutineHost = GameManager.instance != null ? GameManager.instance : this;
         coroutineHost.StartCoroutine(SpawnPortalRoutine(spawnPosition));
@@ -189,7 +196,6 @@ public class BossBase : MonoBehaviour, IDamageable
             gameObject.SetActive(false);
     }
 
-    // 보스가 무적상태일 때 공격을 받았을 때
     protected IEnumerator FlashInvincible(Color flashColor)
     {
         if (spriter == null) yield break;

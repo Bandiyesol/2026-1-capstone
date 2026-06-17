@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 4668427015376356798}
   - component: {fileID: 3482437394989722534}
   - component: {fileID: 2598242311232953111}
-  - component: {fileID: 2447831315397657886}
+  - component: {fileID: 8879579851539650686}
   - component: {fileID: 7708622900765237060}
   m_Layer: 6
   m_Name: Enemy_DeepSeaMutant
@@ -274,7 +274,7 @@ CapsuleCollider2D:
   m_Offset: {x: -0.06246378, y: 0.655405}
   m_Size: {x: 1.1299131, y: 1.3108135}
   m_Direction: 0
---- !u!114 &2447831315397657886
+--- !u!114 &8879579851539650686
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -283,9 +283,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7758972574009123355}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9457a8b5d0654024cb6094e644e55477, type: 3}
+  m_Script: {fileID: 11500000, guid: 4cf6dbd4232eda54c8cd0d5de14b7560, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  m_EditorClassIdentifier: Assembly-CSharp::DeepSeaMinion
   data: {fileID: 11400000, guid: 7eaf9bed5252036499a583d08b7a343c, type: 2}
   target: {fileID: 0}
   waveManager: {fileID: 0}
@@ -293,6 +293,7 @@ MonoBehaviour:
   maxHealth: 0
   attackDamage: 0
   speed: 0
+  searchRadius: 100
 --- !u!114 &7708622900765237060
 MonoBehaviour:
   m_ObjectHideFlags: 0

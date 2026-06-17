@@ -3,19 +3,17 @@ using UnityEngine;
 
 public class PoolManager : MonoBehaviour
 {
-    // 다른 스크립트에서 접근 가능한 싱글톤 인스턴스
     public static PoolManager Instance { get; private set; }
 
     [Header("프리팹 배열 설정")]
     public GameObject[] enemyPrefabs;
     public GameObject[] bossPrefabs;
     public GameObject[] bossBulletPrefabs;
-    public GameObject[] gimmickPrefabs; // 마법진(포탈) 등 오브젝트 포함
+    public GameObject[] gimmickPrefabs;
     public GameObject[] coinPrefabs;
     public GameObject[] chestPrefabs;
     public GameObject[] motionPrefabs;
 
-    // 오브젝트 풀을 관리할 리스트 배열
     List<GameObject>[] enemyPools;
     List<GameObject>[] bossPools;
     List<GameObject>[] bossBulletPools;
@@ -30,11 +28,9 @@ public class PoolManager : MonoBehaviour
 
     void Awake()
     {
-        // 싱글톤 초기화
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        // 각 프리팹 개수에 맞춰 오브젝트 풀(리스트 배열) 생성
         enemyPools = CreatePools(enemyPrefabs != null ? enemyPrefabs.Length : 0);
         bossPools = CreatePools(bossPrefabs != null ? bossPrefabs.Length : 0);
         bossBulletPools = CreatePools(bossBulletPrefabs != null ? bossBulletPrefabs.Length : 0);
@@ -105,7 +101,6 @@ public class PoolManager : MonoBehaviour
         Debug.Log($"[PoolManager] Motion 풀 등록: {motionPrefabById.Count}개");
     }
 
-    // 지정된 개수만큼 빈 리스트(풀) 배열을 생성하는 메서드
     List<GameObject>[] CreatePools(int count)
     {
         List<GameObject>[] pools = new List<GameObject>[count];
@@ -124,8 +119,52 @@ public class PoolManager : MonoBehaviour
     public GameObject GetBoss(int index)
     {
         EnsurePoolCapacity(ref bossPools, bossPrefabs);
-        return GetFromPool(bossPrefabs, bossPools, index, "Boss");
+        return GetBossFromPool(index);
     }
+
+    // 보스 전용 — SetActive 전에 ResetBoss() 호출하여 OnEnable()에서 체력 초기화 보장
+    GameObject GetBossFromPool(int index)
+    {
+        if (bossPrefabs == null || bossPools == null
+            || index < 0 || index >= bossPrefabs.Length || index >= bossPools.Length)
+        {
+            Debug.LogError($"[PoolManager] Boss index {index} 범위 초과.");
+            return null;
+        }
+
+        if (bossPrefabs[index] == null)
+        {
+            Debug.LogError($"[PoolManager] bossPrefabs[{index}]가 null입니다.");
+            return null;
+        }
+
+        GameObject select = null;
+
+        foreach (GameObject item in bossPools[index])
+        {
+            if (item != null && !item.activeSelf)
+            {
+                select = item;
+                break;
+            }
+        }
+
+        if (select == null)
+        {
+            select = Instantiate(bossPrefabs[index], transform);
+            bossPools[index].Add(select);
+        }
+
+        // ★ SetActive(true) 전에 ResetBoss() 호출 → OnEnable()에서 풀피로 초기화됨
+        BossBase boss = select.GetComponent<BossBase>();
+        if (boss != null)
+            boss.ResetBoss();
+
+        select.SetActive(true);
+
+        return select;
+    }
+
     public GameObject GetBossBullet(int index)
     {
         EnsurePoolCapacity(ref bossBulletPools, bossBulletPrefabs);
@@ -148,7 +187,6 @@ public class PoolManager : MonoBehaviour
         return prefab != null && prefab.GetComponent<StagePortal>() != null;
     }
 
-    /// <summary>Stage Portal 프리팹이 gimmickPrefabs에 있으면 해당 인덱스를 반환합니다.</summary>
     public int FindStagePortalGimmickIndex()
     {
         if (gimmickPrefabs == null) return -1;
@@ -163,7 +201,6 @@ public class PoolManager : MonoBehaviour
         return -1;
     }
 
-    /// <summary>ShopkeeperNpc 프리팹이 gimmickPrefabs에 있으면 해당 인덱스를 반환합니다.</summary>
     public int FindShopkeeperGimmickIndex()
     {
         if (gimmickPrefabs == null) return -1;
@@ -215,7 +252,6 @@ public class PoolManager : MonoBehaviour
         return GetFromPool(chestPrefabs, chestPools, index, "Chest");
     }
 
-    /// <summary>무기 Motion 프리팹을 풀에서 꺼냅니다. motionId = 프리팹 이름 (예: effect_sword).</summary>
     public Motion SpawnMotion(string motionId, Vector3 position, Quaternion rotation, bool activateImmediately = true)
     {
         if (string.IsNullOrEmpty(motionId) || !motionPrefabById.TryGetValue(motionId, out GameObject prefab))
@@ -266,7 +302,6 @@ public class PoolManager : MonoBehaviour
         return motion;
     }
 
-    /// <summary>현재 활성 Motion 수.</summary>
     public int GetActiveMotionCount()
     {
         int count = 0;
@@ -283,10 +318,8 @@ public class PoolManager : MonoBehaviour
     }
 
     public int GetRemainingMotionBudget() => Mathf.Max(0, MaxActiveMotions - GetActiveMotionCount());
-
     public bool CanSpawnMotion(int count = 1) => GetRemainingMotionBudget() >= count;
 
-    /// <summary>무기 Motion을 풀로 반환합니다.</summary>
     public void ReleaseMotion(Motion motion)
     {
         if (motion == null)
@@ -296,30 +329,29 @@ public class PoolManager : MonoBehaviour
         motion.gameObject.SetActive(false);
     }
 
-	public void ReturnAllActiveMotions()
-	{
-		foreach (List<Motion> pool in motionPools.Values)
-		{
-			foreach (Motion motion in pool)
-			{
-				if (motion != null && motion.gameObject.activeSelf)
-					ReleaseMotion(motion);
-			}
-		}
-	}
+    public void ReturnAllActiveMotions()
+    {
+        foreach (List<Motion> pool in motionPools.Values)
+        {
+            foreach (Motion motion in pool)
+            {
+                if (motion != null && motion.gameObject.activeSelf)
+                    ReleaseMotion(motion);
+            }
+        }
+    }
 
-	/// <summary>풀에 있는 모든 Motion에서 룬 컴포넌트를 제거합니다 (세션 리셋용).</summary>
-	public void PurgeAllMotionRuneEffects()
-	{
-		foreach (List<Motion> pool in motionPools.Values)
-		{
-			foreach (Motion motion in pool)
-			{
-				if (motion != null)
-					motion.ForceClearRuneEffects();
-			}
-		}
-	}
+    public void PurgeAllMotionRuneEffects()
+    {
+        foreach (List<Motion> pool in motionPools.Values)
+        {
+            foreach (Motion motion in pool)
+            {
+                if (motion != null)
+                    motion.ForceClearRuneEffects();
+            }
+        }
+    }
     #endregion
 
     void EnsurePoolCapacity(ref List<GameObject>[] pools, GameObject[] prefabs)
@@ -341,7 +373,6 @@ public class PoolManager : MonoBehaviour
         pools = resized;
     }
 
-    // 풀에서 비활성화된 오브젝트를 찾거나, 없으면 새로 생성해서 반환하는 핵심 로직
     GameObject GetFromPool(GameObject[] prefabs, List<GameObject>[] pools, int index, string label)
     {
         if (prefabs == null || pools == null || index < 0 || index >= prefabs.Length || index >= pools.Length)
@@ -360,18 +391,16 @@ public class PoolManager : MonoBehaviour
 
         GameObject select = null;
 
-        // 1. 기존 풀에 쉬고 있는(비활성화) 오브젝트가 있다면 재사용
         foreach (GameObject item in pools[index])
         {
             if (!item.activeSelf)
             {
                 select = item;
-                select.SetActive(true); // 활성화하여 반환 준비
+                select.SetActive(true);
                 break;
             }
         }
 
-        // 2. 쉴 수 있는 오브젝트가 없다면 새로 생성(Instantiate) 후 풀에 추가
         if (select == null)
         {
             select = Instantiate(prefabs[index], transform);
@@ -381,13 +410,12 @@ public class PoolManager : MonoBehaviour
         return select;
     }
 
-    // 현재 씬에서 활성화된 모든 풀링 오브젝트를 전부 비활성화(정리)
     public void ReturnAllActiveToPool()
     {
         ReturnAllActiveInPools(enemyPools);
         ReturnAllActiveInPools(bossPools);
         ReturnAllActiveInPools(bossBulletPools);
-        ReturnAllActiveInPools(gimmickPools); // 다음 스테이지 이동 시 마법진도 여기서 자동 정리
+        ReturnAllActiveInPools(gimmickPools);
         ReturnAllActiveInPools(coinPools);
         ReturnAllActiveInPools(chestPools);
         ReturnAllActiveMotions();
@@ -421,14 +449,12 @@ public class PoolManager : MonoBehaviour
         ReturnAllActiveInPools(bossBulletPools);
     }
 
-    /// <summary>스테이지 전환 시 바닥에 남은 코인·상자 등 필드 드랍을 풀로 되돌립니다.</summary>
     public void ReturnActiveFieldDrops()
     {
         ReturnAllActiveInPools(coinPools);
         ReturnAllActiveInPools(chestPools);
     }
 
-    // 하나의 풀 배열 내부에 켜져 있는 모든 오브젝트를 끄는 내부 메서드
     static void ReturnAllActiveInPools(List<GameObject>[] pools)
     {
         if (pools == null) return;
@@ -440,7 +466,7 @@ public class PoolManager : MonoBehaviour
             foreach (GameObject item in pool)
             {
                 if (item != null && item.activeSelf)
-                    item.SetActive(false); // 오브젝트 비활성화 (풀로 반환)
+                    item.SetActive(false);
             }
         }
     }

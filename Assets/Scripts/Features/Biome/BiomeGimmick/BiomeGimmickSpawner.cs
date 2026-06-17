@@ -74,8 +74,12 @@ public class BiomeGimmickSpawner : MonoBehaviour
         if (stageData?.waves == null || stageData.waves.Length == 0)
             return;
 
-        // 보스 웨이브(마지막 웨이브)부터 기믹 추가 스폰 중단
-        if (waveManager.currentWave >= stageData.waves.Length - 1)
+        // =========================================================
+        // [수정된 부분] 
+        // 기존: if (waveManager.currentWave >= stageData.waves.Length - 1)
+        // 변경: 마지막 웨이브까지 기믹이 나오게 하고, 웨이브가 완전히 끝났거나 보스가 클리어된 경우에만 중단
+        // =========================================================
+        if (waveManager.currentWave >= stageData.waves.Length || waveManager.IsBossPhaseCleared)
             return;
 
         // 현재 웨이브

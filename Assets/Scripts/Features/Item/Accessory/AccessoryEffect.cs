@@ -103,6 +103,7 @@ public class AccessoryEffect : MonoBehaviour
     GameObject godShieldInstance;
     [Tooltip("방패 활성 시간(초)")]   public float godShieldActiveTime  = 15f;
     [Tooltip("방패 재충전 시간(초)")] public float godShieldRechargeTime = 15f;
+    [Tooltip("방패 활성 중 받는 피해 고정값")] public float godShieldFixedDamage = 0.01f;
     [Tooltip("프리팹 크기")]          public float godShieldScale        = 2f;
 
     // TimeStop (시간술사의 모래시계)
@@ -706,8 +707,9 @@ public class AccessoryEffect : MonoBehaviour
                         dragonHeartInstance.transform.localPosition = Vector3.zero;
                         dragonHeartInstance.transform.localScale    = Vector3.one * dragonHeartScale;
                     }
-                    GameAudio.PlayLoop(SfxId.AccDragonHeartbeatLoop);
-                    GameAudio.Play(SfxId.AccDragonRoar);
+                    GameAudio.StopLoop(SfxId.AccDragonHeartbeatLoop);
+                    GameAudio.PlayOnce(SfxId.AccDragonHeartbeatLoop);
+                    GameAudio.PlayOnce(SfxId.AccDragonRoar);
                 }
                 break;
 
@@ -846,9 +848,9 @@ public class AccessoryEffect : MonoBehaviour
                 return 0f;
             }
         }
-        // 신의 방패 — 활성 중 받는 피해 1 고정
+        // 신의 방패 — 활성 중 받는 피해 고정
         if (Has(AccessoryEffectType.GodShield) && godShieldDamageFixed)
-            return 1f;
+            return godShieldFixedDamage;
 
         return finalDamage;
     }
@@ -1014,7 +1016,7 @@ public class AccessoryEffect : MonoBehaviour
 
             foreach (Enemy e in FindEnemiesAround(enemy.transform.position, electricRadius))
             {
-                e.TakeDamage(elecDmg);
+                e.TakeDamageInternal(elecDmg, false);
                 // 이펙트
                 if (electricPrefab != null)
                     StartCoroutine(SpawnEffectRoutine(electricPrefab,
@@ -1032,7 +1034,7 @@ public class AccessoryEffect : MonoBehaviour
                 if (magicExplosionPrefab != null)
                     StartCoroutine(SpawnEffectRoutine(magicExplosionPrefab, pos, magicExplosionTime, magicExplosionScale));
                 foreach (Enemy e in FindEnemiesAround(pos, magicExplosionRadius))
-                    e.TakeDamage(magicExplosionDamage);
+                    e.TakeDamageInternal(magicExplosionDamage, false);
                 Debug.Log("[AccessoryEffect] 금지된 마법서 — 마법 폭발!");
             }
         }
@@ -1096,7 +1098,7 @@ public class AccessoryEffect : MonoBehaviour
                     StartCoroutine(SpawnEffectRoutine(explosionEffectPrefab, pos, explosionEffectTime, explosionEffectScale));
                 // 광역 피해
                 foreach (Enemy e in FindEnemiesAround(pos, explosionRadius))
-                    e.TakeDamage(explosionDamage);
+                   e.TakeDamageInternal(explosionDamage, false);
                 Debug.Log("[AccessoryEffect] 폭탄광 — 폭발!");
             }
         }
@@ -1349,9 +1351,11 @@ public class AccessoryEffect : MonoBehaviour
                 soulBullets[i].transform.position = PlayerStats.Instance.transform.position + offset;
 
                 // 공전 중 충돌 피해 (0.5f 반경 내 적에게 틱 데미지)
-                Collider2D[] cols = Physics2D.OverlapCircleAll(soulBullets[i].transform.position, 0.5f);
-                foreach (Collider2D col in cols)
+                using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(
+                    soulBullets[i].transform.position, 0.5f);
+                for (int j = 0; j < query.Count; j++)
                 {
+                    Collider2D col = query.Get(j);
                     Enemy e = col.GetComponent<Enemy>();
                     if (e != null && e.IsLive)
                         e.TakeDamage(soulBulletDamage * Time.deltaTime);
@@ -1510,7 +1514,7 @@ public class AccessoryEffect : MonoBehaviour
         }
     }
 
-    /// <summary>신의 방패 — 15초 피해 1 고정 + 상태이상 면역 + 프리팹, 이후 재충전 15초</summary>
+    /// <summary>신의 방패 — 15초 피해 고정 + 상태이상 면역 + 프리팹, 이후 재충전 15초</summary>
     IEnumerator GodShieldRoutine()
     {
         while (true)
@@ -1532,14 +1536,14 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             godShieldDamageFixed = true;
-            GameAudio.PlayLoop(SfxId.AccGodShieldLoop);
-            Debug.Log("[AccessoryEffect] 신의 방패 활성화 — 피해 1 고정 + 상태이상 면역");
+            GameAudio.StopLoop(SfxId.AccGodShieldLoop);
+            GameAudio.PlayOnce(SfxId.AccGodShieldLoop, 1.4f);
+            Debug.Log($"[AccessoryEffect] 신의 방패 활성화 — 피해 {godShieldFixedDamage} 고정 + 상태이상 면역");
 
             yield return new WaitForSeconds(godShieldActiveTime);
 
             // 방패 비활성화
             godShieldDamageFixed = false;
-            GameAudio.StopLoop(SfxId.AccGodShieldLoop);
             if (godShieldInstance != null)
             {
                 Destroy(godShieldInstance);
@@ -1572,7 +1576,8 @@ public class AccessoryEffect : MonoBehaviour
                 infiniteManaInstance.transform.localPosition = Vector3.zero;
                 infiniteManaInstance.transform.localScale    = Vector3.one * infiniteManaScale;
             }
-            GameAudio.PlayLoop(SfxId.AccInfiniteManaLoop);
+            GameAudio.StopLoop(SfxId.AccInfiniteManaLoop);
+            GameAudio.PlayOnce(SfxId.AccInfiniteManaLoop);
             Debug.Log("[AccessoryEffect] 무한의 마력 — 발동! 투사체 2배 + 공속 +50%");
 
             yield return new WaitForSeconds(infiniteManaDuration);
@@ -1585,7 +1590,6 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             // 파티클 제거
-            GameAudio.StopLoop(SfxId.AccInfiniteManaLoop);
             if (infiniteManaInstance != null)
             {
                 Destroy(infiniteManaInstance);
@@ -1692,7 +1696,7 @@ public class AccessoryEffect : MonoBehaviour
         foreach (Enemy e in FindEnemiesAround(pos, radius))
         {
             if (e == exclude) continue;
-            e.TakeDamage(damage);
+            e.TakeDamageInternal(damage, false);
         }
         Debug.Log($"[AccessoryEffect] 낙뢰 발동 — {damage:F0} 피해 (반경 {radius}m)");
     }
@@ -1703,7 +1707,7 @@ public class AccessoryEffect : MonoBehaviour
         GameAudio.Play(SfxId.AccChainLightning);
         Enemy current = first;
         var hit = new HashSet<Enemy> { first };
-        first.TakeDamage(damage);
+        first.TakeDamageInternal(damage, false);
 
         // 첫 번째 이펙트
         if (chainLightningEffectPrefab != null)
@@ -1722,7 +1726,7 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             if (next == null) break;
-            next.TakeDamage(damage * (1f - i * 0.1f)); // 연쇄마다 10% 감쇠
+            next.TakeDamageInternal(damage * (1f - i * 0.1f), false); // 연쇄마다 10% 감쇠
             hit.Add(next);
 
             // 연쇄 이펙트
@@ -1792,9 +1796,10 @@ public class AccessoryEffect : MonoBehaviour
                 arrowFx.transform.position = pos;
 
             // 이동 경로에서 적 감지
-            Collider2D[] cols = Physics2D.OverlapCircleAll(pos, 0.3f);
-            foreach (Collider2D col in cols)
+            using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(pos, 0.3f);
+            for (int h = 0; h < query.Count; h++)
             {
+                Collider2D col = query.Get(h);
                 Enemy e = col.GetComponent<Enemy>();
                 if (e != null && e.IsLive && !hit.Contains(e))
                 {
@@ -1982,9 +1987,10 @@ public class AccessoryEffect : MonoBehaviour
             // 촉수 위치 주변 적 공격 (레이어 무관하게 직접 탐색)
             bool hitAny = false;
             Vector3 currentPos = tentacle != null ? tentacle.transform.position : pos;
-            Collider2D[] tentacleHits = Physics2D.OverlapCircleAll(currentPos, abyssAttackRadius);
-            foreach (Collider2D col in tentacleHits)
+            using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(currentPos, abyssAttackRadius);
+            for (int h = 0; h < query.Count; h++)
             {
+                Collider2D col = query.Get(h);
                 Enemy e = col.GetComponent<Enemy>();
                 if (e != null && e.IsLive)
                 {
@@ -2017,7 +2023,7 @@ public class AccessoryEffect : MonoBehaviour
         if (zeusLightningPrefab != null)
             StartCoroutine(SpawnEffectRoutine(zeusLightningPrefab,
                 first.transform.position, zeusEffectTime, zeusLightningScale));
-        first.TakeDamage(zeusDamage);
+        first.TakeDamageInternal(zeusDamage, false);
         first.ApplyFreeze(zeusStunDuration);
         Debug.Log("[AccessoryEffect] 제우스의 심판 — 낙뢰!");
 
@@ -2043,7 +2049,7 @@ public class AccessoryEffect : MonoBehaviour
             if (zeusChainPrefab != null)
                 StartCoroutine(SpawnEffectRoutine(zeusChainPrefab,
                     next.transform.position, zeusEffectTime, zeusChainScale));
-            next.TakeDamage(zeusChainDamage);
+            next.TakeDamageInternal(zeusChainDamage, false);
             next.ApplyFreeze(zeusStunDuration);
 
             hit.Add(next);
@@ -2146,7 +2152,7 @@ public class AccessoryEffect : MonoBehaviour
         if (PlayerStats.Instance == null) return;
         GameAudio.StopLoop(SfxId.AccSoulLanternOrbitLoop);
         GameAudio.Play(SfxId.AccSoulLanternShot);
-        List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        IReadOnlyList<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
         if (nearby.Count == 0) return;
 
         for (int i = soulBullets.Count - 1; i >= 0; i--)
@@ -2203,7 +2209,7 @@ public class AccessoryEffect : MonoBehaviour
 
         // 각 탄환마다 가장 가까운 적을 찾아 유도
         var targets = new List<Enemy>();
-        List<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        IReadOnlyList<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
 
         for (int i = 0; i < soulBullets.Count; i++)
         {
@@ -2250,7 +2256,7 @@ public class AccessoryEffect : MonoBehaviour
             {
                 if (PlayerStats.Instance != null)
                 {
-                    List<Enemy> nearby = FindEnemiesAround(bullet.transform.position, 20f);
+                    IReadOnlyList<Enemy> nearby = FindEnemiesAround(bullet.transform.position, 20f);
                     current = nearby.Count > 0 ? nearby[0] : null;
                 }
             }
@@ -2342,17 +2348,23 @@ public class AccessoryEffect : MonoBehaviour
     // ───────────────────────────────────────────
     //  유틸
     // ───────────────────────────────────────────
-    List<Enemy> FindEnemiesAround(Vector3 center, float radius)
+    static readonly List<Enemy> enemiesAroundScratch = new List<Enemy>(32);
+    static int enemyLayerMask = -1;
+
+    IReadOnlyList<Enemy> FindEnemiesAround(Vector3 center, float radius)
     {
-        var result = new List<Enemy>();
-        // Enemy 레이어 마스크 사용 (Physics2D 충돌 설정 무관하게 탐색)
-        int enemyLayer = LayerMask.GetMask("Enemy");
-        Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius, enemyLayer);
-        foreach (Collider2D hit in hits)
+        enemiesAroundScratch.Clear();
+        if (enemyLayerMask < 0)
+            enemyLayerMask = LayerMask.GetMask("Enemy");
+
+        using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(center, radius, enemyLayerMask);
+        for (int i = 0; i < query.Count; i++)
         {
-            Enemy e = hit.GetComponent<Enemy>();
-            if (e != null) result.Add(e);
+            Enemy e = query.Get(i).GetComponent<Enemy>();
+            if (e != null)
+                enemiesAroundScratch.Add(e);
         }
-        return result;
+
+        return enemiesAroundScratch;
     }
 }

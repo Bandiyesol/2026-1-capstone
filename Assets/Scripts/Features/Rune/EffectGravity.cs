@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EffectGravity : RuneEffect, IStateEffect
@@ -31,7 +32,10 @@ public class EffectGravity : RuneEffect, IStateEffect
 
 	void FixedUpdate()
 	{
-		if (weapon.isSplitChild || !ShouldRunEffect() || isFinished || parentMotion == null || parentMotion.instance == null)
+		if (weapon != null && weapon.isSplitChild)
+			return;
+
+		if (!ShouldRunEffect() || isFinished || parentMotion == null || parentMotion.instance == null)
 			return;
 
 		if (pullForce <= 0f || pullRadius <= 0f || duration <= 0f)
@@ -40,12 +44,18 @@ public class EffectGravity : RuneEffect, IStateEffect
 		ApplyPullAt(transform.position);
 	}
 
+	void OnDisable()
+	{
+		elapsedtime = duration;
+	}
+
 	void ApplyPullAt(Vector2 center)
 	{
-		Collider2D[] enemies = FindEnemyColliders(center, pullRadius);
+		IReadOnlyList<Collider2D> enemies = FindEnemyColliders(center, pullRadius);
 
-		foreach (Collider2D enemyCollider in enemies)
+		for (int i = 0; i < enemies.Count; i++)
 		{
+			Collider2D enemyCollider = enemies[i];
 			if (!TryGetDamageable(enemyCollider, out _))
 				continue;
 
