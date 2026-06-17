@@ -761,7 +761,7 @@ public class GameManager : MonoBehaviour
 
 		SettingsUI settings = FindFirstObjectByType<SettingsUI>(FindObjectsInactive.Include);
 		if (settings != null)
-			settings.Close();
+			settings.CloseWithoutResumingGameplay();
 
 		RuneLoadoutViewUI runeLoadout = FindFirstObjectByType<RuneLoadoutViewUI>(FindObjectsInactive.Include);
 		if (runeLoadout != null)

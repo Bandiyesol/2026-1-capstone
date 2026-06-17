@@ -280,17 +280,9 @@ public class GameAudioSettings : MonoBehaviour
 #endif
 	}
 
-	/// <summary>런타임에 BGM 소스를 다시 찾습니다 (Inspector 비어 있을 때).</summary>
+	/// <summary>볼륨 슬라이더 등에서 BGM/SFX 소스 참조·볼륨만 갱신합니다.</summary>
 	public void RefreshSources()
 	{
-		bgmSource = null;
-		sfxSource = null;
-		sfxPool = null;
-		sfxPoolIndex = 0;
-		sfxLoopPool = null;
-		sfxLoopSourcesConfigured = false;
-		activeLoopById.Clear();
-		sfxSourcesConfigured = false;
 		ResolveAudioSources();
 		ConfigureSfxSources();
 		ConfigureSfxLoopSources();
@@ -379,7 +371,7 @@ public class GameAudioSettings : MonoBehaviour
 
 	public void PlaySfxLoop(SfxId id)
 	{
-		if (activeLoopById.ContainsKey(id))
+		if (activeLoopById.TryGetValue(id, out AudioSource existing) && existing != null && existing.isPlaying)
 			return;
 
 		if (sfxEntryCache == null || sfxEntryCache.Count == 0)
@@ -398,6 +390,8 @@ public class GameAudioSettings : MonoBehaviour
 		if (source == null)
 			return;
 
+		RemoveLoopMappingsForSource(source);
+		source.Stop();
 		source.clip = entry.clip;
 		source.volume = GetEffectiveSfxVolume(entry.volumeScale);
 		source.loop = true;
@@ -463,6 +457,78 @@ public class GameAudioSettings : MonoBehaviour
 		}
 
 		activeLoopById.Clear();
+	}
+
+	/// <summary>루프 SFX·풀 재생을 모두 중단합니다 (악세사리 OneShot·고아 루프 포함).</summary>
+	public void ResetGameplaySfx()
+	{
+		StopAllSfxLoops();
+		StopAllSfxHostSources();
+	}
+
+	void RemoveLoopMappingsForSource(AudioSource source)
+	{
+		if (source == null || activeLoopById.Count == 0)
+			return;
+
+		List<SfxId> staleIds = null;
+		foreach (KeyValuePair<SfxId, AudioSource> pair in activeLoopById)
+		{
+			if (pair.Value != source)
+				continue;
+
+			staleIds ??= new List<SfxId>();
+			staleIds.Add(pair.Key);
+		}
+
+		if (staleIds == null)
+			return;
+
+		foreach (SfxId staleId in staleIds)
+			activeLoopById.Remove(staleId);
+	}
+
+	void StopAllSfxHostSources()
+	{
+		ResolveAudioSources();
+
+		if (sfxLoopPool != null)
+		{
+			foreach (AudioSource source in sfxLoopPool)
+			{
+				if (source == null)
+					continue;
+
+				source.Stop();
+				source.clip = null;
+				source.loop = false;
+			}
+		}
+
+		if (sfxPool != null)
+		{
+			foreach (AudioSource source in sfxPool)
+			{
+				if (source == null)
+					continue;
+
+				source.Stop();
+				source.clip = null;
+			}
+		}
+
+		if (sfxSource != null)
+		{
+			foreach (AudioSource source in sfxSource.GetComponents<AudioSource>())
+			{
+				if (source == null || source == bgmSource)
+					continue;
+
+				source.Stop();
+				source.clip = null;
+				source.loop = false;
+			}
+		}
 	}
 
 	void RefreshLoopVolumes()

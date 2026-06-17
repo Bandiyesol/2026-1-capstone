@@ -614,6 +614,9 @@ public class SettingsUI : MonoBehaviour
 
 	void OnMainMenuClicked()
 	{
+		GameAudio.ResetGameplaySfx();
+		CloseWithoutResumingGameplay();
+
 		AuthFlowController auth =
 			FindFirstObjectByType<AuthFlowController>(FindObjectsInactive.Include);
 
@@ -623,8 +626,19 @@ public class SettingsUI : MonoBehaviour
 			return;
 		}
 
-		Close();
 		GameManager.instance?.ReturnToMainMenu();
+	}
+
+	/// <summary>메인 메뉴·종료 등 — 일시정지 해제 없이 설정만 닫습니다.</summary>
+	public void CloseWithoutResumingGameplay()
+	{
+		if (panel == null)
+			return;
+
+		isOpen = false;
+		pausedBySettings = false;
+		HideDeleteAccountPanel();
+		panel.SetActive(false);
 	}
 
 	void OnQuitClicked()
