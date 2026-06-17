@@ -76,19 +76,23 @@ public class LavaTyranoCore : MonoBehaviour
 
             ClearAllBullets();
 
-            SpawnPortal();
-
-            // 모든 분열체가 소멸 완료 → 웨이브 매니저에 보스 처치 1회 통보
-            waveManager?.OnEnemyDead();
+            SpawnRewards();
 
             // 코어 오브젝트 풀 반환
             gameObject.SetActive(false);
         }
     }
 
-    // 마지막 조각이 쓰러진 자리에 다음 방 이동 포탈 생성
-    void SpawnPortal()
+    void SpawnRewards()
     {
+        if (CoinDropManager.Instance != null)
+            CoinDropManager.Instance.TryDropFromBoss(lastDeathPosition);
+
+        if (ChestDropManager.Instance != null)
+            ChestDropManager.Instance.TryDropFromBoss(lastDeathPosition);
+
+        AccessoryEffect.instance?.NotifyBossDead();
+
         BossStageClearUtility.CompleteStage(lastDeathPosition, 13, waveManager);
     }
 
