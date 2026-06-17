@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EffectHoming : RuneEffect, IActiveDriver
@@ -8,6 +9,7 @@ public class EffectHoming : RuneEffect, IActiveDriver
 	float turnSpeed;
 	float moveSpeed;
 	Transform target;
+	EffectRicochet cachedRicochet;
 
 	public override bool isFinished => elapsedtime >= duration;
 
@@ -20,13 +22,13 @@ public class EffectHoming : RuneEffect, IActiveDriver
 		searchRadius = Mathf.Max(2f, RuneDataAccess.GetAffectedRange(data));
 		turnSpeed = GetActiveTurnSpeed();
 		moveSpeed = GetActiveMoveSpeed();
+		cachedRicochet = GetComponent<EffectRicochet>();
 		target = FindClosestEnemy();
 	}
 
 	public void UpdateMovement()
 	{
-		EffectRicochet ricochet = GetComponent<EffectRicochet>();
-		if (ricochet != null && ricochet.PreferStraightTravel)
+		if (cachedRicochet != null && cachedRicochet.PreferStraightTravel)
 		{
 			transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
 			return;
@@ -50,12 +52,13 @@ public class EffectHoming : RuneEffect, IActiveDriver
 
 	Transform FindClosestEnemy()
 	{
-		Collider2D[] hits = FindEnemyColliders(transform.position, searchRadius);
+		IReadOnlyList<Collider2D> hits = FindEnemyColliders(transform.position, searchRadius);
 		Transform closest = null;
 		float minSqrDistance = float.MaxValue;
 
-		foreach (Collider2D hit in hits)
+		for (int i = 0; i < hits.Count; i++)
 		{
+			Collider2D hit = hits[i];
 			if (!TryGetDamageable(hit, out _)) continue;
 
 			float sqrDistance = (hit.transform.position - transform.position).sqrMagnitude;

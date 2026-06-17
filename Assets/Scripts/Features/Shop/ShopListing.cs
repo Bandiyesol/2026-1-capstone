@@ -40,9 +40,9 @@ public class ShopListing
 			case ShopItemCategory.Accessory when accessory != null:
 				return AccessoryIconResolver.Resolve(accessory);
 			case ShopItemCategory.Potion:
-				if (potion?.icon != null)
-					return potion.icon;
-				return null;
+				if (potion != null)
+					return PotionIconResolver.Resolve(potion);
+				return PotionIconResolver.Resolve(fallbackPotionType);
 			default:
 				return null;
 		}

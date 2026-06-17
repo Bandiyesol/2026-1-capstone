@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class EffectChain : RuneEffect, ITriggerEffect
 {
+	static readonly List<Collider2D> chainColliderScratch = new List<Collider2D>(32);
+
 	public bool DestroyOnExecute => data != null && data.isDestroyed;
 	public bool ProtectParent => false;
 
@@ -21,10 +23,10 @@ public class EffectChain : RuneEffect, ITriggerEffect
 			return;
 
 		float chainDamage = DamageCalculator.CalculateBaseDamage(weapon, data);
-		Collider2D[] colliders = FindEnemyColliders(collision.transform.position, radius);
+		CollectEnemyColliders(collision.transform.position, radius, chainColliderScratch);
 		Vector3 hitPosition = collision.transform.position;
 
-		System.Array.Sort(colliders, (a, b) =>
+		chainColliderScratch.Sort((a, b) =>
 		{
 			float distA = (a.transform.position - hitPosition).sqrMagnitude;
 			float distB = (b.transform.position - hitPosition).sqrMagnitude;
@@ -33,8 +35,9 @@ public class EffectChain : RuneEffect, ITriggerEffect
 
 		List<IDamageable> targets = new();
 		List<Vector3> targetPositions = new();
-		foreach (Collider2D enemyCollider in colliders)
+		for (int i = 0; i < chainColliderScratch.Count; i++)
 		{
+			Collider2D enemyCollider = chainColliderScratch[i];
 			if (enemyCollider == collision) continue;
 
 			if (!TryGetDamageable(enemyCollider, out IDamageable damageable) || targets.Contains(damageable)) continue;
@@ -62,7 +65,7 @@ public class EffectChain : RuneEffect, ITriggerEffect
 		line.useWorldSpace = true;
 		line.startWidth = 0.08f;
 		line.endWidth = 0.02f;
-		line.material = new Material(Shader.Find("Sprites/Default"));
+		line.material = ChainLineMaterialCache.Shared;
 		line.startColor = new Color(0.45f, 0.85f, 1f, 1f);
 		line.endColor = new Color(0.85f, 1f, 1f, 0.15f);
 		line.SetPosition(0, startPosition);

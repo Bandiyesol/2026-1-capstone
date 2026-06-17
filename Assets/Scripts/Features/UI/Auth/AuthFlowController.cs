@@ -349,10 +349,12 @@ public class AuthFlowController : MonoBehaviour
 
 	async Task ReturnToMainMenuWithLoadingAsync()
 	{
+		GameAudio.ResetGameplaySfx();
+		CloseSettingsIfOpen();
+
 		using (BeginLoadingScope())
 		{
 			await WaitLoadingMinDisplayAsync();
-			CloseSettingsIfOpen();
 			GameManager.instance?.ReturnToMainMenu();
 
 			if (authScreenRoot != null)
@@ -495,7 +497,7 @@ public class AuthFlowController : MonoBehaviour
 	static void CloseSettingsIfOpen()
 	{
 		SettingsUI ui = FindFirstObjectByType<SettingsUI>(FindObjectsInactive.Include);
-		ui?.Close();
+		ui?.CloseWithoutResumingGameplay();
 	}
 
 	void OnQuitClicked()
