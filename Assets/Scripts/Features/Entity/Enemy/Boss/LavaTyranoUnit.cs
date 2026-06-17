@@ -307,49 +307,52 @@ public class LavaTyranoUnit : BossBase
         core?.RegisterUnit(this);
     }
 
-    // 외부 피격 이벤트 수신 리스너
     public override void TakeDamage(float damage)
     {
-        if (IsDead) return;
+        if (IsDead || isDead)
+            return;
 
-        base.TakeDamage(damage); // 여기서 Dead() 오버라이드 버전이 호출됨
-
-        if (health <= 0)
-            DieUnit(); // 코어에 사망 신호 전달
+        base.TakeDamage(damage);
     }
 
     protected override void Dead()
     {
-        // BossBase.Dead()의 포탈 스폰을 막고 DieUnit()으로 위임
-        // (포탈 생성은 LavaTyranoCore.CheckAllDead()에서 단 1회만 처리)
-        if (isDead) return;
+        if (isDead)
+            return;
+
         isDead = true;
+        canMove = false;
+
+        StopAllCoroutines();
+        isPatternPlaying = false;
 
         if (GameManager.instance != null)
             GameManager.instance.Kill++;
 
-        if (CoinDropManager.Instance != null)
-            CoinDropManager.Instance.TryDropFromBoss(transform.position);
+        RecordEnemyDeath(transform.position);
 
-        if (ChestDropManager.Instance != null)
-            ChestDropManager.Instance.TryDropFromBoss(transform.position);
+        if (rigid != null)
+            rigid.linearVelocity = Vector2.zero;
 
-        BossBase.RecordEnemyDeath(transform.position);
+        if (spriter != null)
+            spriter.enabled = false;
 
-        rigid.linearVelocity = Vector2.zero;
-        canMove = false;
+        if (col != null)
+            col.enabled = false;
 
-        if (spriter != null) spriter.enabled = false;
-        if (col != null) col.enabled = false;
-
-        // waveManager?.OnEnemyDead()는 호출하지 않음 — 코어가 처리
-        // SpawnPortalRoutine도 호출하지 않음 — 코어가 처리
+        // base.Dead() 호출 금지 — 포탈·웨이브 클리어는 LavaTyranoCore 전멸 시 1회만
+        core?.UnregisterUnit(this);
+        gameObject.SetActive(false);
     }
 
-    // 유닛 완전 소멸 프로세스
+    // 분열 시 현 세대만 퇴장 (전투 사망과 별도 — Kill·포탈 없음)
     void DieUnit()
     {
-        core?.UnregisterUnit(this);  // 소멸하기 직전 부모 코어에 사망 도장을 찍고 명단에서 제외
-        gameObject.SetActive(false); // 오브젝트 풀 비활성화 반환
+        StopAllCoroutines();
+        isPatternPlaying = false;
+        canMove = false;
+
+        core?.UnregisterUnit(this);
+        gameObject.SetActive(false);
     }
 }
