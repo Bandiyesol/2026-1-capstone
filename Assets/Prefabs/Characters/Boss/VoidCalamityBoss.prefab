@@ -296,13 +296,13 @@ MonoBehaviour:
   voidSummonBaseInterval: 7
   voidSummonMinInterval: 2.5
   voidSummonRadius: 15
-  voidSummonMinCount: 5
-  voidSummonMaxCount: 12
+  voidSummonMinCount: 7
+  voidSummonMaxCount: 15
   apostlePoolIndex: 17
   apostleSpawnOffset: 5.5
   doomBulletIndex: 20
   doomChargeDuration: 10
-  doomInterruptDamageThreshold: 750
+  doomInterruptDamageThreshold: 100000
   doomWarningCircle: {fileID: 784352810030098290}
 --- !u!114 &-1934167680542377752
 MonoBehaviour:
