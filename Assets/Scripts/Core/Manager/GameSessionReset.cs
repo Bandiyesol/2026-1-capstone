@@ -12,6 +12,7 @@ public static class GameSessionReset
 
 		Time.timeScale = 1f;
 		RuneEffect.InvalidateGameplaySession();
+		GameAudio.ResetGameplaySfx();
 
 		ResetWaveAndStage(game);
 		ResetPool(game.pool);
@@ -113,6 +114,8 @@ public static class GameSessionReset
 
 		if (AccessoryInventory.Instance != null)
 			AccessoryInventory.Instance.Clear();
+
+		AccessoryEffect.instance?.ResetSession();
 
 		PotionInventory potion = Object.FindFirstObjectByType<PotionInventory>(FindObjectsInactive.Include);
 		if (potion != null)
