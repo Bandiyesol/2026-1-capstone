@@ -369,8 +369,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GiantRock
   lifeTime: 0
-  maxHealth: 500000
-  health: 500000
+  maxHealth: 100000
+  health: 100000
   warningTime: 1
   fallDamage: 80
   warningCircle: {fileID: 2746385713242864413}

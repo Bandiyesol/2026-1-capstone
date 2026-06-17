@@ -173,4 +173,4 @@ MonoBehaviour:
   damage: 3
   tickInterval: 0.5
   attachDelay: 1
-  maxHealth: 300000
+  maxHealth: 8500

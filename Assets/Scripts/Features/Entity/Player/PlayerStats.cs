@@ -211,11 +211,56 @@ public class PlayerStats : MonoBehaviour
         SyncGameManagerHealth();
     }
 
-    /// <summary>메인 메뉴 복귀 시 체력 등 런타임 스탯을 기본값으로 되돌립니다.</summary>
+    /// <summary>메인 메뉴 복귀·새 게임 시작 시 악세사리/버프 보너스를 제거하고 체력 등을 초기화합니다.</summary>
     public void ResetRuntimeState()
     {
+        ClearRuntimeBonuses();
         InitializeStats();
         OnStatsChanged?.Invoke();
+    }
+
+    void ClearRuntimeBonuses()
+    {
+        attackPower.flatBonus = attackPower.multiBonus = 0f;
+        attackSpeed.flatBonus = attackSpeed.multiBonus = 0f;
+        projectileCount.flatBonus = projectileCount.multiBonus = 0f;
+        projectileSpeed.flatBonus = projectileSpeed.multiBonus = 0f;
+        projectileRange.flatBonus = projectileRange.multiBonus = 0f;
+        projectileSize.flatBonus = projectileSize.multiBonus = 0f;
+        meleeRange.flatBonus = meleeRange.multiBonus = 0f;
+        critChance.flatBonus = critChance.multiBonus = 0f;
+        critDamage.flatBonus = critDamage.multiBonus = 0f;
+
+        defense.flatBonus = defense.multiBonus = 0f;
+        maxHP.flatBonus = maxHP.multiBonus = 0f;
+        damageReduction.flatBonus = damageReduction.multiBonus = 0f;
+        evasion.flatBonus = evasion.multiBonus = 0f;
+        invincibilityFrames.flatBonus = invincibilityFrames.multiBonus = 0f;
+        healingBonus.flatBonus = healingBonus.multiBonus = 0f;
+        armorPenetration.flatBonus = armorPenetration.multiBonus = 0f;
+        dotDamageReduction.flatBonus = dotDamageReduction.multiBonus = 0f;
+        damageReflect.flatBonus = damageReflect.multiBonus = 0f;
+
+        movementSpeed.flatBonus = movementSpeed.multiBonus = 0f;
+        magnetRange.flatBonus = magnetRange.multiBonus = 0f;
+        cooldownReduction.flatBonus = cooldownReduction.multiBonus = 0f;
+        visionRange.flatBonus = visionRange.multiBonus = 0f;
+        goldGainBonus.flatBonus = goldGainBonus.multiBonus = 0f;
+
+        firePower.flatBonus = firePower.multiBonus = 0f;
+        poisonPower.flatBonus = poisonPower.multiBonus = 0f;
+        freezePower.flatBonus = freezePower.multiBonus = 0f;
+        waterPower.flatBonus = waterPower.multiBonus = 0f;
+        lightningPower.flatBonus = lightningPower.multiBonus = 0f;
+
+        fireEnabled = false;
+        poisonEnabled = false;
+        freezeEnabled = false;
+        waterEnabled = false;
+        lightningEnabled = false;
+
+        isInvincible = false;
+        invincibleTimer = 0f;
     }
 
     // ═════════════════════════════════════════

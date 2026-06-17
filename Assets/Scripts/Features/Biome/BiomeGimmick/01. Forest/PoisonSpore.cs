@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // 독 포자를 밟거나 닿으면 터지는 기믹
@@ -29,19 +30,19 @@ public class PoisonSpore : BiomeGimmick
     protected override void OnEnable()
     {
         base.OnEnable();
-
-        // 활성화될 때 상태 초기화
-        exploded = false;
-
-        // 성장 중엔 충돌 비활성화
         DisableCollider();
+        StartCoroutine(PlayAnimNextFrame());
+    }
 
-        // 애니메이션 재시작
+    IEnumerator PlayAnimNextFrame()
+    {
+        yield return null;
+
         if (anim != null)
         {
-            anim.Rebind();                        // 상태 완전 초기화
-            anim.Update(0f);                      // 즉시 반영
-            anim.Play("PoisonSpore", 0, 0f);      // 첫 프레임부터 재생
+            anim.enabled = false;        // Animator 완전히 끄기
+            yield return null;           // 한 프레임 대기
+            anim.enabled = true;         // 다시 켜면 Entry부터 재시작
         }
     }
 

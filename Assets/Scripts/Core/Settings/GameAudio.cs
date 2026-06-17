@@ -23,6 +23,12 @@ public static class GameAudio
 		GameAudioSettings.Instance?.StopSfxLoop(id);
 	}
 
+	/// <summary>메인 메뉴 복귀·새 게임 시작 시 악세사리 루프·잔여 효과음을 모두 끕니다.</summary>
+	public static void ResetGameplaySfx()
+	{
+		GameAudioSettings.Instance?.ResetGameplaySfx();
+	}
+
 	public static void PlayTogether(SfxId first, SfxId second)
 	{
 		Play(first);
