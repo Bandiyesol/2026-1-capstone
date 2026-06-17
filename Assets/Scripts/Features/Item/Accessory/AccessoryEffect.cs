@@ -1016,7 +1016,7 @@ public class AccessoryEffect : MonoBehaviour
 
             foreach (Enemy e in FindEnemiesAround(enemy.transform.position, electricRadius))
             {
-                e.TakeDamage(elecDmg);
+                e.TakeDamageInternal(elecDmg, false);
                 // 이펙트
                 if (electricPrefab != null)
                     StartCoroutine(SpawnEffectRoutine(electricPrefab,
@@ -1034,7 +1034,7 @@ public class AccessoryEffect : MonoBehaviour
                 if (magicExplosionPrefab != null)
                     StartCoroutine(SpawnEffectRoutine(magicExplosionPrefab, pos, magicExplosionTime, magicExplosionScale));
                 foreach (Enemy e in FindEnemiesAround(pos, magicExplosionRadius))
-                    e.TakeDamage(magicExplosionDamage);
+                    e.TakeDamageInternal(magicExplosionDamage, false);
                 Debug.Log("[AccessoryEffect] 금지된 마법서 — 마법 폭발!");
             }
         }
@@ -1098,7 +1098,7 @@ public class AccessoryEffect : MonoBehaviour
                     StartCoroutine(SpawnEffectRoutine(explosionEffectPrefab, pos, explosionEffectTime, explosionEffectScale));
                 // 광역 피해
                 foreach (Enemy e in FindEnemiesAround(pos, explosionRadius))
-                    e.TakeDamage(explosionDamage);
+                   e.TakeDamageInternal(explosionDamage, false);
                 Debug.Log("[AccessoryEffect] 폭탄광 — 폭발!");
             }
         }
