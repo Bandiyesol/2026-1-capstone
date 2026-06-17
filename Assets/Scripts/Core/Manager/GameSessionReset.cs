@@ -11,6 +11,7 @@ public static class GameSessionReset
 			return;
 
 		Time.timeScale = 1f;
+		GameAudio.ResetGameplaySfx();
 
 		ResetWaveAndStage(game);
 		ResetPool(game.pool);
@@ -109,6 +110,9 @@ public static class GameSessionReset
 
 		if (AccessoryInventory.Instance != null)
 			AccessoryInventory.Instance.Clear();
+
+		if (AccessoryEffect.instance != null)
+			AccessoryEffect.instance.ResetSession();
 
 		PotionInventory potion = Object.FindFirstObjectByType<PotionInventory>(FindObjectsInactive.Include);
 		if (potion != null)
