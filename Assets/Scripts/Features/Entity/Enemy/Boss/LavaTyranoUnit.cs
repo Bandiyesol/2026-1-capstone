@@ -308,14 +308,40 @@ public class LavaTyranoUnit : BossBase
     // 외부 피격 이벤트 수신 리스너
     public override void TakeDamage(float damage)
     {
-        if (IsDead)
-            return;
+        if (IsDead) return;
 
-        base.TakeDamage(damage);
+        base.TakeDamage(damage); // 여기서 Dead() 오버라이드 버전이 호출됨
 
-        // 데미지 연산 결과 체력이 완전히 방전되면 소멸 시퀀스 트리거
         if (health <= 0)
-            DieUnit();
+            DieUnit(); // 코어에 사망 신호 전달
+    }
+
+    protected override void Dead()
+    {
+        // BossBase.Dead()의 포탈 스폰을 막고 DieUnit()으로 위임
+        // (포탈 생성은 LavaTyranoCore.CheckAllDead()에서 단 1회만 처리)
+        if (isDead) return;
+        isDead = true;
+
+        if (GameManager.instance != null)
+            GameManager.instance.Kill++;
+
+        if (CoinDropManager.Instance != null)
+            CoinDropManager.Instance.TryDropFromBoss(transform.position);
+
+        if (ChestDropManager.Instance != null)
+            ChestDropManager.Instance.TryDropFromBoss(transform.position);
+
+        BossBase.RecordEnemyDeath(transform.position);
+
+        rigid.linearVelocity = Vector2.zero;
+        canMove = false;
+
+        if (spriter != null) spriter.enabled = false;
+        if (col != null) col.enabled = false;
+
+        // waveManager?.OnEnemyDead()는 호출하지 않음 — 코어가 처리
+        // SpawnPortalRoutine도 호출하지 않음 — 코어가 처리
     }
 
     // 유닛 완전 소멸 프로세스
