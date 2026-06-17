@@ -83,6 +83,14 @@ public class Enemy : MonoBehaviour, IDamageable
         spriter.sortingOrder = 2; // 살아있을 때 레이어 순서 높임
         spriter.color = originColor;
         ApplyData(); // 데이터 로드 및 스텟 적용
+        if (coll != null)
+            EnemyColliderRegistry.Register(coll);
+    }
+
+    void OnDisable()
+    {
+        if (coll != null)
+            EnemyColliderRegistry.Unregister(coll);
     }
 
     void ApplyData()

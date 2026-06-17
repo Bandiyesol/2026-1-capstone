@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EffectGravity : RuneEffect, IStateEffect
@@ -42,10 +43,11 @@ public class EffectGravity : RuneEffect, IStateEffect
 
 	void ApplyPullAt(Vector2 center)
 	{
-		Collider2D[] enemies = FindEnemyColliders(center, pullRadius);
+		IReadOnlyList<Collider2D> enemies = FindEnemyColliders(center, pullRadius);
 
-		foreach (Collider2D enemyCollider in enemies)
+		for (int i = 0; i < enemies.Count; i++)
 		{
+			Collider2D enemyCollider = enemies[i];
 			if (!TryGetDamageable(enemyCollider, out _))
 				continue;
 

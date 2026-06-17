@@ -49,6 +49,7 @@ public abstract class Motion : MonoBehaviour
 	// 동일 적에 대한 연속 타격 간격 (근접 OnTriggerStay 대응)
 	readonly Dictionary<int, float> hitCooldownUntil = new Dictionary<int, float>();
 	readonly List<ITriggerEffect> cachedTriggerEffects = new List<ITriggerEffect>();
+	EffectRicochet cachedRicochet;
 	const float DefaultHitInterval = 0.25f;
 	const float FinalExecuteDelay = 0.35f;
 
@@ -300,9 +301,10 @@ public abstract class Motion : MonoBehaviour
 		if (radius <= 0f)
 			return;
 
-		Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
-		foreach (Collider2D hit in hits)
+		using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(center, radius);
+		for (int i = 0; i < query.Count; i++)
 		{
+			Collider2D hit = query.Get(i);
 			if (hit == null)
 				continue;
 
@@ -377,7 +379,7 @@ public abstract class Motion : MonoBehaviour
 			if (instance?.info != null && instance.info.type == "Orb")
 				return false;
 
-			EffectRicochet ricochet = GetComponent<EffectRicochet>();
+			EffectRicochet ricochet = cachedRicochet;
 			return ricochet != null && ricochet.PreferStraightTravel;
 		}
 	}
@@ -390,7 +392,7 @@ public abstract class Motion : MonoBehaviour
 		if (instance.info != null && instance.info.type == "Orb")
 			return false;
 
-		EffectRicochet ricochet = GetComponent<EffectRicochet>();
+		EffectRicochet ricochet = cachedRicochet;
 		if (ricochet == null || !ricochet.PreferStraightTravel)
 			return false;
 
@@ -844,12 +846,16 @@ public abstract class Motion : MonoBehaviour
 	void RebuildTriggerEffectCache()
 	{
 		cachedTriggerEffects.Clear();
+		cachedRicochet = null;
 
 		RuneEffect[] effects = GetComponents<RuneEffect>();
 		for (int i = 0; i < effects.Length; i++)
 		{
 			if (effects[i] is ITriggerEffect trigger)
 				cachedTriggerEffects.Add(trigger);
+
+			if (cachedRicochet == null && effects[i] is EffectRicochet ricochet)
+				cachedRicochet = ricochet;
 		}
 	}
 }

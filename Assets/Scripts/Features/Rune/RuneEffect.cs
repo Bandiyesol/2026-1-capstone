@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 // [RuneEffect.cs] 인터페이스 정의
 public interface IActiveDriver  { bool isFinished { get; } void UpdateMovement(); }
@@ -102,21 +102,29 @@ public abstract class RuneEffect : MonoBehaviour
 		return damageable != null;
 	}
 
-	protected static Collider2D[] FindEnemyColliders(Vector2 center, float radius)
+	static readonly List<Collider2D> FindEnemyScratch = new List<Collider2D>(32);
+
+	protected static void CollectEnemyColliders(Vector2 center, float radius, List<Collider2D> results)
 	{
+		results.Clear();
 		if (radius <= 0f)
-			return System.Array.Empty<Collider2D>();
+			return;
 
-		Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
-		List<Collider2D> enemies = new();
-
-		foreach (Collider2D hit in hits)
+		using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(center, radius);
+		for (int i = 0; i < query.Count; i++)
 		{
-			if (hit == null) continue;
-			if (hit.CompareTag("Enemy") || TryGetDamageable(hit, out _))
-				enemies.Add(hit);
-		}
+			Collider2D hit = query.Get(i);
+			if (hit == null)
+				continue;
 
-		return enemies.ToArray();
+			if (hit.CompareTag("Enemy") || TryGetDamageable(hit, out _))
+				results.Add(hit);
+		}
+	}
+
+	protected static IReadOnlyList<Collider2D> FindEnemyColliders(Vector2 center, float radius)
+	{
+		CollectEnemyColliders(center, radius, FindEnemyScratch);
+		return FindEnemyScratch;
 	}
 }

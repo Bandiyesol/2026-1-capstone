@@ -9,6 +9,7 @@ public abstract class MotionAnimatedMelee : Motion
 	SpriteRenderer spriteRenderer;
 	bool isFinished;
 	bool animationStarted;
+	bool pendingAnimatorReset;
 
 	protected abstract string AttackStateName { get; }
 
@@ -20,6 +21,17 @@ public abstract class MotionAnimatedMelee : Motion
 		animationStarted = false;
 		// SetActive(true) 이전에 Animator.Play()를 호출하면 Unity 경고가 발생하므로
 		// 첫 번째 Update에서 재생을 시작한다.
+	}
+
+	void OnEnable()
+	{
+		if (!pendingAnimatorReset)
+			return;
+
+		if (animationCtrl == null)
+			animationCtrl = GetComponent<Animator>();
+
+		ApplyAnimatorReset();
 	}
 
 	protected override float GetDefaultTime() => instance.spawntime;
@@ -103,6 +115,7 @@ public abstract class MotionAnimatedMelee : Motion
 		base.ResetForPool();
 		isFinished = false;
 		animationStarted = false;
+		pendingAnimatorReset = true;
 
 		foreach (TrailRenderer trail in GetComponentsInChildren<TrailRenderer>(true))
 		{
@@ -111,10 +124,21 @@ public abstract class MotionAnimatedMelee : Motion
 			trail.enabled = true;
 		}
 
-		if (animationCtrl != null)
-		{
-			animationCtrl.Rebind();
-			animationCtrl.Update(0f);
-		}
+		if (animationCtrl == null)
+			animationCtrl = GetComponent<Animator>();
+
+		// 풀에서 꺼낼 때는 아직 inactive → OnEnable에서 Rebind/Update 처리
+		if (gameObject.activeInHierarchy)
+			ApplyAnimatorReset();
+	}
+
+	void ApplyAnimatorReset()
+	{
+		pendingAnimatorReset = false;
+		if (animationCtrl == null)
+			return;
+
+		animationCtrl.Rebind();
+		animationCtrl.Update(0f);
 	}
 }

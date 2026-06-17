@@ -305,17 +305,13 @@ public class Player : MonoBehaviour
     /// </summary>
     public bool IsOnLava()
     {
-        // 플레이어 중심부에 아주 작은 가상의 원(반지름 0.15)을 그려 groundMask 레이어에 속한 콜라이더들 서치
-        Collider2D[] hits = Physics2D.OverlapCircleAll(rigid.position, 0.15f, groundMask);
+        using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(rigid.position, 0.15f, groundMask);
 
-        if (hits == null)
-            return false;
-
-        // 수집된 지면 오브젝트 중 "Lava" 태그를 가진 맵 타일이 존재하는지 루프 순회 검사
-        foreach (Collider2D hit in hits)
+        for (int i = 0; i < query.Count; i++)
         {
+            Collider2D hit = query.Get(i);
             if (hit != null && hit.CompareTag("Lava"))
-                return true; // 용암 위에 서있음이 확인됨
+                return true;
         }
 
         return false;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Scaner : MonoBehaviour
@@ -8,37 +6,44 @@ public class Scaner : MonoBehaviour
     public float scanRange;
     // 탐지 대상 레이어 마스크
     public LayerMask targetLayer;
-    // 현재 프레임에 탐지된 대상 목록
-    public RaycastHit2D[] targets;
     // 가장 가까운 대상(없으면 null)
     public Transform nearestTarget;
 
-    void FixedUpdate()
+    Transform scannerTransform;
+
+    void Awake()
     {
-        // 원형 범위 탐지로 적 목록 갱신
-        targets = Physics2D.CircleCastAll(transform.position, scanRange, Vector2.zero, 0, targetLayer);
-        // 무기 조준용 최근접 대상 계산
-        nearestTarget = GetNearest();
+        scannerTransform = transform;
     }
 
-    Transform GetNearest()
+    void FixedUpdate()
     {
-        // 가장 가까운 타겟을 찾는 단순 선형 탐색
-        Transform result = null;
-        float diff = 100;
+        using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(
+            scannerTransform.position, scanRange, targetLayer);
 
-        foreach (RaycastHit2D target in targets)
+        nearestTarget = GetNearest(query, scannerTransform.position);
+    }
+
+    static Transform GetNearest(PhysicsQuery2D.OverlapCircleScope query, Vector3 myPos)
+    {
+        Transform result = null;
+        float diff = 100f;
+
+        for (int i = 0; i < query.Count; i++)
         {
-            Vector3 myPos = transform.position;
-            Vector3 targetPos = target.transform.position;
-            float curDiff = Vector3.Distance(myPos, targetPos);
-            // 현재까지 최소 거리보다 작으면 갱신
+            Collider2D hit = query.Get(i);
+            if (hit == null)
+                continue;
+
+            Transform targetTransform = hit.transform;
+            float curDiff = Vector3.Distance(myPos, targetTransform.position);
             if (curDiff < diff)
             {
                 diff = curDiff;
-                result = target.transform;
+                result = targetTransform;
             }
         }
+
         return result;
     }
 }
