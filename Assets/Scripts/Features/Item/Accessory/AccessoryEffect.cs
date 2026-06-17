@@ -1696,7 +1696,7 @@ public class AccessoryEffect : MonoBehaviour
         foreach (Enemy e in FindEnemiesAround(pos, radius))
         {
             if (e == exclude) continue;
-            e.TakeDamage(damage);
+            e.TakeDamageInternal(damage, false);
         }
         Debug.Log($"[AccessoryEffect] 낙뢰 발동 — {damage:F0} 피해 (반경 {radius}m)");
     }
@@ -1707,7 +1707,7 @@ public class AccessoryEffect : MonoBehaviour
         GameAudio.Play(SfxId.AccChainLightning);
         Enemy current = first;
         var hit = new HashSet<Enemy> { first };
-        first.TakeDamage(damage);
+        first.TakeDamageInternal(damage, false);
 
         // 첫 번째 이펙트
         if (chainLightningEffectPrefab != null)
@@ -1726,7 +1726,7 @@ public class AccessoryEffect : MonoBehaviour
             }
 
             if (next == null) break;
-            next.TakeDamage(damage * (1f - i * 0.1f)); // 연쇄마다 10% 감쇠
+            next.TakeDamageInternal(damage * (1f - i * 0.1f), false); // 연쇄마다 10% 감쇠
             hit.Add(next);
 
             // 연쇄 이펙트
@@ -2023,7 +2023,7 @@ public class AccessoryEffect : MonoBehaviour
         if (zeusLightningPrefab != null)
             StartCoroutine(SpawnEffectRoutine(zeusLightningPrefab,
                 first.transform.position, zeusEffectTime, zeusLightningScale));
-        first.TakeDamage(zeusDamage);
+        first.TakeDamageInternal(zeusDamage, false);
         first.ApplyFreeze(zeusStunDuration);
         Debug.Log("[AccessoryEffect] 제우스의 심판 — 낙뢰!");
 
@@ -2049,7 +2049,7 @@ public class AccessoryEffect : MonoBehaviour
             if (zeusChainPrefab != null)
                 StartCoroutine(SpawnEffectRoutine(zeusChainPrefab,
                     next.transform.position, zeusEffectTime, zeusChainScale));
-            next.TakeDamage(zeusChainDamage);
+            next.TakeDamageInternal(zeusChainDamage, false);
             next.ApplyFreeze(zeusStunDuration);
 
             hit.Add(next);
