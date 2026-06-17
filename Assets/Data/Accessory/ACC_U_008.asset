@@ -25,4 +25,4 @@ MonoBehaviour:
   - statType: 3
     value: 0.4
     isMulti: 1
-  effectType: 30
+  effectType: 0
