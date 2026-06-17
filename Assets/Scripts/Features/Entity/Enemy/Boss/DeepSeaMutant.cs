@@ -217,25 +217,17 @@ public class DeepSeaMutant : BossBase
     /// </summary>
     public void OnSummonDead()
     {
-        // 무적 페이즈가 아닐 때 들어온 신호는 예외 차단
         if (!invinciblePhase)
             return;
 
-        // [핵심 기믹] 부하가 죽을 때마다 보스의 체력이 최대 체력의 5%씩 강제로 깎임 (자해)
         health -= maxHealth * 0.05f;
+        health = Mathf.Max(health, 1f); // 무적 중엔 1 이하로 안 내려가게
 
-        // 자해로 인해 체력이 0 이하가 되면 즉시 사망 처리 후 탈출
         if (health <= 0f)
         {
             Dead();
             return;
         }
-
-        /*// 맵에 살아있는 부하가 단 한 마리도 없다면 보스의 무적 상태 강제 해제
-        if (!HasAliveSummons())
-        {
-            invinciblePhase = false;
-        }*/
     }
 
     // 소환수 리스트 정밀 검사
