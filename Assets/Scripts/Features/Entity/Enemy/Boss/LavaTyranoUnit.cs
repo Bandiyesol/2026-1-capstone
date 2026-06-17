@@ -40,6 +40,8 @@ public class LavaTyranoUnit : BossBase
         baseAttackDamage = attackDamage;
         lavaTimer = 0f;
         isOnLava = false;
+
+        core?.RegisterUnit(this);
     }
 
     protected override void Update()

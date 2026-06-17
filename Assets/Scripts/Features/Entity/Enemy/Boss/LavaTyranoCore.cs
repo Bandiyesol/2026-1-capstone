@@ -32,6 +32,20 @@ public class LavaTyranoCore : MonoBehaviour
             if (waveManager == null)
                 waveManager = FindFirstObjectByType<WaveManager>();
         }
+
+        EnsureInitialUnitRegistered();
+    }
+
+    void EnsureInitialUnitRegistered()
+    {
+        LavaTyranoUnit initial = GetComponentInChildren<LavaTyranoUnit>(true);
+        if (initial == null)
+            return;
+
+        if (initial.core == null)
+            initial.core = this;
+
+        RegisterUnit(initial);
     }
 
     // 신생 유닛 리스트 등록 가동
