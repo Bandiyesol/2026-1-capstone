@@ -13,6 +13,7 @@ public class BossHealthHudUI : MonoBehaviour
 	StageManager stageManager;
 	int appliedStageIndex = -1;
 	bool visible;
+	float hudRefreshTimer;
 
 	void Awake()
 	{
@@ -33,6 +34,12 @@ public class BossHealthHudUI : MonoBehaviour
 			SetVisible(false);
 			return;
 		}
+
+		hudRefreshTimer -= Time.unscaledDeltaTime;
+		if (hudRefreshTimer > 0f && visible)
+			return;
+
+		hudRefreshTimer = 0.08f;
 
 		BossHealthHudResolver.Snapshot snap = BossHealthHudResolver.Resolve();
 		if (!snap.IsValid)

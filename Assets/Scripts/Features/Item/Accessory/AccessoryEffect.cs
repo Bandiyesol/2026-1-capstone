@@ -35,6 +35,7 @@ public class AccessoryEffect : MonoBehaviour
 
     // MovingDamage
     Vector3 lastPosition;
+    float movingDamageTickTimer;
 
     // ElectricOnHit (번개 깃든 암령)
     [Header("[ ElectricOnHit — 번개 깃든 암령 ]")]
@@ -174,6 +175,8 @@ public class AccessoryEffect : MonoBehaviour
     public float movingDamageMinSpeed   = 0.5f;
     [Tooltip("피해 범위")]
     public float movingDamageRadius     = 1.5f;
+    [Tooltip("피해 판정 간격(초)")]
+    public float movingDamageTickInterval = 0.12f;
 
     [Header("[ BurningAura — 화염의 외투 ]")]
     [Tooltip("주변 적에게 주는 초당 피해")]
@@ -339,6 +342,8 @@ public class AccessoryEffect : MonoBehaviour
     [Tooltip("탄환 재소환 주기(초)")]    public float soulBulletRespawnTime  = 8f;
     readonly List<GameObject> soulBullets = new List<GameObject>();
     float soulBulletAngleOffset = 0f;
+    float soulBulletDamageTimer;
+    const float SoulBulletDamageInterval = 0.12f;
     Coroutine soulBulletRoutine;
 
     // LightningStrike / ChainLightning
@@ -379,6 +384,7 @@ public class AccessoryEffect : MonoBehaviour
     [Tooltip("화살 사거리")]              public float revengeArrowRange      = 6f;
     [Tooltip("피격 발동 쿨타임(초)")]     public float revengeArrowCooldown   = 5f;
     float lastRevengeArrowTime = -999f;
+    bool useMagicOrbVisual;
 
     void Awake()
     {
@@ -483,16 +489,17 @@ public class AccessoryEffect : MonoBehaviour
     void OnDestroy()
     {
         StopAccessoryLoopAudio();
+        ClearAllTransientEffects();
     }
 
     /// <summary>메인 메뉴 복귀·새 게임 시작 시 특수 악세사리 효과를 초기화합니다.</summary>
     public void ResetSession()
     {
+        ClearAllTransientEffects();
+        PurgeUntrackedEffectClones();
         StopAllCoroutines();
         owned.Clear();
         StopAccessoryLoopAudio();
-        ClearAllTransientEffects();
-        PurgeUntrackedEffectClones();
 
         speedOnHitRoutine = null;
         burningAuraRoutine = null;
@@ -540,11 +547,24 @@ public class AccessoryEffect : MonoBehaviour
         minervaCurrentFrame = 0;
         minervaCurrentBonus = 0f;
         soulBulletAngleOffset = 0f;
+        soulBulletDamageTimer = 0f;
         lastPosition = Vector3.zero;
+        movingDamageTickTimer = 0f;
         lastRevengeArrowTime = -999f;
+        useMagicOrbVisual = false;
+        RestoreFrozenBosses();
 
         if (playerSpriter != null)
             playerSpriter.color = Color.white;
+    }
+
+    static void RestoreFrozenBosses()
+    {
+        foreach (BossBase boss in Object.FindObjectsByType<BossBase>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (boss != null)
+                boss.enabled = true;
+        }
     }
 
     static void StopAccessoryLoopAudio()
@@ -772,8 +792,10 @@ public class AccessoryEffect : MonoBehaviour
 
             case AccessoryEffectType.LightningStrike:
             case AccessoryEffectType.ChainLightning:
+                break;
+
             case AccessoryEffectType.RevengeArrow:
-                // 훅(NotifyEnemyHit / NotifyPlayerDamaged)에서 처리
+                useMagicOrbVisual = data != null && data.name == "ACC_R_019";
                 break;
 
             default:
@@ -871,7 +893,7 @@ public class AccessoryEffect : MonoBehaviour
             if (reflectRatio > 0f)
             {
                 float reflectDamage = finalDamage * reflectRatio;
-                foreach (Enemy e in FindEnemiesAround(playerPos, reflectRadius))
+                foreach (Enemy e in SnapshotEnemiesAround(playerPos, reflectRadius))
                     e.TakeDamage(reflectDamage);
             }
         }
@@ -884,7 +906,7 @@ public class AccessoryEffect : MonoBehaviour
 
         if (Has(AccessoryEffectType.SlowOnHit))
         {
-            foreach (Enemy e in FindEnemiesAround(playerPos, slowOnHitRadius))
+            foreach (Enemy e in SnapshotEnemiesAround(playerPos, slowOnHitRadius))
                 e.ApplyFreeze(slowOnHitFreezeTime);
         }
 
@@ -929,7 +951,7 @@ public class AccessoryEffect : MonoBehaviour
             StartCoroutine(SpawnEffectRoutine(phoenixExplosionPrefab, pos, 1f, phoenixExplosionScale));
 
         float explosionDamage = PlayerStats.Instance.AttackPower * phoenixExplosionRatio;
-        foreach (Enemy e in FindEnemiesAround(pos, phoenixExplosionRadius))
+        foreach (Enemy e in SnapshotEnemiesAround(pos, phoenixExplosionRadius))
             e.TakeDamage(explosionDamage);
 
         // 무적 빨간 오라 5초 동안 표시
@@ -969,7 +991,7 @@ public class AccessoryEffect : MonoBehaviour
             yield return new WaitForSeconds(phoenixAuraBurnInterval);
             if (PlayerStats.Instance == null) break;
 
-            foreach (Enemy e in FindEnemiesAround(
+            foreach (Enemy e in SnapshotEnemiesAround(
                 PlayerStats.Instance.transform.position, phoenixAuraBurnRadius))
             {
                 e.ApplyBurn(phoenixAuraBurnDmg, phoenixAuraBurnInterval, phoenixAuraBurnDuration);
@@ -982,6 +1004,12 @@ public class AccessoryEffect : MonoBehaviour
     // ───────────────────────────────────────────
     public void NotifyEnemyHit(Enemy enemy)
     {
+        if (enemy == null || !enemy.IsCombatLive)
+            return;
+
+        if (!AccessoryCombatBudget.TryBeginEnemyHit(enemy))
+            return;
+
         // 황금 손목 보호대
         if (Has(AccessoryEffectType.GoldOnHit) && Random.value < goldOnHitChance)
             GameManager.instance?.AddCoin(1);
@@ -1003,39 +1031,38 @@ public class AccessoryEffect : MonoBehaviour
         }
 
         // 번개 깃든 암령 — 적중마다 감전 + 주변 30% 전기 피해
-        if (Has(AccessoryEffectType.ElectricOnHit) && enemy != null && enemy.IsLive)
+        if (Has(AccessoryEffectType.ElectricOnHit))
         {
             GameAudio.Play(SfxId.AccElectricChain);
-            // 감전 (빙결 재활용)
             enemy.ApplyFreeze(electricStunDuration);
 
-            // 주변 적에게 전기 피해
             float elecDmg = PlayerStats.Instance != null
                 ? PlayerStats.Instance.AttackPower * electricDamageRatio
                 : electricDamageRatio * 10f;
 
-            foreach (Enemy e in FindEnemiesAround(enemy.transform.position, electricRadius))
+            if (electricPrefab != null && AccessoryCombatBudget.TrySpawnFx())
             {
-                e.TakeDamageInternal(elecDmg, false);
-                // 이펙트
-                if (electricPrefab != null)
-                    StartCoroutine(SpawnEffectRoutine(electricPrefab,
-                        e.transform.position, electricEffectTime, electricScale));
+                StartCoroutine(SpawnEffectRoutine(
+                    electricPrefab, enemy.transform.position, electricEffectTime, electricScale));
             }
+
+            ApplyAoEDamageAround(enemy.transform.position, electricRadius, elecDmg);
         }
 
         // 금지된 마법서 — 25% 확률 마법 폭발
-        if (Has(AccessoryEffectType.ElementStack) && enemy != null && enemy.IsLive)
+        if (Has(AccessoryEffectType.ElementStack))
         {
-            if (Random.value < magicExplosionChance)
+            if (Random.value < magicExplosionChance && AccessoryCombatBudget.TryAoEProc())
             {
                 GameAudio.Play(SfxId.AccForbiddenTome);
                 Vector3 pos = enemy.transform.position;
-                if (magicExplosionPrefab != null)
-                    StartCoroutine(SpawnEffectRoutine(magicExplosionPrefab, pos, magicExplosionTime, magicExplosionScale));
-                foreach (Enemy e in FindEnemiesAround(pos, magicExplosionRadius))
-                    e.TakeDamageInternal(magicExplosionDamage, false);
-                Debug.Log("[AccessoryEffect] 금지된 마법서 — 마법 폭발!");
+                if (magicExplosionPrefab != null && AccessoryCombatBudget.TrySpawnFx())
+                {
+                    StartCoroutine(SpawnEffectRoutine(
+                        magicExplosionPrefab, pos, magicExplosionTime, magicExplosionScale));
+                }
+
+                ApplyAoEDamageAround(pos, magicExplosionRadius, magicExplosionDamage);
             }
         }
 
@@ -1087,19 +1114,19 @@ public class AccessoryEffect : MonoBehaviour
         }
 
         // 폭탄광 — 20% 확률 광역 폭발
-        if (Has(AccessoryEffectType.Explosion) && enemy != null && enemy.IsLive)
+        if (Has(AccessoryEffectType.Explosion))
         {
-            if (Random.value < explosionChance)
+            if (Random.value < explosionChance && AccessoryCombatBudget.TryAoEProc())
             {
                 GameAudio.Play(SfxId.AccExplosion);
                 Vector3 pos = enemy.transform.position;
-                // 폭발 이펙트 소환
-                if (explosionEffectPrefab != null)
-                    StartCoroutine(SpawnEffectRoutine(explosionEffectPrefab, pos, explosionEffectTime, explosionEffectScale));
-                // 광역 피해
-                foreach (Enemy e in FindEnemiesAround(pos, explosionRadius))
-                   e.TakeDamageInternal(explosionDamage, false);
-                Debug.Log("[AccessoryEffect] 폭탄광 — 폭발!");
+                if (explosionEffectPrefab != null && AccessoryCombatBudget.TrySpawnFx())
+                {
+                    StartCoroutine(SpawnEffectRoutine(
+                        explosionEffectPrefab, pos, explosionEffectTime, explosionEffectScale));
+                }
+
+                ApplyAoEDamageAround(pos, explosionRadius, explosionDamage);
             }
         }
 
@@ -1132,7 +1159,7 @@ public class AccessoryEffect : MonoBehaviour
     public void NotifyEnemyKilledWithPos(Vector3 pos)
     {
         if (!Has(AccessoryEffectType.SkeletonOnKill)) return;
-        foreach (Enemy e in FindEnemiesAround(pos, skeletonSlowRadius))
+        foreach (Enemy e in SnapshotEnemiesAround(pos, skeletonSlowRadius))
             e.ApplySlow(skeletonSlowRatio, skeletonSlowDuration);
         Debug.Log("[AccessoryEffect] 흑마법의 인장 — 주변 적 이동속도 감소!");
     }
@@ -1143,12 +1170,26 @@ public class AccessoryEffect : MonoBehaviour
         if (!Has(AccessoryEffectType.PoisonSpread)) return;
         if (killedEnemy == null) return;
 
-        foreach (Enemy nearby in FindEnemiesAround(killedEnemy.transform.position, poisonSpreadRadius))
+        foreach (Enemy nearby in SnapshotEnemiesAround(killedEnemy.transform.position, poisonSpreadRadius))
         {
-            if (nearby == killedEnemy) continue;
+            if (!nearby.IsCombatLive || nearby == killedEnemy) continue;
             nearby.ApplyPoison(poisonDamagePerTick, poisonTickInterval, poisonDuration);
         }
         Debug.Log("[AccessoryEffect] 맹독성 확산기 — 독 전이!");
+    }
+
+    /// <summary>풀 반환·비활성화 시 재앙의 씨앗 등 적 추적 코루틴을 정리합니다.</summary>
+    public void NotifyEnemyDespawned(Enemy enemy)
+    {
+        if (enemy == null)
+            return;
+
+        if (seedRoutines.TryGetValue(enemy, out Coroutine routine))
+        {
+            if (routine != null)
+                StopCoroutine(routine);
+            seedRoutines.Remove(enemy);
+        }
     }
 
     // ───────────────────────────────────────────
@@ -1227,18 +1268,31 @@ public class AccessoryEffect : MonoBehaviour
             }
         }
 
+        Vector3 playerPos = PlayerStats.Instance.transform.position;
+        bool trackPlayerMovement = Has(AccessoryEffectType.MovingDamage) || Has(AccessoryEffectType.DimensionBoots);
+        float frameMoveDistance = trackPlayerMovement
+            ? Vector3.Distance(playerPos, lastPosition)
+            : 0f;
+        float frameMoveSpeed = frameMoveDistance / Mathf.Max(Time.deltaTime, 1e-5f);
+
         // 대지의 신발 — 이동 중 주변 적 피해
         if (Has(AccessoryEffectType.MovingDamage))
         {
-            Vector3 curPos = PlayerStats.Instance.transform.position;
-            float moved = Vector3.Distance(curPos, lastPosition) / Time.deltaTime;
-            if (moved >= movingDamageMinSpeed)
+            if (frameMoveSpeed >= movingDamageMinSpeed)
             {
-                float dmg = movingDamagePerSec * Time.deltaTime;
-                foreach (Enemy e in FindEnemiesAround(curPos, movingDamageRadius))
-                    e.TakeDamage(dmg);
+                movingDamageTickTimer -= Time.deltaTime;
+                if (movingDamageTickTimer <= 0f)
+                {
+                    movingDamageTickTimer = movingDamageTickInterval;
+                    float dmg = movingDamagePerSec * movingDamageTickInterval;
+                    foreach (Enemy e in SnapshotEnemiesAround(playerPos, movingDamageRadius))
+                        e.TakeDamageInternal(dmg, triggerAccessoryHook: false);
+                }
             }
-            lastPosition = curPos;
+            else
+            {
+                movingDamageTickTimer = 0f;
+            }
         }
 
 
@@ -1256,10 +1310,7 @@ public class AccessoryEffect : MonoBehaviour
                 lastDimensionSpeedBonus = newBonus;
             }
 
-            // 이동 감지
-            Vector3 curPos = PlayerStats.Instance.transform.position;
-            float moved = Vector3.Distance(curPos, lastPosition);
-            bool isMoving = moved > 0.01f;
+            bool isMoving = frameMoveDistance > 0.01f;
 
             // 이동 중 회피율 +30%
             if (isMoving && !isMovingBonus)
@@ -1281,13 +1332,16 @@ public class AccessoryEffect : MonoBehaviour
                 {
                     footprintTimer = 0f;
                     GameAudio.Play(SfxId.AccDimensionFootprint, footprintSfxScale);
-                    GameObject fp = Instantiate(footprintPrefab, curPos, Quaternion.identity);
+                    GameObject fp = Instantiate(footprintPrefab, playerPos, Quaternion.identity);
                     TrackTransientEffect(fp);
                     fp.transform.localScale = Vector3.one * footprintScale;
                     Destroy(fp, footprintLifetime);
                 }
             }
         }
+
+        if (trackPlayerMovement)
+            lastPosition = playerPos;
 
         // 미다스의 장갑 — 골드 500개 단위로 황금색 틴트
         if (Has(AccessoryEffectType.MidasGlove) && GameManager.instance != null)
@@ -1343,6 +1397,12 @@ public class AccessoryEffect : MonoBehaviour
         {
             soulBulletAngleOffset += soulBulletOrbitSpeed * Time.deltaTime;
             float angleStep = 360f / soulBullets.Count;
+
+            soulBulletDamageTimer -= Time.deltaTime;
+            bool dealSoulDamage = soulBulletDamageTimer <= 0f;
+            if (dealSoulDamage)
+                soulBulletDamageTimer = SoulBulletDamageInterval;
+
             for (int i = 0; i < soulBullets.Count; i++)
             {
                 if (soulBullets[i] == null) continue;
@@ -1350,15 +1410,21 @@ public class AccessoryEffect : MonoBehaviour
                 Vector3 offset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * soulBulletOrbitRadius;
                 soulBullets[i].transform.position = PlayerStats.Instance.transform.position + offset;
 
-                // 공전 중 충돌 피해 (0.5f 반경 내 적에게 틱 데미지)
+                if (!dealSoulDamage)
+                    continue;
+
                 using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(
                     soulBullets[i].transform.position, 0.5f);
                 for (int j = 0; j < query.Count; j++)
                 {
                     Collider2D col = query.Get(j);
                     Enemy e = col.GetComponent<Enemy>();
-                    if (e != null && e.IsLive)
-                        e.TakeDamage(soulBulletDamage * Time.deltaTime);
+                    if (e != null && e.IsCombatLive)
+                    {
+                        e.TakeDamageInternal(
+                            soulBulletDamage * SoulBulletDamageInterval,
+                            triggerAccessoryHook: false);
+                    }
                 }
             }
             // 플레이어 바라보는 방향으로 탄환 뒤집기
@@ -1417,7 +1483,7 @@ public class AccessoryEffect : MonoBehaviour
             yield return new WaitForSeconds(burningAuraTickInterval);
             if (PlayerStats.Instance == null) continue;
             float dmg = burningAuraDamagePerSec * burningAuraTickInterval;
-            foreach (Enemy e in FindEnemiesAround(
+            foreach (Enemy e in SnapshotEnemiesAround(
                 PlayerStats.Instance.transform.position, burningAuraRadius))
                 e.TakeDamage(dmg);
         }
@@ -1431,7 +1497,7 @@ public class AccessoryEffect : MonoBehaviour
             if (PlayerStats.Instance == null) continue;
 
             Vector3 center = PlayerStats.Instance.transform.position;
-            foreach (Enemy e in FindEnemiesAround(center, blackHoleRadius))
+            foreach (Enemy e in SnapshotEnemiesAround(center, blackHoleRadius))
             {
                 Vector3 dir = (center - e.transform.position).normalized;
                 e.transform.position += dir * blackHoleForce * blackHoleTickInterval;
@@ -1465,52 +1531,63 @@ public class AccessoryEffect : MonoBehaviour
         {
             yield return new WaitForSeconds(hourglassCooldown);
 
-            // 모래시계 프리팹 — 화면 중앙에 반투명으로 소환
             GameObject hourglass = null;
-            if (hourglassPrefab != null)
-            {
-                // 카메라 중앙 위치
-                Vector3 centerPos = Camera.main != null
-                    ? Camera.main.transform.position
-                    : Vector3.zero;
-                centerPos.z = 0f;
+            BossBase[] frozenBosses = null;
 
-                hourglass = Instantiate(hourglassPrefab, centerPos, Quaternion.identity);
-                TrackTransientEffect(hourglass);
-                // 반투명 적용
-                SpriteRenderer sr = hourglass.GetComponentInChildren<SpriteRenderer>();
-                if (sr != null)
+            try
+            {
+                if (hourglassPrefab != null)
                 {
-                    Color col = sr.color;
-                    sr.color = new Color(col.r, col.g, col.b, hourglassAlpha);
+                    Vector3 centerPos = Camera.main != null
+                        ? Camera.main.transform.position
+                        : Vector3.zero;
+                    centerPos.z = 0f;
+
+                    hourglass = Instantiate(hourglassPrefab, centerPos, Quaternion.identity);
+                    TrackTransientEffect(hourglass);
+                    SpriteRenderer sr = hourglass.GetComponentInChildren<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        Color col = sr.color;
+                        sr.color = new Color(col.r, col.g, col.b, hourglassAlpha);
+                        sr.sortingOrder = 999;
+                    }
                 }
 
-                // UI 위에 렌더링되도록 Order 설정
-                if (sr != null) sr.sortingOrder = 999;
+                GameAudio.Play(SfxId.AccHourglass);
+                Debug.Log("[AccessoryEffect] 시간술사의 모래시계 — 시간 정지!");
+
+                Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+                frozenBosses = Object.FindObjectsByType<BossBase>(FindObjectsSortMode.None);
+
+                foreach (Enemy e in enemies)
+                {
+                    if (e != null)
+                        e.ApplyFreeze(hourglassDuration);
+                }
+
+                foreach (BossBase b in frozenBosses)
+                {
+                    if (b != null)
+                        b.enabled = false;
+                }
+
+                yield return new WaitForSeconds(hourglassDuration);
+                Debug.Log("[AccessoryEffect] 시간 정지 해제");
             }
+            finally
+            {
+                if (frozenBosses != null)
+                {
+                    foreach (BossBase b in frozenBosses)
+                    {
+                        if (b != null)
+                            b.enabled = true;
+                    }
+                }
 
-            // 적/보스만 정지 (플레이어는 계속 움직임)
-            GameAudio.Play(SfxId.AccHourglass);
-            Debug.Log("[AccessoryEffect] 시간술사의 모래시계 — 시간 정지!");
-            Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-            BossBase[] bosses = Object.FindObjectsByType<BossBase>(FindObjectsSortMode.None);
-
-            // 적 이동속도 0으로 설정
-            foreach (Enemy e in enemies) e.ApplyFreeze(hourglassDuration);
-            // 보스 비활성화 (isPatternPlaying 방식으로 멈춤)
-            foreach (BossBase b in bosses) b.enabled = false;
-
-            yield return new WaitForSeconds(hourglassDuration);
-
-            // 보스 다시 활성화
-            foreach (BossBase b in bosses) if (b != null) b.enabled = true;
-            Debug.Log("[AccessoryEffect] 시간 정지 해제");
-
-            // 모래시계 제거
-            ReleaseTransientEffect(hourglass);
-
-            timeStopRoutine = StartCoroutine(HourglassRoutine());
-            yield break;
+                ReleaseTransientEffect(hourglass);
+            }
         }
     }
 
@@ -1628,14 +1705,15 @@ public class AccessoryEffect : MonoBehaviour
             elapsed += Time.deltaTime;
 
             // 씨앗이 적 머리 위 따라다니기
-            if (seedFx != null && enemy != null && enemy.IsLive)
+            if (seedFx != null && enemy != null && enemy.IsCombatLive)
                 seedFx.transform.position = enemy.transform.position + Vector3.up * seedHeadOffset;
 
-            // 적이 죽으면 씨앗 제거 (전이는 NotifyEnemyKilledWithPos에서 처리)
-            if (enemy == null || !enemy.IsLive)
+            // 적이 죽거나 풀에 반환되면 씨앗 제거
+            if (enemy == null || !enemy.IsCombatLive)
             {
                 ReleaseTransientEffect(seedFx);
-                if (seedRoutines.ContainsKey(enemy)) seedRoutines.Remove(enemy);
+                if (enemy != null && seedRoutines.ContainsKey(enemy))
+                    seedRoutines.Remove(enemy);
                 yield break;
             }
 
@@ -1645,7 +1723,7 @@ public class AccessoryEffect : MonoBehaviour
         // 씨앗 제거 후 폭발
         ReleaseTransientEffect(seedFx);
 
-        if (enemy != null && enemy.IsLive)
+        if (enemy != null && enemy.IsCombatLive)
         {
             GameAudio.Play(SfxId.AccCalamitySeedExplosion);
             // 폭발 이펙트
@@ -1657,24 +1735,25 @@ public class AccessoryEffect : MonoBehaviour
                 Destroy(exFx, 1f);
             }
 
-            // 최대체력 5% 피해
+            // 최대체력 5% 피해 (악세사리 연쇄 발동 없음)
             float dmg = enemy.maxHealth * seedDamageRatio;
-            enemy.TakeDamage(dmg);
+            enemy.TakeDamageInternal(dmg, triggerAccessoryHook: false);
             Debug.Log($"[AccessoryEffect] 재앙의 씨앗 — 폭발! {dmg:F0} 피해");
 
             // 주변 적에게 씨앗 전이
             SpreadSeed(enemy);
         }
 
-        if (seedRoutines.ContainsKey(enemy)) seedRoutines.Remove(enemy);
+        if (enemy != null && seedRoutines.ContainsKey(enemy))
+            seedRoutines.Remove(enemy);
     }
 
     /// <summary>씨앗 주변 전이</summary>
     void SpreadSeed(Enemy origin)
     {
-        foreach (Enemy e in FindEnemiesAround(origin.transform.position, seedSpreadRadius))
+        foreach (Enemy e in SnapshotEnemiesAround(origin.transform.position, seedSpreadRadius))
         {
-            if (e == origin) continue;
+            if (!e.IsCombatLive || e == origin) continue;
             if (seedRoutines.ContainsKey(e)) continue;
             seedRoutines[e] = StartCoroutine(CalamitySeedRoutine(e));
         }
@@ -1693,7 +1772,7 @@ public class AccessoryEffect : MonoBehaviour
         if (lightningEffectPrefab != null)
             StartCoroutine(SpawnEffectRoutine(lightningEffectPrefab, pos, lightningEffectTime, lightningEffectScale));
 
-        foreach (Enemy e in FindEnemiesAround(pos, radius))
+        foreach (Enemy e in SnapshotEnemiesAround(pos, radius))
         {
             if (e == exclude) continue;
             e.TakeDamageInternal(damage, false);
@@ -1718,7 +1797,7 @@ public class AccessoryEffect : MonoBehaviour
             Enemy next = null;
             float minDist = float.MaxValue;
 
-            foreach (Enemy e in FindEnemiesAround(current.transform.position, chainLightningRadius))
+            foreach (Enemy e in SnapshotEnemiesAround(current.transform.position, chainLightningRadius))
             {
                 if (hit.Contains(e)) continue;
                 float dist = Vector3.Distance(current.transform.position, e.transform.position);
@@ -1762,10 +1841,24 @@ public class AccessoryEffect : MonoBehaviour
     /// <summary>현재 어느 악세사리가 발동했는지에 따라 이펙트 프리팹 선택</summary>
     GameObject ResolveArrowEffectPrefab()
     {
-        // 마법의 구(ACC_R_019)가 활성화된 경우 MagicOrbEffect 우선 사용
-        if (magicOrbEffectPrefab != null)
+        if (useMagicOrbVisual && magicOrbEffectPrefab != null)
             return magicOrbEffectPrefab;
         return revengeArrowEffectPrefab;
+    }
+
+    bool ShouldCancelRevengeArrowFx()
+    {
+        if (GameManager.instance == null || !GameManager.instance.isLive)
+            return true;
+
+        return PlayerStats.Instance == null;
+    }
+
+    /// <summary>사망·일시정지 시 남는 투사체 이펙트 정리</summary>
+    public void ClearCombatTransientEffects()
+    {
+        ClearAllTransientEffects();
+        PurgeUntrackedEffectClones();
     }
 
     IEnumerator ArrowRoutine(Vector3 startPos, Vector2 dir, float damage)
@@ -1775,7 +1868,6 @@ public class AccessoryEffect : MonoBehaviour
         Vector3 pos    = startPos;
         var hit = new HashSet<Enemy>();
 
-        // 화살/마법구 이펙트 오브젝트 소환 (악세사리 종류에 따라 자동 선택)
         GameObject arrowFx = null;
         GameObject fxPrefab = ResolveArrowEffectPrefab();
         if (fxPrefab != null)
@@ -1786,32 +1878,41 @@ public class AccessoryEffect : MonoBehaviour
             arrowFx.transform.localScale = Vector3.one * 0.5f;
         }
 
-        while (elapsed < duration)
+        try
         {
-            elapsed += Time.deltaTime;
-            pos     += (Vector3)(dir * revengeArrowSpeed * Time.deltaTime);
-
-            // 이펙트 위치 갱신
-            if (arrowFx != null)
-                arrowFx.transform.position = pos;
-
-            // 이동 경로에서 적 감지
-            using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(pos, 0.3f);
-            for (int h = 0; h < query.Count; h++)
+            while (elapsed < duration)
             {
-                Collider2D col = query.Get(h);
-                Enemy e = col.GetComponent<Enemy>();
-                if (e != null && e.IsLive && !hit.Contains(e))
-                {
-                    e.TakeDamage(damage);
-                    hit.Add(e);
-                }
-            }
-            yield return null;
-        }
+                if (ShouldCancelRevengeArrowFx())
+                    yield break;
 
-        // 화살 이펙트 제거
-        ReleaseTransientEffect(arrowFx);
+                float dt = Time.deltaTime;
+                if (dt <= 0f)
+                    dt = Time.unscaledDeltaTime;
+
+                elapsed += dt;
+                pos     += (Vector3)(dir * revengeArrowSpeed * dt);
+
+                if (arrowFx != null)
+                    arrowFx.transform.position = pos;
+
+                using PhysicsQuery2D.OverlapCircleScope query = PhysicsQuery2D.OverlapCircle(pos, 0.3f);
+                for (int h = 0; h < query.Count; h++)
+                {
+                    Collider2D col = query.Get(h);
+                    Enemy e = col.GetComponent<Enemy>();
+                    if (e != null && e.IsLive && !hit.Contains(e))
+                    {
+                        e.TakeDamage(damage);
+                        hit.Add(e);
+                    }
+                }
+                yield return null;
+            }
+        }
+        finally
+        {
+            ReleaseTransientEffect(arrowFx);
+        }
     }
 
     /// <summary>이펙트 프리팹을 소환하고 일정 시간 후 제거</summary>
@@ -2037,7 +2138,7 @@ public class AccessoryEffect : MonoBehaviour
         {
             Enemy next = null;
             float minDist = float.MaxValue;
-            foreach (Enemy e in FindEnemiesAround(current.transform.position, zeusChainRadius))
+            foreach (Enemy e in SnapshotEnemiesAround(current.transform.position, zeusChainRadius))
             {
                 if (hit.Contains(e)) continue;
                 float dist = Vector3.Distance(current.transform.position, e.transform.position);
@@ -2152,7 +2253,7 @@ public class AccessoryEffect : MonoBehaviour
         if (PlayerStats.Instance == null) return;
         GameAudio.StopLoop(SfxId.AccSoulLanternOrbitLoop);
         GameAudio.Play(SfxId.AccSoulLanternShot);
-        IReadOnlyList<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        IReadOnlyList<Enemy> nearby = SnapshotEnemiesAround(PlayerStats.Instance.transform.position, 20f);
         if (nearby.Count == 0) return;
 
         for (int i = soulBullets.Count - 1; i >= 0; i--)
@@ -2209,7 +2310,7 @@ public class AccessoryEffect : MonoBehaviour
 
         // 각 탄환마다 가장 가까운 적을 찾아 유도
         var targets = new List<Enemy>();
-        IReadOnlyList<Enemy> nearby = FindEnemiesAround(PlayerStats.Instance.transform.position, 20f);
+        IReadOnlyList<Enemy> nearby = SnapshotEnemiesAround(PlayerStats.Instance.transform.position, 20f);
 
         for (int i = 0; i < soulBullets.Count; i++)
         {
@@ -2256,7 +2357,7 @@ public class AccessoryEffect : MonoBehaviour
             {
                 if (PlayerStats.Instance != null)
                 {
-                    IReadOnlyList<Enemy> nearby = FindEnemiesAround(bullet.transform.position, 20f);
+                    IReadOnlyList<Enemy> nearby = SnapshotEnemiesAround(bullet.transform.position, 20f);
                     current = nearby.Count > 0 ? nearby[0] : null;
                 }
             }
@@ -2353,7 +2454,34 @@ public class AccessoryEffect : MonoBehaviour
 
     IReadOnlyList<Enemy> FindEnemiesAround(Vector3 center, float radius)
     {
-        enemiesAroundScratch.Clear();
+        FillEnemiesAround(center, radius, enemiesAroundScratch);
+        return enemiesAroundScratch;
+    }
+
+    List<Enemy> SnapshotEnemiesAround(Vector3 center, float radius)
+    {
+        FillEnemiesAround(center, radius, enemiesAroundScratch);
+        // foreach 도중 다른 NotifyEnemyHit이 같은 버퍼를 Clear하지 않도록 복사본 반환
+        return new List<Enemy>(enemiesAroundScratch);
+    }
+
+    void ApplyAoEDamageAround(Vector3 center, float radius, float damage, Enemy exclude = null)
+    {
+        FillEnemiesAround(center, radius, enemiesAroundScratch);
+        int count = enemiesAroundScratch.Count;
+        for (int i = 0; i < count; i++)
+        {
+            Enemy target = enemiesAroundScratch[i];
+            if (target == null || target == exclude || !target.IsCombatLive)
+                continue;
+
+            target.TakeDamageInternal(damage, triggerAccessoryHook: false);
+        }
+    }
+
+    static void FillEnemiesAround(Vector3 center, float radius, List<Enemy> results)
+    {
+        results.Clear();
         if (enemyLayerMask < 0)
             enemyLayerMask = LayerMask.GetMask("Enemy");
 
@@ -2361,10 +2489,8 @@ public class AccessoryEffect : MonoBehaviour
         for (int i = 0; i < query.Count; i++)
         {
             Enemy e = query.Get(i).GetComponent<Enemy>();
-            if (e != null)
-                enemiesAroundScratch.Add(e);
+            if (e != null && e.IsCombatLive)
+                results.Add(e);
         }
-
-        return enemiesAroundScratch;
     }
 }

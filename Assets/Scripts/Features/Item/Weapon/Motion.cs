@@ -638,7 +638,7 @@ public abstract class Motion : MonoBehaviour
 	public void ForceClearRuneEffects() => ClearAttachedRuneEffects();
 
 	/// <summary>
-	/// 풀 재사용 시 Destroy() 지연으로 이전 룬 상태(elapsedtime, remainingBounces 등)가 남는 문제 방지.
+	/// 풀 재사용 시 이전 룬 컴포넌트를 제거합니다. 물리 콜백 중에는 Destroy만 사용합니다.
 	/// </summary>
 	void ClearAttachedRuneEffects()
 	{
@@ -649,10 +649,15 @@ public abstract class Motion : MonoBehaviour
 		RuneEffect[] effects = GetComponents<RuneEffect>();
 		for (int i = effects.Length - 1; i >= 0; i--)
 		{
-			if (effects[i] == null)
+			RuneEffect effect = effects[i];
+			if (effect == null)
 				continue;
 
-			DestroyImmediate(effects[i]);
+			effect.enabled = false;
+			if (Application.isPlaying)
+				Destroy(effect);
+			else
+				DestroyImmediate(effect);
 		}
 	}
 

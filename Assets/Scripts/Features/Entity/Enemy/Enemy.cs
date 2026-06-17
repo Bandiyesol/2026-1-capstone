@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour, IDamageable
     // 상태 제어 변수들
     protected bool isLive;     // 현재 살아있는지 여부 (자식 클래스 접근 가능)
     public bool IsLive => isLive;  // 외부 접근용 프로퍼티
+    public bool IsCombatLive => isLive && isActiveAndEnabled;
     bool isFrozen;             // 빙결(치명적 멈춤) 상태 여부
     bool hiddenInFog;          // 안개 속에 숨겨졌는지 여부
     float freezeTimer;         // 빙결 남은 시간 타이머
@@ -89,9 +90,20 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void OnDisable()
     {
+        isLive = false;
+        isBurning = false;
+        isPoisoning = false;
+        isBleeding = false;
+        isFrozen = false;
+        burnRoutine = null;
+        poisonRoutine = null;
+        bleedRoutine = null;
+
         ClearGravityPull();
         if (coll != null)
             EnemyColliderRegistry.Unregister(coll);
+
+        AccessoryEffect.instance?.NotifyEnemyDespawned(this);
     }
 
     void ApplyData()
@@ -192,7 +204,7 @@ public void TakeDamage(float damage)
 // 악세사리 광역 효과 등 "이미 NotifyEnemyHit을 발동시킨 공격"에서 호출
 public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
 {
-    if (!isLive || health <= 0f) return;
+    if (!isLive || health <= 0f || !isActiveAndEnabled) return;
 
     health -= damage;
 
@@ -236,7 +248,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
     /// <summary>이동속도 감소 (ratio: 0.2 = 20% 감소, duration: 지속 시간)</summary>
     public void ApplySlow(float ratio, float duration)
     {
-        if (!isLive) return;
+        if (!IsCombatLive) return;
         StartCoroutine(SlowRoutine(ratio, duration));
     }
 
@@ -262,6 +274,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
 
     public void ApplyFreeze(float duration)
     {
+        if (!IsCombatLive) return;
         isFrozen = true;
         freezeTimer = Mathf.Max(freezeTimer, duration); // 더 긴 빙결 시간으로 갱신
     }
@@ -272,7 +285,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
     /// </summary>
     public void ApplyBurn(float damagePerTick, float tickInterval, float duration)
     {
-        if (!isLive) return;
+        if (!IsCombatLive) return;
 
         // 기존 화상 코루틴 중단 후 새 파라미터로 재시작 (갱신)
         if (burnRoutine != null) StopCoroutine(burnRoutine);
@@ -289,7 +302,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
         {
             yield return new WaitForSeconds(tickInterval);
             elapsed += tickInterval;
-            if (isLive) TakeDamage(damagePerTick);
+            if (isLive) TakeDamageInternal(damagePerTick, triggerAccessoryHook: false);
         }
 
         isBurning = false;
@@ -303,7 +316,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
     /// </summary>
     public void ApplyPoison(float damagePerTick, float tickInterval, float duration)
     {
-        if (!isLive) return;
+        if (!IsCombatLive) return;
 
         if (poisonRoutine != null) StopCoroutine(poisonRoutine);
         poisonRoutine = StartCoroutine(PoisonRoutine(damagePerTick, tickInterval, duration));
@@ -319,7 +332,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
         {
             yield return new WaitForSeconds(tickInterval);
             elapsed += tickInterval;
-            if (isLive) TakeDamage(damagePerTick);
+            if (isLive) TakeDamageInternal(damagePerTick, triggerAccessoryHook: false);
         }
 
         isPoisoning = false;
@@ -332,7 +345,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
     /// </summary>
     public void ApplyBleed(float damagePerTick, float tickInterval, float duration)
     {
-        if (!isLive) return;
+        if (!IsCombatLive) return;
 
         if (bleedRoutine != null) StopCoroutine(bleedRoutine);
         bleedRoutine = StartCoroutine(BleedRoutine(damagePerTick, tickInterval, duration));
@@ -358,7 +371,7 @@ public void TakeDamageInternal(float damage, bool triggerAccessoryHook)
             float finalDamage = damagePerTick + moved * 2f;
             lastPos = transform.position;
 
-            TakeDamage(finalDamage);
+            TakeDamageInternal(finalDamage, triggerAccessoryHook: false);
         }
 
         isBleeding = false;
