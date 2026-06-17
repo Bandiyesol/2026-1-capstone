@@ -32,13 +32,21 @@ public class EffectGravity : RuneEffect, IStateEffect
 
 	void FixedUpdate()
 	{
-		if (weapon.isSplitChild || !ShouldRunEffect() || isFinished || parentMotion == null || parentMotion.instance == null)
+		if (weapon != null && weapon.isSplitChild)
+			return;
+
+		if (!ShouldRunEffect() || isFinished || parentMotion == null || parentMotion.instance == null)
 			return;
 
 		if (pullForce <= 0f || pullRadius <= 0f || duration <= 0f)
 			return;
 
 		ApplyPullAt(transform.position);
+	}
+
+	void OnDisable()
+	{
+		elapsedtime = duration;
 	}
 
 	void ApplyPullAt(Vector2 center)

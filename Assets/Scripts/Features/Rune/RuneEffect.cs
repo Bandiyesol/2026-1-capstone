@@ -16,6 +16,12 @@ public abstract class RuneEffect : MonoBehaviour
 	public RuneData data { get; protected set; }
 	public float currentCooltime { get; protected set; } = 0f;
 
+	static int activeGameplaySessionId;
+	int initGameplaySessionId;
+
+	/// <summary>메인 메뉴 복귀·새 게임 시작 시 호출 — 이전 판의 룬 컴포넌트가 동작하지 않게 합니다.</summary>
+	public static void InvalidateGameplaySession() => activeGameplaySessionId++;
+
 	public bool isReady          => currentCooltime <= 0f;
 	public virtual bool isFinished     => true;
 	public virtual bool ManualCollision => false;
@@ -26,11 +32,15 @@ public abstract class RuneEffect : MonoBehaviour
 		parentMotion  = motion;
 		data          = runeData;
 		currentCooltime = 0f;
+		initGameplaySessionId = activeGameplaySessionId;
 	}
 
 	/// <summary>플레이 중이며, 이 룬이 현재 로드아웃에 장착되어 있을 때만 true.</summary>
 	public bool ShouldRunEffect()
 	{
+		if (initGameplaySessionId != activeGameplaySessionId)
+			return false;
+
 		if (GameManager.instance == null || !GameManager.instance.isLive)
 			return false;
 

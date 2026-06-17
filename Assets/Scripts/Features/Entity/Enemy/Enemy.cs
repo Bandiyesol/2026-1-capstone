@@ -89,6 +89,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void OnDisable()
     {
+        ClearGravityPull();
         if (coll != null)
             EnemyColliderRegistry.Unregister(coll);
     }
@@ -153,6 +154,13 @@ public class Enemy : MonoBehaviour, IDamageable
         gravityPullForce = force;
         // Update에서 갱신 → 다음 FixedUpdate까지 유지 (frameCount 동기화 버그 방지)
         gravityPullUntil = Time.time + 0.2f;
+    }
+
+    public void ClearGravityPull()
+    {
+        gravityPullCenter = null;
+        gravityPullForce = 0f;
+        gravityPullUntil = 0f;
     }
 
     void LateUpdate()

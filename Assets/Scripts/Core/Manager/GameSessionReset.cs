@@ -11,6 +11,7 @@ public static class GameSessionReset
 			return;
 
 		Time.timeScale = 1f;
+		RuneEffect.InvalidateGameplaySession();
 
 		ResetWaveAndStage(game);
 		ResetPool(game.pool);
@@ -90,8 +91,11 @@ public static class GameSessionReset
 
 		foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None))
 		{
-			if (enemy != null)
-				enemy.gameObject.SetActive(false);
+			if (enemy == null)
+				continue;
+
+			enemy.ClearGravityPull();
+			enemy.gameObject.SetActive(false);
 		}
 
 		foreach (BossBase boss in Object.FindObjectsByType<BossBase>(FindObjectsInactive.Include, FindObjectsSortMode.None))
