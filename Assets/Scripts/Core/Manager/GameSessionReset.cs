@@ -11,7 +11,7 @@ public static class GameSessionReset
 			return;
 
 		Time.timeScale = 1f;
-		GameAudio.ResetGameplaySfx();
+		RuneEffect.InvalidateGameplaySession();
 
 		ResetWaveAndStage(game);
 		ResetPool(game.pool);
@@ -91,8 +91,11 @@ public static class GameSessionReset
 
 		foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None))
 		{
-			if (enemy != null)
-				enemy.gameObject.SetActive(false);
+			if (enemy == null)
+				continue;
+
+			enemy.ClearGravityPull();
+			enemy.gameObject.SetActive(false);
 		}
 
 		foreach (BossBase boss in Object.FindObjectsByType<BossBase>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -110,9 +113,6 @@ public static class GameSessionReset
 
 		if (AccessoryInventory.Instance != null)
 			AccessoryInventory.Instance.Clear();
-
-		if (AccessoryEffect.instance != null)
-			AccessoryEffect.instance.ResetSession();
 
 		PotionInventory potion = Object.FindFirstObjectByType<PotionInventory>(FindObjectsInactive.Include);
 		if (potion != null)

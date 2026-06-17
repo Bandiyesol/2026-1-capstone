@@ -227,6 +227,8 @@ public class GameManager : MonoBehaviour
 		DismissBlockingRewardOverlays();
 		isLive = false;
 		FreezePlayerMovement();
+		PoolManager.Instance?.ReturnAllActiveMotions();
+		PoolManager.Instance?.PurgeAllMotionRuneEffects();
 		PoolManager.Instance?.ReturnStageClearGimmicks();
 		PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
 		PoolManager.Instance?.ReturnActiveFieldDrops();
@@ -549,6 +551,9 @@ public class GameManager : MonoBehaviour
     IEnumerator GameOverRoutine()
     {
         isLive = false;
+        RuneEffect.InvalidateGameplaySession();
+        PoolManager.Instance?.ReturnAllActiveMotions();
+        PoolManager.Instance?.PurgeAllMotionRuneEffects();
         yield return new WaitForSeconds(0.5f);
 
         if (uiResult != null)
@@ -602,6 +607,7 @@ public class GameManager : MonoBehaviour
     public void GameRetry()
     {
         Time.timeScale = 1f;
+        RuneEffect.InvalidateGameplaySession();
         if (player != null)
             player.ResetForMainMenu();
 
