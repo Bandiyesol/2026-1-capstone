@@ -54,8 +54,10 @@ public class PixelButtonSpriteSwap : MonoBehaviour
 
 	void TryLoadDefaultCrossSpritesIfEmpty()
 	{
-		if (idleSprite != null && pressedSprite != null)
-			return;
+		if (idleSprite == null)
+			idleSprite = UiRuntimeAssets.LoadCrossIdleSprite();
+		if (pressedSprite == null)
+			pressedSprite = UiRuntimeAssets.LoadCrossPushedSprite();
 
 #if UNITY_EDITOR
 		if (idleSprite == null)

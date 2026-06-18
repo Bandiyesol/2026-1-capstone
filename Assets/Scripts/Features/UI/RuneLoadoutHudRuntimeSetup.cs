@@ -1,8 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 /// <summary>
 /// 씬에 룬 순서 HUD가 없을 때 런타임에 버튼·패널을 복구합니다.
@@ -10,7 +7,6 @@ using UnityEditor;
 public static class RuneLoadoutHudRuntimeSetup
 {
 	const float HudButtonGap = 50f;
-	const string RuneIconAssetPath = "Assets/Arts/UI/Vol 6 Ui Expansion Pack/Runes/Runes_13_01.png";
 	static bool ensured;
 
 	public static void Ensure()
@@ -189,14 +185,6 @@ public static class RuneLoadoutHudRuntimeSetup
 
 	static Sprite LoadRuneHudIcon()
 	{
-#if UNITY_EDITOR
-		Object[] assets = AssetDatabase.LoadAllAssetsAtPath(RuneIconAssetPath);
-		foreach (Object asset in assets)
-		{
-			if (asset is Sprite sprite)
-				return sprite;
-		}
-#endif
-		return null;
+		return UiRuntimeAssets.LoadRuneHudIcon();
 	}
 }

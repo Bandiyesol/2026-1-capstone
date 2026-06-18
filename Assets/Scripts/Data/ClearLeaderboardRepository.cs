@@ -9,12 +9,9 @@ public class ClearLeaderboardRepository
 {
 	const string CollectionName = "clearLeaderboard";
 
-	readonly FirebaseFirestore database;
+	FirebaseFirestore database;
 
-	public ClearLeaderboardRepository()
-	{
-		database = FirebaseFirestore.DefaultInstance;
-	}
+	FirebaseFirestore Database => database ??= FirebaseFirestore.DefaultInstance;
 
 	public async Task SubmitClearAsync(GameRunRecord record)
 	{
@@ -43,8 +40,8 @@ public class ClearLeaderboardRepository
 			RecordJson = JsonUtility.ToJson(record),
 		};
 
-		DocumentReference doc = database.Collection(CollectionName).Document(record.id);
-		await doc.SetAsync(entry);
+		DocumentReference doc = Database.Collection(CollectionName).Document(record.id);
+		await doc.SetAsync(entry).AwaitOnMainThread();
 		Debug.Log($"[ClearLeaderboardRepository] 전역 랭킹 등록: {record.id}, {record.playTimeSeconds:F0}s");
 	}
 
@@ -53,11 +50,14 @@ public class ClearLeaderboardRepository
 		if (count <= 0)
 			return Array.Empty<GameRunRecord>();
 
-		Query query = database.Collection(CollectionName)
+		if (FirestoreRestClient.UseRestInPlayerBuild)
+			return await FirestoreRestClient.FetchTopClearsAsync(count);
+
+		Query query = Database.Collection(CollectionName)
 			.OrderBy("playTimeSeconds")
 			.Limit(count);
 
-		QuerySnapshot snapshot = await query.GetSnapshotAsync();
+		QuerySnapshot snapshot = await query.GetSnapshotAsync().AwaitOnMainThread();
 		var records = new List<GameRunRecord>(snapshot.Count);
 
 		foreach (DocumentSnapshot document in snapshot.Documents)
@@ -79,7 +79,10 @@ public class ClearLeaderboardRepository
 		if (string.IsNullOrEmpty(recordId))
 			return null;
 
-		DocumentSnapshot snapshot = await database.Collection(CollectionName).Document(recordId).GetSnapshotAsync();
+		if (FirestoreRestClient.UseRestInPlayerBuild)
+			return await FirestoreRestClient.FindClearRecordByIdAsync(recordId);
+
+		DocumentSnapshot snapshot = await Database.Collection(CollectionName).Document(recordId).GetSnapshotAsync().AwaitOnMainThread();
 		if (!snapshot.Exists)
 			return null;
 

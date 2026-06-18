@@ -260,9 +260,11 @@ public class AuthFlowController : MonoBehaviour
 
 	async Task ApplyEnterGameStartAsync()
 	{
+		await UnityMainThread.EnsureAsync();
 		CloseSettingsIfOpen();
 		await WaitLoadingMinDisplayAsync();
 		await UserAccountDisplay.RefreshAsync();
+		await GameRunLeaderboard.RefreshGlobalAsync();
 
 		if (authScreenRoot != null)
 			authScreenRoot.SetActive(false);
@@ -272,7 +274,6 @@ public class AuthFlowController : MonoBehaviour
 
 		ClearAllAuthInputs();
 		SetStatus("");
-		await GameRunLeaderboard.RefreshGlobalAsync();
 		GameManager.RefreshMainMenuLeaderboard();
 	}
 
@@ -304,6 +305,7 @@ public class AuthFlowController : MonoBehaviour
 
 	async Task ApplyExitToLoginAsync()
 	{
+		await UnityMainThread.EnsureAsync();
 		await WaitLoadingMinDisplayAsync();
 		UserAccountDisplay.ClearCache();
 		GameRunLeaderboard.ClearGlobalCache();
@@ -368,7 +370,7 @@ public class AuthFlowController : MonoBehaviour
 	/// <summary>GameStart 등에서 실패 시 로딩 없이 로그인 화면에 오류 표시</summary>
 	async Task ShowAuthErrorAsync(string message)
 	{
-		await Task.Yield();
+		await UnityMainThread.EnsureAsync();
 
 		if (gameStartRoot != null)
 			gameStartRoot.SetActive(false);
@@ -514,6 +516,11 @@ public class AuthFlowController : MonoBehaviour
 		try
 		{
 			await action();
+		}
+		catch (System.Exception exception)
+		{
+			Debug.LogException(exception);
+			SetStatus("요청 처리 중 오류가 발생했습니다.");
 		}
 		finally
 		{
@@ -713,15 +720,12 @@ public class AuthFlowController : MonoBehaviour
 	async Task WaitLoadingMinDisplayAsync()
 	{
 		if (loadingMinDisplaySeconds <= 0f)
-		{
-			await Task.Yield();
 			return;
-		}
 
 		float elapsed = 0f;
 		while (elapsed < loadingMinDisplaySeconds)
 		{
-			await Task.Yield();
+			await UnityMainThread.WaitForNextFrameAsync();
 			elapsed += Time.unscaledDeltaTime;
 		}
 	}

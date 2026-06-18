@@ -382,10 +382,7 @@ public class ShopUI : MonoBehaviour
 		if (settings != null && settings.slotFrameSprite != null)
 			slotFrameSprite = settings.slotFrameSprite;
 
-#if UNITY_EDITOR
-		if (slotFrameSprite == null)
-			slotFrameSprite = ShopItemRow.LoadDefaultFrameSprite();
-#endif
+		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
 	}
 
 	void ApplySlotVisualSettingsToRows()
@@ -896,12 +893,7 @@ public class ShopUI : MonoBehaviour
 
 	void ResolveKoreanFont()
 	{
-		if (koreanFont != null)
-			return;
-
-#if UNITY_EDITOR
-		koreanFont = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TmpKoreanFontUtility.NeoDgmAssetPath);
-#endif
+		koreanFont = TmpKoreanFontUtility.ResolveNeoDgmFont(koreanFont);
 	}
 
 	static void EnsureCloseButtonPressedSprite(GameObject closeBtnObject)

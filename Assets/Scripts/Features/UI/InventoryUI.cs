@@ -608,10 +608,7 @@ public class InventoryUI : MonoBehaviour
 				slotIconPadding = settings.iconPadding;
 		}
 
-#if UNITY_EDITOR
-		if (slotFrameSprite == null)
-			slotFrameSprite = InventoryItemRow.LoadDefaultFrameSprite();
-#endif
+		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
 	}
 
 	void ApplySlotVisualSettingsToRows()
@@ -627,10 +624,11 @@ public class InventoryUI : MonoBehaviour
 			return;
 
 		InventoryUI ui = activeInstance != null ? activeInstance : FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
-		if (ui == null || ui.slotFrameSprite == null)
+		if (ui == null)
 			return;
 
-		row.ConfigureSlotVisual(ui.slotFrameSprite, ui.slotIconPadding);
+		Sprite frameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(ui.slotFrameSprite);
+		row.ConfigureSlotVisual(frameSprite, ui.slotIconPadding);
 	}
 
 	void RefreshWeaponRow()
@@ -705,12 +703,7 @@ public class InventoryUI : MonoBehaviour
 
 	void ResolveKoreanFont()
 	{
-		if (koreanFont != null)
-			return;
-
-#if UNITY_EDITOR
-		koreanFont = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TmpKoreanFontUtility.NeoDgmAssetPath);
-#endif
+		koreanFont = TmpKoreanFontUtility.ResolveNeoDgmFont(koreanFont);
 	}
 
 	static void EnsureCloseButtonPressedSprite(GameObject closeBtnObject)
