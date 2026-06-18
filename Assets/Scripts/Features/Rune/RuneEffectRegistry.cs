@@ -40,8 +40,17 @@ public static class RuneEffectRegistry
 		Component[] existingEffects = target.GetComponents(effectType);
 		for (int i = existingEffects.Length - 1; i >= 0; i--)
 		{
-			if (existingEffects[i] != null)
-				UnityEngine.Object.DestroyImmediate(existingEffects[i]);
+			Component existing = existingEffects[i];
+			if (existing == null)
+				continue;
+
+			if (existing is Behaviour behaviour)
+				behaviour.enabled = false;
+
+			if (Application.isPlaying)
+				UnityEngine.Object.Destroy(existing);
+			else
+				UnityEngine.Object.DestroyImmediate(existing);
 		}
 
 		RuneEffect effect = (RuneEffect)target.AddComponent(effectType);

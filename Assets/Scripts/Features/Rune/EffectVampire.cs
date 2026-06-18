@@ -19,11 +19,7 @@ public class EffectVampire : RuneEffect, ITriggerEffect
 		PlayerStats stats = DamageCalculator.ResolvePlayerStats();
 		if (stats != null)
 		{
-			float beforeHeal = stats.CurrentHP;
 			stats.Heal(healAmount);
-#if UNITY_EDITOR
-			Debug.Log($"[Vampire] Heal {stats.CurrentHP - beforeHeal:0.##}/{healAmount:0.##}");
-#endif
 		}
 
 		ResetCooltime();

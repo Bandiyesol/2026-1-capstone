@@ -7,8 +7,13 @@ public class TileManager : MonoBehaviour
 
     public float tileSize = 50f; // 타일 한 변 길이 (중심 간 거리)
 
-    void Update()
+    public static int LastWrapFrame { get; private set; } = -1;
+
+    void LateUpdate()
     {
+        if (player == null || tiles == null || tiles.Length == 0)
+            return;
+
         // 현재 플레이어 위치
         Vector3 playerPos = player.position;
 
@@ -18,6 +23,9 @@ public class TileManager : MonoBehaviour
         // 모든 타일 검사
         foreach (var t in tiles)
         {
+            if (t == null)
+                continue;
+
             // 플레이어 ↔ 타일 위치 차이
             Vector3 diff = playerPos - t.position;
 
@@ -57,6 +65,7 @@ public class TileManager : MonoBehaviour
             {
                 // 타일을 반대편 끝으로 순간 이동
                 t.position += move;
+                LastWrapFrame = Time.frameCount;
             }
         }
     }
