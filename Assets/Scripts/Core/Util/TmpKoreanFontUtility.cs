@@ -186,11 +186,24 @@ public static class TmpKoreanFontUtility
 		if (cachedNeoDgm != null)
 			return cachedNeoDgm;
 
+		cachedNeoDgm = UiRuntimeAssets.LoadKoreanFont();
+		if (cachedNeoDgm != null)
+			return cachedNeoDgm;
+
 #if UNITY_EDITOR
 		cachedNeoDgm = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(NeoDgmAssetPath);
 		if (cachedNeoDgm != null)
 			return cachedNeoDgm;
 #endif
+
+		foreach (TMP_Text tmp in Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+		{
+			if (!IsFontAssetRenderable(tmp.font))
+				continue;
+
+			cachedNeoDgm = tmp.font;
+			return cachedNeoDgm;
+		}
 
 		MainStoryUI mainStory = UnityEngine.Object.FindFirstObjectByType<MainStoryUI>(FindObjectsInactive.Include);
 		if (mainStory != null)

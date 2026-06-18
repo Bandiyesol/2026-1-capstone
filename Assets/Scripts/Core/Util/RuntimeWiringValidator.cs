@@ -47,5 +47,19 @@ public static class RuntimeWiringValidator
             if (weaponManager.GetMotionPrefab("effect_orb") == null)
                 Debug.LogWarning("[RuntimeWiringValidator] effect_orb 프리팹을 찾지 못했습니다.");
         }
+
+        ValidateUiRuntimeAssets();
+    }
+
+    static void ValidateUiRuntimeAssets()
+    {
+        if (InventorySlotVisualSettings.LoadResourceFrameSprite() == null)
+            Debug.LogWarning("[RuntimeWiringValidator] UI 슬롯 프레임 Resources 로드 실패 (UI/Panels_06).");
+
+        if (UiRuntimeAssets.LoadKoreanFont() == null && TmpKoreanFontUtility.ResolveNeoDgmFont(null) == null)
+            Debug.LogWarning("[RuntimeWiringValidator] 한글 폰트를 찾지 못했습니다 (UI/Fonts/neodgm SDF).");
+
+        if (UiRuntimeAssets.LoadCrossIdleSprite() == null)
+            Debug.LogWarning("[RuntimeWiringValidator] 닫기 버튼 스프라이트 로드 실패 (UI/Cross_Idle).");
     }
 }

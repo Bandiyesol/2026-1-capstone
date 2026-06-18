@@ -11,18 +11,15 @@ public class UserProfileRepository
 	const string UsersCollection = "users";
 	const string UsernamesCollection = "usernames";
 
-	readonly FirebaseFirestore database;
+	FirebaseFirestore database;
 
-	public UserProfileRepository()
-	{
-		database = FirebaseFirestore.DefaultInstance;
-	}
+	FirebaseFirestore Database => database ??= FirebaseFirestore.DefaultInstance;
 
 	public async Task<bool> IsUsernameTakenAsync(string username)
 	{
 		string normalized = NormalizeUsername(username);
-		DocumentReference doc = database.Collection(UsernamesCollection).Document(normalized);
-		DocumentSnapshot snapshot = await doc.GetSnapshotAsync();
+		DocumentReference doc = Database.Collection(UsernamesCollection).Document(normalized);
+		DocumentSnapshot snapshot = await doc.GetSnapshotAsync().AwaitOnMainThread();
 		return snapshot.Exists;
 	}
 
@@ -36,10 +33,10 @@ public class UserProfileRepository
 		if (string.IsNullOrEmpty(uid))
 			throw new InvalidOperationException("userId 가 비어 있습니다.");
 
-		DocumentReference userDoc = database.Collection(UsersCollection).Document(uid);
-		DocumentReference usernameDoc = database.Collection(UsernamesCollection).Document(normalized);
+		DocumentReference userDoc = Database.Collection(UsersCollection).Document(uid);
+		DocumentReference usernameDoc = Database.Collection(UsernamesCollection).Document(normalized);
 
-		WriteBatch batch = database.StartBatch();
+		WriteBatch batch = Database.StartBatch();
 		batch.Set(userDoc, new UserProfileRecord
 		{
 			Username = normalized,
@@ -52,14 +49,17 @@ public class UserProfileRepository
 			Email = mail,
 			Uid = uid,
 		});
-		await batch.CommitAsync();
+		await batch.CommitAsync().AwaitOnMainThread();
 	}
 
 	public async Task<string> GetEmailByUsernameAsync(string username)
 	{
+		if (FirestoreRestClient.UseRestInPlayerBuild)
+			return await FirestoreRestClient.GetEmailByUsernameAsync(username);
+
 		string normalized = NormalizeUsername(username);
-		DocumentReference doc = database.Collection(UsernamesCollection).Document(normalized);
-		DocumentSnapshot snapshot = await doc.GetSnapshotAsync();
+		DocumentReference doc = Database.Collection(UsernamesCollection).Document(normalized);
+		DocumentSnapshot snapshot = await doc.GetSnapshotAsync().AwaitOnMainThread();
 
 		if (!snapshot.Exists)
 			return null;
@@ -74,8 +74,11 @@ public class UserProfileRepository
 		if (string.IsNullOrEmpty(uid))
 			return null;
 
-		DocumentReference doc = database.Collection(UsersCollection).Document(uid);
-		DocumentSnapshot snapshot = await doc.GetSnapshotAsync();
+		if (FirestoreRestClient.UseRestInPlayerBuild)
+			return await FirestoreRestClient.GetUserProfileAsync(uid);
+
+		DocumentReference doc = Database.Collection(UsersCollection).Document(uid);
+		DocumentSnapshot snapshot = await doc.GetSnapshotAsync().AwaitOnMainThread();
 
 		if (!snapshot.Exists)
 			return null;
@@ -89,14 +92,14 @@ public class UserProfileRepository
 		if (string.IsNullOrEmpty(uid))
 			throw new InvalidOperationException("userId 가 비어 있습니다.");
 
-		WriteBatch batch = database.StartBatch();
-		batch.Delete(database.Collection(UsersCollection).Document(uid));
+		WriteBatch batch = Database.StartBatch();
+		batch.Delete(Database.Collection(UsersCollection).Document(uid));
 
 		string normalized = NormalizeUsername(username);
 		if (!string.IsNullOrEmpty(normalized))
-			batch.Delete(database.Collection(UsernamesCollection).Document(normalized));
+			batch.Delete(Database.Collection(UsernamesCollection).Document(normalized));
 
-		await batch.CommitAsync();
+		await batch.CommitAsync().AwaitOnMainThread();
 	}
 
 	public static string NormalizeUsername(string username)

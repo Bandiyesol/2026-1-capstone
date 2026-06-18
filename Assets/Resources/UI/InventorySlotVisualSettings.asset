@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7c3e91f4b2d64f0a9e8c1d5f6b7a902, type: 3}
   m_Name: InventorySlotVisualSettings
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlotVisualSettings
-  slotFrameSprite: {fileID: -8136509021760896224, guid: 18859343a5bfe8649b95ffbd2b5b7f4b, type: 3}
+  slotFrameSprite: {fileID: -8136509021760896224, guid: dfc0907afdbc4abcae3894049ed5cd14, type: 3}
   iconPadding: 12

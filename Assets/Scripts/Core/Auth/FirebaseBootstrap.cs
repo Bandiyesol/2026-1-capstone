@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Firebase;
+using Firebase.Auth;
 using Firebase.Extensions;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public class FirebaseBootstrap : MonoBehaviour
 	{
 		try
 		{
-			DependencyStatus status = await FirebaseApp.CheckAndFixDependenciesAsync();
+			DependencyStatus status = await FirebaseApp.CheckAndFixDependenciesAsync().AwaitOnMainThread();
 			if (status != DependencyStatus.Available)
 			{
 				LastError = $"Firebase 의존성 오류: {status}";
@@ -48,7 +49,18 @@ public class FirebaseBootstrap : MonoBehaviour
 
 			IsReady = true;
 			LastError = null;
-			Debug.Log("[FirebaseBootstrap] Firebase 초기화 완료");
+
+			await UnityMainThread.EnsureAsync();
+			FirebaseAuth auth = FirebaseAuth.DefaultInstance;
+			if (auth == null)
+			{
+				LastError = "FirebaseAuth.DefaultInstance 가 null 입니다.";
+				Debug.LogError($"[FirebaseBootstrap] {LastError}");
+				IsReady = false;
+				return false;
+			}
+
+			Debug.Log("[FirebaseBootstrap] Firebase 초기화 완료 (Auth 준비)");
 			return true;
 		}
 		catch (Exception exception)

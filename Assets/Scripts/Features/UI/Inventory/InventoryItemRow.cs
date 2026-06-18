@@ -1,20 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 /// <summary>
 /// 인벤토리 한 줄 — 슬롯 프레임 안에 아이콘을 표시하고, 가로 공간이 넘치면 줄바꿈합니다.
 /// </summary>
 public class InventoryItemRow : MonoBehaviour
 {
-	const string DefaultFrameAssetPath =
-		"Assets/Arts/UI/Vol 6 Ui Expansion Pack/Panels/Panels_06.png";
-
-	const string DefaultFrameSpriteName = "Panels_06_0";
-
 	[SerializeField] RectTransform slotContainer;
 	[SerializeField] GameObject slotPrefab;
 	[SerializeField] Sprite slotFrameSprite;
@@ -80,6 +72,8 @@ public class InventoryItemRow : MonoBehaviour
 			frameImage.type = Image.Type.Simple;
 			frameImage.preserveAspect = false;
 			frameImage.color = Color.white;
+			if (InventorySlotVisualSettings.IsFallbackHitSprite(frameSprite))
+				frameImage.color = new Color(1f, 1f, 1f, 0.01f);
 			frameImage.enabled = true;
 			frameImage.raycastTarget = true;
 			StretchToParent(frameImage.rectTransform);
@@ -195,30 +189,12 @@ public class InventoryItemRow : MonoBehaviour
 		}
 
 		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
-
-#if UNITY_EDITOR
-		if (slotFrameSprite == null || slotFrameSprite.name == "InventorySlotHitFallback")
-			slotFrameSprite = LoadDefaultFrameSprite() ?? slotFrameSprite;
-#endif
 	}
 
 	public static Sprite LoadDefaultFrameSprite()
 	{
-#if UNITY_EDITOR
-		Object[] assets = AssetDatabase.LoadAllAssetsAtPath(DefaultFrameAssetPath);
-		foreach (Object asset in assets)
-		{
-			if (asset is Sprite sprite && sprite.name == DefaultFrameSpriteName)
-				return sprite;
-		}
-
-		foreach (Object asset in assets)
-		{
-			if (asset is Sprite sprite)
-				return sprite;
-		}
-#endif
-		return null;
+		return InventorySlotVisualSettings.LoadResourceFrameSprite()
+			?? InventorySlotVisualSettings.GetFallbackHitSprite();
 	}
 
 	void EnsureGridLayout(RectTransform parent)
@@ -312,7 +288,12 @@ public class InventoryItemRow : MonoBehaviour
 
 	static void DestroyLayoutGroupImmediate(Component component)
 	{
-		if (component != null)
+		if (component == null)
+			return;
+
+		if (Application.isPlaying)
+			Object.Destroy(component);
+		else
 			Object.DestroyImmediate(component);
 	}
 

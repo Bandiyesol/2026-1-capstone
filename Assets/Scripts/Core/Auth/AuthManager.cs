@@ -18,6 +18,8 @@ public class AuthManager : MonoBehaviour
 	FirebaseAuth auth;
 	UserProfileRepository profiles;
 
+	UserProfileRepository Profiles => profiles ??= new UserProfileRepository();
+
 	static void MakePersistRoot(GameObject target)
 	{
 		if (target.transform.parent != null)
@@ -36,28 +38,34 @@ public class AuthManager : MonoBehaviour
 
 		Instance = this;
 		MakePersistRoot(gameObject);
-		profiles = new UserProfileRepository();
 	}
 
 	public async Task<(bool ok, string message)> LoginAsync(string idOrEmail, string password)
 	{
+		await UnityMainThread.EnsureAsync();
+		Debug.Log("[AuthManager] LoginAsync 시작");
+
 		var ready = await EnsureReadyAsync();
 		if (!ready.ok)
 			return (false, ready.error);
+
+		Debug.Log("[AuthManager] Firebase 준비 완료");
 
 		if (!AuthValidation.IsValidPassword(password, out string passwordError))
 			return (false, passwordError);
 
 		try
 		{
+			Debug.Log("[AuthManager] 아이디/이메일 확인 중");
 			string email = await ResolveEmailAsync(idOrEmail);
 			if (string.IsNullOrEmpty(email))
 				return (false, "아이디를 찾을 수 없습니다.");
 
-			AuthResult result = await auth.SignInWithEmailAndPasswordAsync(email, password);
+			Debug.Log("[AuthManager] 이메일 확인 완료, 로그인 시도");
+			AuthResult result = await auth.SignInWithEmailAndPasswordAsync(email, password).AwaitOnMainThread();
 			FirebaseUser user = result.User;
 
-			await user.ReloadAsync();
+			await user.ReloadAsync().AwaitOnMainThread();
 			user = auth.CurrentUser;
 
 			if (user == null || !user.IsEmailVerified)
@@ -70,6 +78,7 @@ public class AuthManager : MonoBehaviour
 		}
 		catch (FirebaseException exception)
 		{
+			await UnityMainThread.EnsureAsync();
 			return (false, TranslateLoginFirebaseError(exception));
 		}
 		catch (Exception exception)
@@ -117,20 +126,20 @@ public class AuthManager : MonoBehaviour
 
 		try
 		{
-			if (await profiles.IsUsernameTakenAsync(username))
+			if (await Profiles.IsUsernameTakenAsync(username))
 				return (false, "이미 사용 중인 아이디입니다.");
 
 			Debug.Log($"[AuthManager] 계정 생성 시도: {email}");
-			AuthResult createResult = await auth.CreateUserWithEmailAndPasswordAsync(email, password);
+			AuthResult createResult = await auth.CreateUserWithEmailAndPasswordAsync(email, password).AwaitOnMainThread();
 			createdUser = createResult.User;
 
-			await createdUser.SendEmailVerificationAsync();
+			await createdUser.SendEmailVerificationAsync().AwaitOnMainThread();
 			verificationEmailSent = true;
 			Debug.Log($"[AuthManager] 인증 메일 발송 완료: {email}");
 
 			try
 			{
-				await profiles.SaveProfileAsync(createdUser.UserId, username, nickname, email);
+				await Profiles.SaveProfileAsync(createdUser.UserId, username, nickname, email);
 				Debug.Log($"[AuthManager] Firestore 프로필 저장 완료: {username}");
 			}
 			catch (Exception profileException)
@@ -186,7 +195,7 @@ public class AuthManager : MonoBehaviour
 
 		try
 		{
-			await auth.SendPasswordResetEmailAsync(email);
+			await auth.SendPasswordResetEmailAsync(email).AwaitOnMainThread();
 			return (true, "비밀번호 재설정 메일을 보냈습니다. 메일함을 확인하세요.");
 		}
 		catch (FirebaseException exception)
@@ -207,7 +216,7 @@ public class AuthManager : MonoBehaviour
 
 		try
 		{
-			await auth.CurrentUser.ReloadAsync();
+			await auth.CurrentUser.ReloadAsync().AwaitOnMainThread();
 			return auth.CurrentUser.IsEmailVerified;
 		}
 		catch (Exception exception)
@@ -257,13 +266,13 @@ public class AuthManager : MonoBehaviour
 		try
 		{
 			UserProfileRepository.UserProfileRecord profile =
-				await profiles.GetProfileAsync(user.UserId);
+				await Profiles.GetProfileAsync(user.UserId);
 
 			Credential credential = EmailAuthProvider.GetCredential(email, password);
-			await user.ReauthenticateAsync(credential);
+			await user.ReauthenticateAsync(credential).AwaitOnMainThread();
 
-			await profiles.DeleteProfileAsync(user.UserId, profile?.Username);
-			await user.DeleteAsync();
+			await Profiles.DeleteProfileAsync(user.UserId, profile?.Username);
+			await user.DeleteAsync().AwaitOnMainThread();
 
 			try
 			{
@@ -307,7 +316,7 @@ public class AuthManager : MonoBehaviour
 			if (string.IsNullOrEmpty(email))
 				return (false, "아이디를 찾을 수 없습니다.");
 
-			AuthResult result = await auth.SignInWithEmailAndPasswordAsync(email, password);
+			AuthResult result = await auth.SignInWithEmailAndPasswordAsync(email, password).AwaitOnMainThread();
 			FirebaseUser user = result.User;
 
 			if (user.IsEmailVerified)
@@ -316,7 +325,7 @@ public class AuthManager : MonoBehaviour
 				return (true, "이미 인증된 계정입니다. 로그인하세요.");
 			}
 
-			await user.SendEmailVerificationAsync();
+			await user.SendEmailVerificationAsync().AwaitOnMainThread();
 			auth.SignOut();
 			return (true, "인증 메일을 다시 보냈습니다.");
 		}
@@ -362,7 +371,9 @@ public class AuthManager : MonoBehaviour
 
 	async Task<(bool ok, string error)> EnsureReadyAsync()
 	{
-		bool ready = await FirebaseBootstrap.EnsureInitializedAsync();
+		await UnityMainThread.EnsureAsync();
+
+		bool ready = await FirebaseBootstrap.EnsureInitializedAsync().AwaitOnMainThread();
 		if (!ready)
 			return (false, FirebaseBootstrap.LastError ?? "Firebase 초기화에 실패했습니다.");
 
@@ -384,14 +395,14 @@ public class AuthManager : MonoBehaviour
 		if (input.Contains("@"))
 			return input;
 
-		return await profiles.GetEmailByUsernameAsync(input);
+		return await Profiles.GetEmailByUsernameAsync(input);
 	}
 
 	static async Task TryDeleteUserAsync(FirebaseUser user)
 	{
 		try
 		{
-			await user.DeleteAsync();
+			await user.DeleteAsync().AwaitOnMainThread();
 		}
 		catch (Exception exception)
 		{

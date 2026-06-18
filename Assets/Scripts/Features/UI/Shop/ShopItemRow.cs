@@ -2,20 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 /// <summary>
 /// 상점 한 줄 — 프레임+아이콘(위) / 가격(아래) 분리 배치.
 /// </summary>
 public class ShopItemRow : MonoBehaviour
 {
-	const string DefaultFrameAssetPath =
-		"Assets/Arts/UI/Vol 6 Ui Expansion Pack/Panels/Panels_06.png";
-
-	const string DefaultFrameSpriteName = "Panels_06_0";
-
 	[SerializeField] RectTransform slotContainer;
 	[SerializeField] GameObject slotPrefab;
 	[SerializeField] Sprite slotFrameSprite;
@@ -88,6 +80,8 @@ public class ShopItemRow : MonoBehaviour
 			frameImage.type = Image.Type.Simple;
 			frameImage.preserveAspect = false;
 			frameImage.color = data.soldOut ? soldOutColor : Color.white;
+			if (InventorySlotVisualSettings.IsFallbackHitSprite(frameSprite))
+				frameImage.color = new Color(1f, 1f, 1f, 0.01f);
 			frameImage.enabled = true;
 			frameImage.raycastTarget = true;
 			LayoutIconBand(frameImage.rectTransform, priceBand, 0f);
@@ -236,30 +230,12 @@ public class ShopItemRow : MonoBehaviour
 		}
 
 		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
-
-#if UNITY_EDITOR
-		if (slotFrameSprite == null || slotFrameSprite.name == "InventorySlotHitFallback")
-			slotFrameSprite = LoadDefaultFrameSprite() ?? slotFrameSprite;
-#endif
 	}
 
 	public static Sprite LoadDefaultFrameSprite()
 	{
-#if UNITY_EDITOR
-		Object[] assets = AssetDatabase.LoadAllAssetsAtPath(DefaultFrameAssetPath);
-		foreach (Object asset in assets)
-		{
-			if (asset is Sprite sprite && sprite.name == DefaultFrameSpriteName)
-				return sprite;
-		}
-
-		foreach (Object asset in assets)
-		{
-			if (asset is Sprite sprite)
-				return sprite;
-		}
-#endif
-		return null;
+		return InventorySlotVisualSettings.LoadResourceFrameSprite()
+			?? InventorySlotVisualSettings.GetFallbackHitSprite();
 	}
 
 	void EnsureGridLayout(RectTransform parent)

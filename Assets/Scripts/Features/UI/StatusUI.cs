@@ -308,12 +308,7 @@ public class StatusUI : MonoBehaviour
 
 	void ResolveKoreanFont()
 	{
-		if (koreanFont != null)
-			return;
-
-#if UNITY_EDITOR
-		koreanFont = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TmpKoreanFontUtility.NeoDgmAssetPath);
-#endif
+		koreanFont = TmpKoreanFontUtility.ResolveNeoDgmFont(koreanFont);
 	}
 
 	void RefreshPortrait()
