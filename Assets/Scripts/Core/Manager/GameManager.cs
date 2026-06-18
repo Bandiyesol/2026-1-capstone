@@ -220,6 +220,25 @@ public class GameManager : MonoBehaviour
 	/// <summary>마법진 진입 — 스테이지 기록 → 다음 스테이지 → 보스 알리미 → 룬(2·3스테이지) 또는 순서만(4+) → 웨이브.</summary>
 	public void AdvanceStageViaPortal()
 	{
+		if (portalAdvanceRunning)
+			return;
+
+		StartCoroutine(AdvanceStageViaPortalRoutine());
+	}
+
+	bool portalAdvanceRunning;
+
+	IEnumerator AdvanceStageViaPortalRoutine()
+	{
+		portalAdvanceRunning = true;
+		// OnTriggerEnter2D 중 DestroyImmediate 불가 → 다음 프레임에 정리·전환
+		yield return null;
+		portalAdvanceRunning = false;
+		AdvanceStageViaPortalInternal();
+	}
+
+	void AdvanceStageViaPortalInternal()
+	{
 		StageManager stage = StageManager.instance;
 		if (stage == null)
 			return;
@@ -227,6 +246,8 @@ public class GameManager : MonoBehaviour
 		DismissBlockingRewardOverlays();
 		isLive = false;
 		FreezePlayerMovement();
+		PoolManager.Instance?.ReturnAllActiveMotions();
+		PoolManager.Instance?.PurgeAllMotionRuneEffects();
 		PoolManager.Instance?.ReturnStageClearGimmicks();
 		PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
 		PoolManager.Instance?.ReturnActiveFieldDrops();
@@ -549,6 +570,10 @@ public class GameManager : MonoBehaviour
     IEnumerator GameOverRoutine()
     {
         isLive = false;
+        AccessoryEffect.instance?.ClearCombatTransientEffects();
+        RuneEffect.InvalidateGameplaySession();
+        PoolManager.Instance?.ReturnAllActiveMotions();
+        PoolManager.Instance?.PurgeAllMotionRuneEffects();
         yield return new WaitForSeconds(0.5f);
 
         if (uiResult != null)
@@ -602,6 +627,7 @@ public class GameManager : MonoBehaviour
     public void GameRetry()
     {
         Time.timeScale = 1f;
+        RuneEffect.InvalidateGameplaySession();
         if (player != null)
             player.ResetForMainMenu();
 
@@ -779,6 +805,7 @@ public class GameManager : MonoBehaviour
     public void Stop()
     {
         isLive = false;
+        AccessoryEffect.instance?.ClearCombatTransientEffects();
         Time.timeScale = 0;
     }
 

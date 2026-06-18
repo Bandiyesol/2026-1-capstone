@@ -18,6 +18,9 @@ public class WaveManager : MonoBehaviour
     [Header("상태")]
     public int currentWave; // 현재 진행 중인 웨이브 번호 (배열 인덱스 기준, 0부터 시작)
 
+    [Header("바이옴 기믹 스포너들")]
+    public BiomeGimmickSpawner[] gimmickSpawners;
+
     // --- 내부 상태 제어 변수 ---
     int aliveEnemyCount; // 현재 필드(또는 진행 중인 페이즈)에 생존해 있는 적의 총 수량 카운트
     bool isSpawning;     // 현재 코루틴 루프를 통해 몬스터들을 순차적으로 필드에 소환하는 중인지 나타내는 플래그
@@ -26,6 +29,8 @@ public class WaveManager : MonoBehaviour
     int bossRollGeneration;
     bool bossPhaseCleared;
     bool isTransitioningWave;
+    Coroutine spawnWaveCoroutine;
+    int bossSpawnCommittedWave = -1;
 
     /// <summary>스테이지 시작·보스 알리미와 동일한 보스 후보 중 하나를 미리 선택합니다.</summary>
     public int SelectedBossSpawnDataIndex { get; private set; } = -1;
@@ -35,27 +40,50 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     public void StartStage()
     {
+        StopSpawnWaveCoroutine();
         StopAllCoroutines();
         isSpawning = false;
         aliveEnemyCount = 0;
         bossPhaseCleared = false;
         isTransitioningWave = false;
+        bossSpawnCommittedWave = -1;
 
         if (stageManager != null)
             PrepareBossForStage(stageManager.stageIndex);
+
+        // [변경] FindObjectsOfType을 지우고, 인스펙터로 연결된 배열을 바로 사용!
+        if (gimmickSpawners != null)
+        {
+            foreach (var spawner in gimmickSpawners)
+            {
+                if (spawner != null) // 혹시 모를 null 체크
+                    spawner.ResetSpawner();
+            }
+        }
 
         currentWave = 0; // 웨이브 번호 초기화
         StartWave();     // 첫 번째 웨이브 스폰 루틴 시동
     }
 
+    void StopSpawnWaveCoroutine()
+    {
+        if (spawnWaveCoroutine == null)
+            return;
+
+        StopCoroutine(spawnWaveCoroutine);
+        spawnWaveCoroutine = null;
+    }
+
     /// <summary>포털 전환 직전 — 이전 스테이지 웨이브 코루틴을 정리합니다.</summary>
     public void AbortStageTransition()
     {
+        StopSpawnWaveCoroutine();
         StopAllCoroutines();
         isSpawning = false;
         aliveEnemyCount = 0;
         bossPhaseCleared = false;
         isTransitioningWave = false;
+        bossSpawnCommittedWave = -1;
     }
 
     public void PrepareBossForStage(int stageIndex, bool forceReroll = false)
@@ -166,6 +194,7 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     public void ResetForMainMenu()
     {
+        StopSpawnWaveCoroutine();
         StopAllCoroutines(); // 가동 중인 스폰 및 대기 코루틴 전면 중지
         started = false;     // 실행 상태 플래그 초기화
         isSpawning = false;   // 소환 중 플래그 초기화
@@ -176,6 +205,7 @@ public class WaveManager : MonoBehaviour
         bossRollGeneration++;
         bossPhaseCleared = false;
         isTransitioningWave = false;
+        bossSpawnCommittedWave = -1;
     }
 
     public bool IsBossPhaseCleared => bossPhaseCleared;
@@ -192,9 +222,19 @@ public class WaveManager : MonoBehaviour
         if (stageData?.waves == null || currentWave >= stageData.waves.Length)
             return;
 
-        StartCoroutine(SpawnWave());
+        StopSpawnWaveCoroutine();
+        spawnWaveCoroutine = StartCoroutine(SpawnWaveTracked());
     }
 
+    IEnumerator SpawnWaveTracked()
+    {
+        yield return SpawnWave();
+        spawnWaveCoroutine = null;
+    }
+
+    /// <summary>
+    /// [메인 제어 루틴] 타이밍 버그가 수정된 안전한 스폰 제어 코루틴
+    /// </summary>
     /// <summary>
     /// [메인 제어 루틴] 타이밍 버그가 수정된 안전한 스폰 제어 코루틴
     /// </summary>
@@ -203,10 +243,9 @@ public class WaveManager : MonoBehaviour
         if (bossPhaseCleared)
             yield break;
 
-        isSpawning = true;   // 몬스터 소환 프로세스 시작 설정 (중간 정산 버그 방지)
-        aliveEnemyCount = 0; // 이번 웨이브용 생존 카운트 리셋
+        isSpawning = true;
+        aliveEnemyCount = 0;
 
-        // 현재 진행 중인 스테이지 인덱스와 웨이브 인덱스를 기반으로 ScriptableObject 등에서 웨이브 데이터 인출
         var stageData = stageManager.stageDatas[stageManager.stageIndex];
         if (stageData.waves == null || currentWave >= stageData.waves.Length)
             yield break;
@@ -219,19 +258,25 @@ public class WaveManager : MonoBehaviour
             if (wave.enemies != null && wave.enemies.Length > 0)
             {
                 yield return StartCoroutine(SpawnNormalWave(wave));
-                Debug.Log($"[WaveManager] 선결 잡몹 스폰 완료, aliveEnemyCount={aliveEnemyCount}"); // 추가
+                Debug.Log($"[WaveManager] 선결 잡몹 스폰 완료, aliveEnemyCount={aliveEnemyCount}");
                 yield return new WaitUntil(() => aliveEnemyCount <= 0);
-                Debug.Log("[WaveManager] 선결 잡몹 전멸 확인, 보스 스폰 진행"); // 추가
+                Debug.Log("[WaveManager] 선결 잡몹 전멸 확인, 보스 스폰 진행");
             }
 
             SpawnBossWave(wave);
-            Debug.Log("[WaveManager] SpawnBossWave 호출됨"); // 추가
+            Debug.Log("[WaveManager] SpawnBossWave 호출됨");
+
+            // 여기서 보스가 죽을 때까지 코루틴이 대기합니다.
             yield return new WaitUntil(() => aliveEnemyCount <= 0);
+
+            // =========================================================
+            // [여기에 추가] 보스가 죽어서 대기가 풀리면 즉시 보스 스테이지 클리어 처리!
+            // =========================================================
+            NotifyBossStageCleared();
         }
         // 🎯 [분기 2] 일반 잡몹 웨이브인 경우
         else
         {
-            // 지정된 잡몹 배치 테이블에 맞춰 스폰 진행 후 코루틴 종료 대기
             yield return StartCoroutine(SpawnNormalWave(wave));
         }
 
@@ -286,6 +331,20 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     void SpawnBossWave(WaveData wave)
     {
+        if (bossSpawnCommittedWave == currentWave)
+        {
+            Debug.LogWarning($"[WaveManager] Wave {currentWave} 보스가 이미 스폰됨 — 중복 SpawnBossWave 무시");
+            return;
+        }
+
+        if (HasActiveStageBoss())
+        {
+            Debug.LogWarning("[WaveManager] 필드에 활성 보스가 남아 있어 중복 스폰을 차단합니다.");
+            aliveEnemyCount = 1;
+            bossSpawnCommittedWave = currentWave;
+            return;
+        }
+
         // 보스 등장 전 호위 몬스터·소환 잔여물 정리 (카운트 불일치 시 타 바이옴 몬스터 겹침 방지)
         PoolManager.Instance?.ReturnActiveEnemiesAndBosses();
 
@@ -305,11 +364,30 @@ public class WaveManager : MonoBehaviour
             SelectedBossSpawnDataIndex = spawnIndex;
         }
 
+        bossSpawnCommittedWave = currentWave;
         SpawnEnemy(spawnIndex);
         GameManager.instance?.RefreshBossBriefingForBossSpawn(spawnIndex);
 
         // 보스 본체 개체 카운트를 1로 확정 명시
         aliveEnemyCount = 1;
+    }
+
+    bool HasActiveStageBoss()
+    {
+        BossBase[] bosses = Object.FindObjectsByType<BossBase>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        for (int i = 0; i < bosses.Length; i++)
+        {
+            BossBase boss = bosses[i];
+            if (boss == null || !boss.gameObject.activeInHierarchy || boss.health <= 0f)
+                continue;
+
+            if (boss.waveManager != this)
+                continue;
+
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -377,9 +455,11 @@ public class WaveManager : MonoBehaviour
 
         bossPhaseCleared = true;
         isTransitioningWave = false;
+        StopSpawnWaveCoroutine();
         StopAllCoroutines();
         isSpawning = false;
         aliveEnemyCount = 0;
+        bossSpawnCommittedWave = -1;
 
         if (stageManager != null && stageManager.stageDatas != null
             && stageManager.stageIndex >= 0 && stageManager.stageIndex < stageManager.stageDatas.Length)

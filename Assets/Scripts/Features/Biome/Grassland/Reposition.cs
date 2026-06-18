@@ -22,17 +22,33 @@ public class GrasslandReposition : MonoBehaviour
     [Tooltip("null이면 Camera.main")]
     [SerializeField] Camera gameplayCamera;
 
+    const float RepositionCooldown = 0.45f;
+    const int DistanceCheckStride = 3;
+
+    float nextRepositionAllowedTime;
+    int distanceCheckPhase;
+
     void Awake()
     {
         // 컴포넌트 참조 캐싱
         coll = GetComponent<Collider2D>();
         rb = GetComponent<Rigidbody2D>();
+        distanceCheckPhase = Mathf.Abs(GetInstanceID()) % DistanceCheckStride;
     }
 
     void FixedUpdate()
     {
         // 적은 트리거 누락 가능성이 있어 거리 기반 재배치를 병행
         if (!CompareTag("Enemy") || !isActiveAndEnabled || !coll.enabled)
+            return;
+
+        if (Time.frameCount - TileManager.LastWrapFrame <= 1)
+            return;
+
+        if (Time.frameCount % DistanceCheckStride != distanceCheckPhase)
+            return;
+
+        if (Time.time < nextRepositionAllowedTime)
             return;
 
         Player player = GameManager.instance != null ? GameManager.instance.player : null;
@@ -61,6 +77,9 @@ public class GrasslandReposition : MonoBehaviour
     private void RepositionEnemy()
     {
         if (!coll.enabled)
+            return;
+
+        if (!EnemyRepositionBudget.TryConsume())
             return;
 
         Player player = GameManager.instance != null ? GameManager.instance.player : null;
@@ -94,13 +113,17 @@ public class GrasslandReposition : MonoBehaviour
         // 전방 거리와 좌우 흩뿌림(lateral)을 조합하여 최종 좌표 생성
         float lateral = Random.Range(-lateralPastScreen, lateralPastScreen);
         Vector2 offset = facing * forwardDist + side * lateral;
-        Vector3 newPos = anchor + offset;
-        newPos.z = transform.position.z;
+        Vector2 newPos = anchor + offset;
 
         if (rb != null)
-            rb.MovePosition(newPos);
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.position = newPos;
+        }
         else
-            transform.position = newPos;
+            transform.position = new Vector3(newPos.x, newPos.y, transform.position.z);
+
+        nextRepositionAllowedTime = Time.time + RepositionCooldown;
     }
 
     private void RepositionGround()

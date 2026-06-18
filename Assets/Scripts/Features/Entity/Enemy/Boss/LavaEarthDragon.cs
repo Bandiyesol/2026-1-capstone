@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LavaEarthDragon : BossBase
@@ -43,6 +44,9 @@ public class LavaEarthDragon : BossBase
     bool phase50Triggered;
     bool phase25Triggered;
 
+    readonly List<GameObject> summonedMinions = new List<GameObject>();
+    const int MaxSummonedMinions = 16;
+
     protected override void OnEnable()
     {
         // 부모 초기화
@@ -67,6 +71,7 @@ public class LavaEarthDragon : BossBase
         phase75Triggered = false;
         phase50Triggered = false;
         phase25Triggered = false;
+        summonedMinions.Clear();
 
         // 기본 용암 타일 활성화
         ActivateLavaTile(0);
@@ -81,12 +86,17 @@ public class LavaEarthDragon : BossBase
 
     void OnDisable()
     {
-        // 풀 반환 시 코루틴 정리
+        ClearSummonedMinions();
         StopAllCoroutines();
 
-        // 상태 복구
         canMove = true;
         isPatternPlaying = false;
+    }
+
+    protected override void Dead()
+    {
+        ClearSummonedMinions();
+        base.Dead();
     }
 
     protected override void FixedUpdate()
@@ -188,36 +198,66 @@ public class LavaEarthDragon : BossBase
         if (BossSummonGuard.IsBlocked())
             return;
 
-        // 이동 중만 소환
         if (!canMove)
             return;
 
-        // 확률 체크
         if (Random.value > summonChance)
             return;
 
-        // 현재 소환 개수
+        PurgeInactiveSummons();
+        if (summonedMinions.Count >= MaxSummonedMinions)
+            return;
+
         int currentSummonCount =
             summonCount * summonMultiplier;
 
         for (int i = 0; i < currentSummonCount; i++)
         {
-            // PoolManager에서 적 가져오기
+            if (summonedMinions.Count >= MaxSummonedMinions)
+                break;
+
             GameObject monster =
                 GameManager.instance.pool.GetEnemy(
                     summonMonsterIndex
                 );
 
-            if (monster != null)
-            {
-                // 보스 주변 랜덤 위치
-                Vector2 offset =
-                    Random.insideUnitCircle * 2f;
+            if (monster == null)
+                continue;
 
-                monster.transform.position =
-                    (Vector2)transform.position + offset;
-            }
+            Vector2 offset =
+                Random.insideUnitCircle * 2f;
+
+            monster.transform.position =
+                (Vector2)transform.position + offset;
+
+            Enemy enemy = monster.GetComponent<Enemy>();
+            if (enemy != null)
+                enemy.waveManager = waveManager;
+
+            summonedMinions.Add(monster);
         }
+    }
+
+    void PurgeInactiveSummons()
+    {
+        for (int i = summonedMinions.Count - 1; i >= 0; i--)
+        {
+            GameObject minion = summonedMinions[i];
+            if (minion == null || !minion.activeSelf)
+                summonedMinions.RemoveAt(i);
+        }
+    }
+
+    void ClearSummonedMinions()
+    {
+        for (int i = summonedMinions.Count - 1; i >= 0; i--)
+        {
+            GameObject minion = summonedMinions[i];
+            if (minion != null && minion.activeSelf)
+                minion.SetActive(false);
+        }
+
+        summonedMinions.Clear();
     }
 
     public override void TakeDamage(float damage)

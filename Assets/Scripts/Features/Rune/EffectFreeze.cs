@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EffectFreeze : RuneEffect, ITriggerEffect
@@ -19,10 +20,11 @@ public class EffectFreeze : RuneEffect, ITriggerEffect
 		if (radius <= 0f || duration <= 0f)
 			return;
 
-		Collider2D[] enemies = FindEnemyColliders(collision.transform.position, radius);
+		IReadOnlyList<Collider2D> enemies = FindEnemyColliders(collision.transform.position, radius);
 
-		foreach (Collider2D enemyCollider in enemies)
+		for (int i = 0; i < enemies.Count; i++)
 		{
+			Collider2D enemyCollider = enemies[i];
 			Enemy enemy = enemyCollider.GetComponent<Enemy>();
 			if (enemy != null) enemy.ApplyFreeze(duration);
 		}

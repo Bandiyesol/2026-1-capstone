@@ -40,6 +40,8 @@ public class LavaTyranoUnit : BossBase
         baseAttackDamage = attackDamage;
         lavaTimer = 0f;
         isOnLava = false;
+
+        core?.RegisterUnit(this);
     }
 
     protected override void Update()
@@ -305,23 +307,52 @@ public class LavaTyranoUnit : BossBase
         core?.RegisterUnit(this);
     }
 
-    // 외부 피격 이벤트 수신 리스너
     public override void TakeDamage(float damage)
     {
-        if (IsDead)
+        if (IsDead || isDead)
             return;
 
         base.TakeDamage(damage);
-
-        // 데미지 연산 결과 체력이 완전히 방전되면 소멸 시퀀스 트리거
-        if (health <= 0)
-            DieUnit();
     }
 
-    // 유닛 완전 소멸 프로세스
+    protected override void Dead()
+    {
+        if (isDead)
+            return;
+
+        isDead = true;
+        canMove = false;
+
+        StopAllCoroutines();
+        isPatternPlaying = false;
+
+        if (GameManager.instance != null)
+            GameManager.instance.Kill++;
+
+        RecordEnemyDeath(transform.position);
+
+        if (rigid != null)
+            rigid.linearVelocity = Vector2.zero;
+
+        if (spriter != null)
+            spriter.enabled = false;
+
+        if (col != null)
+            col.enabled = false;
+
+        // base.Dead() 호출 금지 — 포탈·웨이브 클리어는 LavaTyranoCore 전멸 시 1회만
+        core?.UnregisterUnit(this);
+        gameObject.SetActive(false);
+    }
+
+    // 분열 시 현 세대만 퇴장 (전투 사망과 별도 — Kill·포탈 없음)
     void DieUnit()
     {
-        core?.UnregisterUnit(this);  // 소멸하기 직전 부모 코어에 사망 도장을 찍고 명단에서 제외
-        gameObject.SetActive(false); // 오브젝트 풀 비활성화 반환
+        StopAllCoroutines();
+        isPatternPlaying = false;
+        canMove = false;
+
+        core?.UnregisterUnit(this);
+        gameObject.SetActive(false);
     }
 }

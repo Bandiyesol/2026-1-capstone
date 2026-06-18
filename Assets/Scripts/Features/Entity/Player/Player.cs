@@ -44,6 +44,8 @@ public class Player : MonoBehaviour
     Coroutine iceSlowRoutine;                                   // 실행 중인 빙결 코루틴 핸들 (중복 실행 제어용)
     Coroutine burnRoutine;                                      // 실행 중인 화상 코루틴 핸들 (중복 실행 제어용)
 
+    int lavaContactCount;                                       // Lava 트리거 겹침 수 (IsOnLava용, Physics 쿼리 대체)
+
     public Vector2 lastTravelDirection = Vector2.right;         // 입력이 멈췄을 때 바라볼 마지막 이동 방향 기록 (기본값 우측)
 
     void Awake()
@@ -67,6 +69,11 @@ public class Player : MonoBehaviour
             PlayerStats.Instance.OnStatsChanged += SyncBaseSpeed;
             SyncBaseSpeed(); // 첫 진입 시 초기 스탯 기반 속도 동기화
         }
+    }
+
+    void OnEnable()
+    {
+        lavaContactCount = 0;
     }
 
     void OnDestroy()
@@ -192,6 +199,18 @@ public class Player : MonoBehaviour
         return spriter.flipX ? Vector2.left : Vector2.right;
     }
 
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Lava"))
+            lavaContactCount++;
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Lava"))
+            lavaContactCount = Mathf.Max(0, lavaContactCount - 1);
+    }
+
     /// <summary>
     /// 몬스터 몸체 콜라이더와 지속적으로 부딪히고 있을 때 (초당 도트 데미지 처리)
     /// </summary>
@@ -304,25 +323,9 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 레이캐스트 대신 OverlapCircle 구조를 사용하여 현재 딛고 있는 바닥 타일이 용암(Lava)인지 감지하는 함수
+    /// Lava 트리거(타일맵 IsTrigger) 겹침으로 판정. 매 프레임 OverlapCircle 스캔을 쓰지 않습니다.
     /// </summary>
-    public bool IsOnLava()
-    {
-        // 플레이어 중심부에 아주 작은 가상의 원(반지름 0.15)을 그려 groundMask 레이어에 속한 콜라이더들 서치
-        Collider2D[] hits = Physics2D.OverlapCircleAll(rigid.position, 0.15f, groundMask);
-
-        if (hits == null)
-            return false;
-
-        // 수집된 지면 오브젝트 중 "Lava" 태그를 가진 맵 타일이 존재하는지 루프 순회 검사
-        foreach (Collider2D hit in hits)
-        {
-            if (hit != null && hit.CompareTag("Lava"))
-                return true; // 용암 위에 서있음이 확인됨
-        }
-
-        return false;
-    }
+    public bool IsOnLava() => lavaContactCount > 0;
 
     /// <summary>
     /// 외부 유발용: 빙결 감속 디버프 적용 함수 (역상성인 화상 상태일 시 서로 상쇄됨)

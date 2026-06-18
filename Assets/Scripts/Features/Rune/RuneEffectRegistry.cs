@@ -37,7 +37,22 @@ public static class RuneEffectRegistry
 			return null;
 		}
 
-		// 컴포넌트 부착 후 공통 초기화 함수(InitEffect) 호출
+		Component[] existingEffects = target.GetComponents(effectType);
+		for (int i = existingEffects.Length - 1; i >= 0; i--)
+		{
+			Component existing = existingEffects[i];
+			if (existing == null)
+				continue;
+
+			if (existing is Behaviour behaviour)
+				behaviour.enabled = false;
+
+			if (Application.isPlaying)
+				UnityEngine.Object.Destroy(existing);
+			else
+				UnityEngine.Object.DestroyImmediate(existing);
+		}
+
 		RuneEffect effect = (RuneEffect)target.AddComponent(effectType);
 		effect.InitEffect(weapon, motion, runeData);
 		return effect;
