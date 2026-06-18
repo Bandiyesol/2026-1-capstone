@@ -241,6 +241,8 @@ public class AccessoryEffect : MonoBehaviour
     // CalamitySeed
     readonly System.Collections.Generic.Dictionary<Enemy,Coroutine> seedRoutines
         = new System.Collections.Generic.Dictionary<Enemy,Coroutine>();
+    readonly System.Collections.Generic.Dictionary<Enemy,GameObject> seedEffects
+        = new System.Collections.Generic.Dictionary<Enemy,GameObject>();
 
     int lastMidasGoldTier;
 
@@ -518,6 +520,7 @@ public class AccessoryEffect : MonoBehaviour
                 StopCoroutine(routine);
         }
         seedRoutines.Clear();
+        seedEffects.Clear();
 
         for (int i = soulBullets.Count - 1; i >= 0; i--)
         {
@@ -1190,6 +1193,20 @@ public class AccessoryEffect : MonoBehaviour
                 StopCoroutine(routine);
             seedRoutines.Remove(enemy);
         }
+
+        ReleaseSeedVisual(enemy);
+    }
+
+    void ReleaseSeedVisual(Enemy enemy)
+    {
+        if (enemy == null)
+            return;
+
+        if (!seedEffects.TryGetValue(enemy, out GameObject seedFx))
+            return;
+
+        seedEffects.Remove(enemy);
+        ReleaseTransientEffect(seedFx);
     }
 
     // ───────────────────────────────────────────
@@ -1697,6 +1714,7 @@ public class AccessoryEffect : MonoBehaviour
             seedFx = Instantiate(seedEffectPrefab, headPos, Quaternion.identity);
             TrackTransientEffect(seedFx);
             seedFx.transform.localScale = Vector3.one * seedScale;
+            seedEffects[enemy] = seedFx;
         }
 
         float elapsed = 0f;
@@ -1711,7 +1729,7 @@ public class AccessoryEffect : MonoBehaviour
             // 적이 죽거나 풀에 반환되면 씨앗 제거
             if (enemy == null || !enemy.IsCombatLive)
             {
-                ReleaseTransientEffect(seedFx);
+                ReleaseSeedVisual(enemy);
                 if (enemy != null && seedRoutines.ContainsKey(enemy))
                     seedRoutines.Remove(enemy);
                 yield break;
@@ -1721,7 +1739,8 @@ public class AccessoryEffect : MonoBehaviour
         }
 
         // 씨앗 제거 후 폭발
-        ReleaseTransientEffect(seedFx);
+        ReleaseSeedVisual(enemy);
+        seedFx = null;
 
         if (enemy != null && enemy.IsCombatLive)
         {
