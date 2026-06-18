@@ -12,6 +12,7 @@ public static class UserAccountDisplay
 
 	public static async Task RefreshAsync()
 	{
+		await UnityMainThread.EnsureAsync();
 		cachedNickname = null;
 
 		if (AuthManager.Instance == null || !AuthManager.Instance.IsLoggedIn)

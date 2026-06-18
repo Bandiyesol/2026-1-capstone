@@ -25,8 +25,14 @@ public class GameStartMenuController : MonoBehaviour
 
 	async System.Threading.Tasks.Task RefreshLeaderboardWhenMenuOpensAsync()
 	{
-		await UserAccountDisplay.RefreshAsync();
-		await GameRunLeaderboard.RefreshGlobalAsync();
+		await UnityMainThread.EnsureAsync();
+
+		// AuthFlowController가 로그인 직후 이미 Firestore를 갱신한 경우 중복 네트워크 호출을 막습니다.
+		if (!GameRunLeaderboard.UsesGlobalCache)
+		{
+			await UserAccountDisplay.RefreshAsync();
+			await GameRunLeaderboard.RefreshGlobalAsync();
+		}
 
 		MainMenuLeaderboardView leaderboard = MainMenuLeaderboardBootstrap.Ensure(transform);
 		if (leaderboard == null)

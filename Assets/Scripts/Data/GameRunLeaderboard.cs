@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public static class GameRunLeaderboard
 	static readonly List<GameRunRecord> GlobalTopClears = new List<GameRunRecord>();
 	static readonly Dictionary<string, GameRunRecord> GlobalRecordsById = new Dictionary<string, GameRunRecord>();
 	static bool globalCacheReady;
+	static readonly SemaphoreSlim RefreshLock = new SemaphoreSlim(1, 1);
 
 	public static bool UsesGlobalCache => globalCacheReady;
 
@@ -23,11 +25,25 @@ public static class GameRunLeaderboard
 
 	public static async Task RefreshGlobalAsync(int count = MaxRankCount)
 	{
+		await RefreshLock.WaitAsync();
+		try
+		{
+			await RefreshGlobalInternalAsync(count);
+		}
+		finally
+		{
+			RefreshLock.Release();
+		}
+	}
+
+	static async Task RefreshGlobalInternalAsync(int count)
+	{
+		await UnityMainThread.EnsureAsync();
 		GlobalTopClears.Clear();
 		GlobalRecordsById.Clear();
 		globalCacheReady = false;
 
-		if (!await FirebaseBootstrap.EnsureInitializedAsync())
+		if (!await FirebaseBootstrap.EnsureInitializedAsync().AwaitOnMainThread())
 		{
 			Debug.LogWarning("[GameRunLeaderboard] Firebase 미초기화 — 로컬 기록으로 랭킹을 표시합니다.");
 			return;
@@ -58,7 +74,7 @@ public static class GameRunLeaderboard
 		if (record == null || !record.cleared)
 			return;
 
-		if (!await FirebaseBootstrap.EnsureInitializedAsync())
+		if (!await FirebaseBootstrap.EnsureInitializedAsync().AwaitOnMainThread())
 			return;
 
 		if (AuthManager.Instance == null || !AuthManager.Instance.IsLoggedIn)
@@ -142,7 +158,7 @@ public static class GameRunLeaderboard
 		if (cached != null)
 			return cached;
 
-		if (!await FirebaseBootstrap.EnsureInitializedAsync())
+		if (!await FirebaseBootstrap.EnsureInitializedAsync().AwaitOnMainThread())
 			return null;
 
 		if (AuthManager.Instance == null || !AuthManager.Instance.IsLoggedIn)
