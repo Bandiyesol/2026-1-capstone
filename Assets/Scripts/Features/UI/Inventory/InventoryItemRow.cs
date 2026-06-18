@@ -75,11 +75,12 @@ public class InventoryItemRow : MonoBehaviour
 
 		if (frameImage != null)
 		{
-			frameImage.sprite = slotFrameSprite;
+			Sprite frameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
+			frameImage.sprite = frameSprite;
 			frameImage.type = Image.Type.Simple;
 			frameImage.preserveAspect = false;
 			frameImage.color = Color.white;
-			frameImage.enabled = slotFrameSprite != null;
+			frameImage.enabled = true;
 			frameImage.raycastTarget = true;
 			StretchToParent(frameImage.rectTransform);
 		}
@@ -193,9 +194,11 @@ public class InventoryItemRow : MonoBehaviour
 				iconPadding = settings.iconPadding;
 		}
 
+		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
+
 #if UNITY_EDITOR
-		if (slotFrameSprite == null)
-			slotFrameSprite = LoadDefaultFrameSprite();
+		if (slotFrameSprite == null || slotFrameSprite.name == "InventorySlotHitFallback")
+			slotFrameSprite = LoadDefaultFrameSprite() ?? slotFrameSprite;
 #endif
 	}
 

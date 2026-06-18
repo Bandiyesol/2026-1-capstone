@@ -83,11 +83,12 @@ public class ShopItemRow : MonoBehaviour
 
 		if (frameImage != null)
 		{
-			frameImage.sprite = slotFrameSprite;
+			Sprite frameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
+			frameImage.sprite = frameSprite;
 			frameImage.type = Image.Type.Simple;
 			frameImage.preserveAspect = false;
 			frameImage.color = data.soldOut ? soldOutColor : Color.white;
-			frameImage.enabled = slotFrameSprite != null;
+			frameImage.enabled = true;
 			frameImage.raycastTarget = true;
 			LayoutIconBand(frameImage.rectTransform, priceBand, 0f);
 		}
@@ -234,9 +235,11 @@ public class ShopItemRow : MonoBehaviour
 				iconPadding = settings.iconPadding;
 		}
 
+		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
+
 #if UNITY_EDITOR
-		if (slotFrameSprite == null)
-			slotFrameSprite = LoadDefaultFrameSprite();
+		if (slotFrameSprite == null || slotFrameSprite.name == "InventorySlotHitFallback")
+			slotFrameSprite = LoadDefaultFrameSprite() ?? slotFrameSprite;
 #endif
 	}
 

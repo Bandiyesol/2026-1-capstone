@@ -56,19 +56,42 @@ public class StageManager : MonoBehaviour
         EnsureStageMaps();
     }
 
+    bool HasValidStageMaps()
+    {
+        if (stages == null || stages.Length == 0)
+            return false;
+
+        for (int i = 0; i < stages.Length; i++)
+        {
+            if (stages[i] == null)
+                return false;
+        }
+
+        return true;
+    }
+
     void EnsureStageMaps()
     {
-        if (stages != null && stages.Length >= TotalStages)
+        if (HasValidStageMaps())
             return;
 
-        GameObject stagesRoot = GameObject.Find("Stages");
-        if (stagesRoot == null)
-            return;
+        Transform stagesRoot = null;
+        if (waveManager != null)
+            stagesRoot = waveManager.transform;
+        else
+        {
+            GameObject found = GameObject.Find("Stages");
+            if (found != null)
+                stagesRoot = found.transform;
+        }
 
-        int childCount = stagesRoot.transform.childCount;
-        if (childCount <= 0)
+        if (stagesRoot == null || stagesRoot.childCount <= 0)
+        {
+            Debug.LogWarning("[StageManager] stages를 찾지 못했습니다. Inspector의 stages 또는 Stages 오브젝트를 확인하세요.");
             return;
+        }
 
+        int childCount = stagesRoot.childCount;
         var maps = new GameObject[childCount];
         for (int i = 0; i < childCount; i++)
             maps[i] = stagesRoot.transform.GetChild(i).gameObject;
@@ -99,6 +122,9 @@ public class StageManager : MonoBehaviour
         int activeMapIndex = ResolveMapIndex(stageIndex);
         for (int i = 0; i < MapCount; i++)
         {
+            if (stages[i] == null)
+                continue;
+
             bool shouldBeActive = i == activeMapIndex;
             if (stages[i].activeSelf != shouldBeActive)
                 stages[i].SetActive(shouldBeActive);

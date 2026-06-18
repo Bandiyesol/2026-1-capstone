@@ -5,6 +5,8 @@ public static class RuntimeWiringValidator
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void ValidateOnSceneLoad()
     {
+        UiInputSystemBootstrap.EnsureUiInputModule();
+
         GameManager game = Object.FindFirstObjectByType<GameManager>(FindObjectsInactive.Include);
         Player player = Object.FindFirstObjectByType<Player>(FindObjectsInactive.Include);
         WeaponManager weaponManager = Object.FindFirstObjectByType<WeaponManager>(FindObjectsInactive.Include);

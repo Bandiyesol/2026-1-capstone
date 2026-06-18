@@ -382,9 +382,11 @@ public class ShopUI : MonoBehaviour
 		if (settings != null && settings.slotFrameSprite != null)
 			slotFrameSprite = settings.slotFrameSprite;
 
+		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
+
 #if UNITY_EDITOR
-		if (slotFrameSprite == null)
-			slotFrameSprite = ShopItemRow.LoadDefaultFrameSprite();
+		if (slotFrameSprite == null || slotFrameSprite.name == "InventorySlotHitFallback")
+			slotFrameSprite = ShopItemRow.LoadDefaultFrameSprite() ?? slotFrameSprite;
 #endif
 	}
 

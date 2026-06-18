@@ -608,9 +608,11 @@ public class InventoryUI : MonoBehaviour
 				slotIconPadding = settings.iconPadding;
 		}
 
+		slotFrameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(slotFrameSprite);
+
 #if UNITY_EDITOR
-		if (slotFrameSprite == null)
-			slotFrameSprite = InventoryItemRow.LoadDefaultFrameSprite();
+		if (slotFrameSprite == null || slotFrameSprite.name == "InventorySlotHitFallback")
+			slotFrameSprite = InventoryItemRow.LoadDefaultFrameSprite() ?? slotFrameSprite;
 #endif
 	}
 
@@ -627,10 +629,11 @@ public class InventoryUI : MonoBehaviour
 			return;
 
 		InventoryUI ui = activeInstance != null ? activeInstance : FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
-		if (ui == null || ui.slotFrameSprite == null)
+		if (ui == null)
 			return;
 
-		row.ConfigureSlotVisual(ui.slotFrameSprite, ui.slotIconPadding);
+		Sprite frameSprite = InventorySlotVisualSettings.ResolveSlotFrameSprite(ui.slotFrameSprite);
+		row.ConfigureSlotVisual(frameSprite, ui.slotIconPadding);
 	}
 
 	void RefreshWeaponRow()
